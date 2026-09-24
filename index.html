@@ -152,7 +152,6 @@
   <main id="page-main" class="page active">
     <h1 class="page-title">Маркет <span class="muted">Звёзды и Премиум</span></h1>
 
-    <!-- Live-строка -->
     <div class="live-strip">
       <span class="live-dot"></span>
       <span id="liveOnline">1 247</span> человек онлайн
@@ -186,7 +185,6 @@
       </div>
     </div>
 
-    <!-- Кейс дня -->
     <div class="case-banner">
       <div class="case-left">
         <div class="case-emoji">🎰</div>
@@ -198,7 +196,6 @@
       <button class="btn-case" onclick="spinCase()">Крутить</button>
     </div>
 
-    <!-- Колесо фортуны -->
     <div class="case-banner wheel-banner">
       <div class="case-left">
         <div class="case-emoji">🎡</div>
@@ -210,7 +207,6 @@
       <button class="btn-case" onclick="spinWheel()">Крутить</button>
     </div>
 
-    <!-- Ежедневный бонус -->
     <div class="daily-bonus" id="dailyBonus">
       <div class="daily-left">
         <div class="daily-emoji">🎁</div>
@@ -222,9 +218,8 @@
       <button class="btn-case" onclick="claimDaily()">Забрать</button>
     </div>
 
-    <!-- Быстрые фильтры -->
     <div class="quick-filters">
-      <button class="quick-chip" data-quick="all">Все</button>
+      <button class="quick-chip active" data-quick="all">Все</button>
       <button class="quick-chip" data-quick="cheap">Дешевле 100₽</button>
       <button class="quick-chip" data-quick="hit">🔥 Хиты</button>
       <button class="quick-chip" data-quick="new">🆕 Новинки</button>
@@ -244,19 +239,15 @@
     <div class="products-loader hidden" id="productsLoader">Загрузка...</div>
     <div class="products-end hidden" id="productsEnd">— Конец каталога —</div>
 
-    <!-- Недавно просмотренные -->
     <div class="section-title hidden" id="recentTitle">👀 Недавно смотрел</div>
     <div class="hscroll" id="recentList"></div>
 
-    <!-- Live-лента покупок -->
     <div class="section-title">🔴 Live — сейчас покупают</div>
     <div class="live-feed" id="liveFeed"></div>
 
-    <!-- Топ-5 отзывов -->
     <div class="section-title">⭐ Что говорят юзеры</div>
     <div class="reviews-mini" id="reviewsMini"></div>
 
-    <!-- Пакеты -->
     <div class="section-title">🎁 Готовые пакеты</div>
     <div class="packages" id="packagesList"></div>
   </main>
@@ -275,7 +266,6 @@
       </div>
     </div>
 
-    <!-- Прогресс лояльности -->
     <div class="loyalty-card">
       <div class="loyalty-head">
         <span>Уровень лояльности</span>
@@ -340,7 +330,6 @@
     <h1 class="page-title">Корзина</h1>
     <div id="cartList"></div>
 
-    <!-- Апселл -->
     <div class="upsell hidden" id="upsell">
       <div class="upsell-title">🎁 С этим часто берут:</div>
       <div id="upsellList"></div>
@@ -455,7 +444,7 @@
       <div class="stars-input" id="starsInput">
         <span data-star="1">★</span><span data-star="2">★</span>
         <span data-star="3">★</span><span data-star="4">★</span>
-        <span data-star="5">★</span>
+        <span data-star="5" class="active">★</span>
       </div>
       <textarea id="reviewText" placeholder="Напиши свой отзыв о маркете..."></textarea>
       <button class="btn btn-primary" onclick="addReview()">Отправить</button>
@@ -566,23 +555,73 @@
   <!-- ============= PAGE: SETTINGS ============= -->
   <main id="page-settings" class="page">
     <h1 class="page-title">⚙️ Настройки</h1>
-    <div class="setting-row">
-      <span>Тема</span>
-      <div class="theme-switch">
-        <button class="theme-btn active" data-theme-set="dark">🌙 Тёмная</button>
-        <button class="theme-btn" data-theme-set="light">☀️ Светлая</button>
+
+    <div class="setting-row col">
+      <span>🎨 Тема оформления</span>
+      <div class="theme-grid">
+        <div class="theme-swatch swatch-dark" data-theme="dark" data-label="Тёмная"></div>
+        <div class="theme-swatch swatch-light" data-theme="light" data-label="Светлая"></div>
+        <div class="theme-swatch swatch-midnight" data-theme="midnight" data-label="Midnight"></div>
+        <div class="theme-swatch swatch-cyberpunk" data-theme="cyberpunk" data-label="Cyber"></div>
+        <div class="theme-swatch swatch-ocean" data-theme="ocean" data-label="Ocean"></div>
+        <div class="theme-swatch swatch-forest" data-theme="forest" data-label="Forest"></div>
+        <div class="theme-swatch swatch-sunset" data-theme="sunset" data-label="Sunset"></div>
+        <div class="theme-swatch swatch-sakura" data-theme="sakura" data-label="Sakura"></div>
+        <div class="theme-swatch swatch-mono" data-theme="mono" data-label="Mono"></div>
       </div>
     </div>
-    <div class="setting-row">
-      <span>Звук при покупке</span>
-      <label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label>
+
+    <div class="setting-row col">
+      <span>🌈 Акцентный цвет</span>
+      <div class="accent-grid">
+        <div class="accent-dot active" data-accent="red" style="background:#ff2d55;color:#ff2d55"></div>
+        <div class="accent-dot" data-accent="pink" style="background:#ff4fa3;color:#ff4fa3"></div>
+        <div class="accent-dot" data-accent="purple" style="background:#a855f7;color:#a855f7"></div>
+        <div class="accent-dot" data-accent="blue" style="background:#3b82f6;color:#3b82f6"></div>
+        <div class="accent-dot" data-accent="cyan" style="background:#06b6d4;color:#06b6d4"></div>
+        <div class="accent-dot" data-accent="green" style="background:#22c55e;color:#22c55e"></div>
+        <div class="accent-dot" data-accent="yellow" style="background:#fbbf24;color:#fbbf24"></div>
+        <div class="accent-dot" data-accent="orange" style="background:#f97316;color:#f97316"></div>
+      </div>
     </div>
+
     <div class="setting-row">
-      <span>Уведомления в боте</span>
-      <label class="switch"><input type="checkbox" id="notifyToggle" checked><span class="slider"></span></label>
+      <span>📐 Радиус углов</span>
+      <select id="radiusSelect" class="season-select">
+        <option value="sharp">Острые</option>
+        <option value="default" selected>Обычные</option>
+        <option value="round">Скруглённые</option>
+        <option value="pill">Максимум</option>
+      </select>
     </div>
+
     <div class="setting-row">
-      <span>Сезонная тема</span>
+      <span>🔠 Размер шрифта</span>
+      <select id="fontScaleSelect" class="season-select">
+        <option value="small">Мелкий</option>
+        <option value="default" selected>Обычный</option>
+        <option value="large">Крупный</option>
+        <option value="xlarge">Очень крупный</option>
+      </select>
+    </div>
+
+    <div class="setting-row">
+      <span>📱 Компактный режим</span>
+      <label class="switch"><input type="checkbox" id="compactToggle"><span class="slider"></span></label>
+    </div>
+
+    <div class="setting-row">
+      <span>✨ Анимации</span>
+      <label class="switch"><input type="checkbox" id="animToggle" checked><span class="slider"></span></label>
+    </div>
+
+    <div class="setting-row">
+      <span>💡 Эффект свечения</span>
+      <label class="switch"><input type="checkbox" id="glowToggle" checked><span class="slider"></span></label>
+    </div>
+
+    <div class="setting-row">
+      <span>🎄 Сезонная тема</span>
       <select id="seasonSelect" class="season-select">
         <option value="default">Обычная</option>
         <option value="newyear">🎄 Новый год</option>
@@ -590,6 +629,28 @@
         <option value="blackfriday">🖤 Чёрная пятница</option>
       </select>
     </div>
+
+    <div class="setting-row">
+      <span>🔊 Звук при покупке</span>
+      <label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label>
+    </div>
+
+    <div class="setting-row">
+      <span>🔔 Уведомления в боте</span>
+      <label class="switch"><input type="checkbox" id="notifyToggle" checked><span class="slider"></span></label>
+    </div>
+
+    <div class="setting-row">
+      <span>📳 Вибрация</span>
+      <label class="switch"><input type="checkbox" id="hapticToggle" checked><span class="slider"></span></label>
+    </div>
+
+    <div class="info-block" style="margin-top:16px;">
+      <h3>💡 Совет</h3>
+      <p>Все настройки сохраняются автоматически. Можешь смело экспериментировать — вернуть дефолт можно в любой момент.</p>
+    </div>
+
+    <button class="btn btn-secondary btn-full" style="margin-top:12px;" onclick="resetSettings()">🔄 Сбросить настройки</button>
   </main>
 
   <!-- ============= PAGE: ADMIN ============= -->
@@ -725,8 +786,6 @@
 
 <!-- TOASTS -->
 <div class="toast-wrap" id="toastWrap"></div>
-
-</div>
 
 <script src="script.js"></script>
 </body>
