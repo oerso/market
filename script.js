@@ -7,7 +7,7 @@ const SUPPORT_LINK = 'https://t.me/desired_support';
 const BOT_LINK = 'https://t.me/desired_bot';
 const LOW_STOCK_THRESHOLD = 5;
 
-// ==================== STORAGE WRAPPER ====================
+// ==================== STORAGE ====================
 const Storage = {
   get(key, fallback = null) {
     try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
@@ -40,7 +40,7 @@ const state = {
   onlineCount: 1247,
   tgUser: null,
   appliedPromo: null,
-  cartChannel: 'general',
+  chatChannel: 'general',
   reviewRating: 5,
   reviewFilter: 'all',
   loyaltyLevel: 'bronze'
@@ -114,15 +114,16 @@ const ACHIEVEMENTS = [
 ];
 
 const DIARY = [
-  { date: 'Сегодня', text: 'Запустили обновление Mini App. Добавили: кейс, колесо, баллы, избранное, кэшбэк, достижения, live-ленту, пакеты.' },
+  { date: 'Сегодня', text: 'Запустили обновление Mini App. Добавили: 9 тем, акцентные цвета, кастомный радиус, размер шрифта, компактный режим, glow-эффект, сезонные ивенты.' },
   { date: 'Вчера', text: 'Первый тест с кентом. Чат пока не работает между юзерами — ждём бэкенд.' },
   { date: '2 дня назад', text: 'Собрали дизайн-систему. Manrope, градиенты, анимации, splash-экран.' },
   { date: '3 дня назад', text: 'Стартовали разработку маркета. Цель: 50-300к ₽/мес.' }
 ];
 
 const CHANGELOG = [
-  { ver: 'v0.3.0', date: 'Сегодня', changes: ['Кейс дня и колесо фортуны', 'Ежедневный бонус и стрик', 'Баллы, кэшбэк, уровни лояльности', 'Избранное и недавно просмотренные', 'Live-лента покупок', 'Пакеты товаров и апселл', 'Достижения и лидерборд', 'Тёмная/светлая тема', 'Сезонные ивенты', 'Промокоды в профиле'] },
-  { ver: 'v0.2.0', date: '3 дня назад', changes: ['Полный редизайн', 'Авторизация', 'Админ-панель на 2 юзера', 'Корзина и профиль', 'Отзывы и FAQ', 'Рефералка'] },
+  { ver: 'v0.4.0', date: 'Сегодня', changes: ['9 тем оформления', '8 акцентных цветов', 'Радиус углов на выбор', 'Размер шрифта', 'Компактный режим', 'Glow-эффект', 'Ripple на кнопках', 'Shimmer на балансе и прогрессе', 'Анимация аватарки', 'Кнопка сброса настроек'] },
+  { ver: 'v0.3.0', date: '3 дня назад', changes: ['Кейс дня и колесо фортуны', 'Ежедневный бонус и стрик', 'Баллы, кэшбэк, уровни лояльности', 'Избранное и недавно просмотренные', 'Live-лента покупок', 'Пакеты товаров и апселл', 'Достижения и лидерборд', 'Промокоды в профиле'] },
+  { ver: 'v0.2.0', date: '5 дней назад', changes: ['Полный редизайн', 'Авторизация', 'Админ-панель на 2 юзера', 'Корзина и профиль', 'Отзывы и FAQ', 'Рефералка'] },
   { ver: 'v0.1.0', date: 'Неделю назад', changes: ['Первый каркас Mini App', 'Каталог товаров', 'Базовый дизайн'] }
 ];
 
@@ -140,7 +141,6 @@ const LIVE_BUYERS = [
 // ==================== INIT ====================
 window.addEventListener('DOMContentLoaded', () => {
   applyTheme();
-  applySeason();
   initTelegram();
 
   setTimeout(() => {
@@ -148,12 +148,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if (splash) splash.classList.add('hide');
     setTimeout(() => {
       if (state.currentUser) {
-        // проверка онбординга
-        if (!Storage.get('onboarded', false)) {
-          showOnboarding();
-        } else {
-          enterApp();
-        }
+        if (!Storage.get('onboarded', false)) showOnboarding();
+        else enterApp();
       } else {
         document.getElementById('authScreen').classList.remove('hidden');
       }
@@ -161,12 +157,14 @@ window.addEventListener('DOMContentLoaded', () => {
   }, 1200);
 
   renderAuthForm();
-  bindEvents();
   startPromoTimer();
   startOnlineTicker();
   initCase();
   initWheel();
   initDaily();
+  initSettingsUI();
+  renderLiveFeed();
+  renderReviewsMini();
 });
 
 function initTelegram() {
@@ -180,13 +178,66 @@ function initTelegram() {
   if (u) state.tgUser = u;
 }
 
-// ==================== THEME / SEASON ====================
+// ==================== THEME SYSTEM ====================
 function applyTheme() {
   const theme = Storage.get('theme', 'dark');
   document.body.setAttribute('data-theme', theme);
-  document.querySelectorAll('.theme-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.themeSet === theme);
-  });
+  applyAccent();
+  applyRadius();
+  applyFontScale();
+  applyCompact();
+  applyAnimations();
+  applyGlow();
+  applySeason();
+  syncThemeSwatches();
+}
+
+function applyAccent() {
+  const accent = Storage.get('accent', 'red');
+  const presets = {
+    red:    { accent: '#ff2d55', dark: '#c11a3d', glow: 'rgba(255,45,85,0.35)' },
+    pink:   { accent: '#ff4fa3', dark: '#cc1a78', glow: 'rgba(255,79,163,0.35)' },
+    purple: { accent: '#a855f7', dark: '#7c3aed', glow: 'rgba(168,85,247,0.35)' },
+    blue:   { accent: '#3b82f6', dark: '#1d4ed8', glow: 'rgba(59,130,246,0.35)' },
+    cyan:   { accent: '#06b6d4', dark: '#0e7490', glow: 'rgba(6,182,212,0.35)' },
+    green:  { accent: '#22c55e', dark: '#15803d', glow: 'rgba(34,197,94,0.35)' },
+    yellow: { accent: '#fbbf24', dark: '#d97706', glow: 'rgba(251,191,36,0.35)' },
+    orange: { accent: '#f97316', dark: '#c2410c', glow: 'rgba(249,115,22,0.35)' }
+  };
+  const p = presets[accent] || presets.red;
+  document.body.style.setProperty('--accent', p.accent);
+  document.body.style.setProperty('--accent-dark', p.dark);
+  document.body.style.setProperty('--accent-glow', p.glow);
+}
+
+function applyRadius() {
+  const r = Storage.get('radius', 'default');
+  const map = { sharp: '6px', default: '16px', round: '24px', pill: '32px' };
+  const val = map[r] || map.default;
+  document.body.style.setProperty('--radius', val);
+  document.body.style.setProperty('--radius-sm', `calc(${val} - 4px)`);
+  document.body.style.setProperty('--radius-lg', `calc(${val} + 6px)`);
+}
+
+function applyFontScale() {
+  const s = Storage.get('fontScale', 'default');
+  const map = { small: '0.9', default: '1', large: '1.1', xlarge: '1.2' };
+  document.body.style.setProperty('--font-scale', map[s] || '1');
+}
+
+function applyCompact() {
+  const compact = Storage.get('compact', false);
+  document.body.classList.toggle('compact', compact);
+}
+
+function applyAnimations() {
+  const enabled = Storage.get('animEnabled', true);
+  document.body.classList.toggle('no-anim', !enabled);
+}
+
+function applyGlow() {
+  const enabled = Storage.get('glow', true);
+  document.body.classList.toggle('glow', enabled);
 }
 
 function applySeason() {
@@ -197,21 +248,90 @@ function applySeason() {
   if (sel) sel.value = season;
 }
 
-document.addEventListener('change', (e) => {
-  if (e.target.id === 'seasonSelect') {
-    Storage.set('season', e.target.value);
-    applySeason();
-    toast('Сезонная тема применена', 'success');
+function syncThemeSwatches() {
+  const t = Storage.get('theme', 'dark');
+  document.querySelectorAll('.theme-swatch').forEach(s => {
+    s.classList.toggle('active', s.dataset.theme === t);
+  });
+  const a = Storage.get('accent', 'red');
+  document.querySelectorAll('.accent-dot').forEach(d => {
+    d.classList.toggle('active', d.dataset.accent === a);
+  });
+  const rInput = document.getElementById('radiusSelect');
+  if (rInput) rInput.value = Storage.get('radius', 'default');
+  const fInput = document.getElementById('fontScaleSelect');
+  if (fInput) fInput.value = Storage.get('fontScale', 'default');
+  const compactToggle = document.getElementById('compactToggle');
+  if (compactToggle) compactToggle.checked = Storage.get('compact', false);
+  const animToggle = document.getElementById('animToggle');
+  if (animToggle) animToggle.checked = Storage.get('animEnabled', true);
+  const glowToggle = document.getElementById('glowToggle');
+  if (glowToggle) glowToggle.checked = Storage.get('glow', true);
+  const soundToggle = document.getElementById('soundToggle');
+  if (soundToggle) soundToggle.checked = Storage.get('soundEnabled', true);
+  const notifyToggle = document.getElementById('notifyToggle');
+  if (notifyToggle) notifyToggle.checked = Storage.get('notifyEnabled', true);
+  const hapticToggle = document.getElementById('hapticToggle');
+  if (hapticToggle) hapticToggle.checked = Storage.get('hapticEnabled', true);
+}
+
+function initSettingsUI() {
+  syncThemeSwatches();
+}
+
+// Слушатели настроек и ripple
+document.addEventListener('click', (e) => {
+  const swatch = e.target.closest('.theme-swatch');
+  if (swatch) {
+    Storage.set('theme', swatch.dataset.theme);
+    applyTheme();
+    haptic('light');
+    return;
+  }
+  const dot = e.target.closest('.accent-dot');
+  if (dot) {
+    Storage.set('accent', dot.dataset.accent);
+    applyAccent();
+    syncThemeSwatches();
+    haptic('light');
+    return;
+  }
+  const rippleBtn = e.target.closest('.btn');
+  if (rippleBtn && Storage.get('animEnabled', true) !== false) {
+    const rect = rippleBtn.getBoundingClientRect();
+    const x = (e.clientX || (e.touches && e.touches[0]?.clientX) || rect.left + rect.width/2) - rect.left;
+    const y = (e.clientY || (e.touches && e.touches[0]?.clientY) || rect.top + rect.height/2) - rect.top;
+    const size = Math.max(rect.width, rect.height);
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (x - size/2) + 'px';
+    ripple.style.top = (y - size/2) + 'px';
+    rippleBtn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
   }
 });
 
-document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('theme-btn')) {
-    const t = e.target.dataset.themeSet;
-    Storage.set('theme', t);
-    applyTheme();
-  }
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'radiusSelect') { Storage.set('radius', e.target.value); applyRadius(); }
+  if (e.target.id === 'fontScaleSelect') { Storage.set('fontScale', e.target.value); applyFontScale(); }
+  if (e.target.id === 'compactToggle') { Storage.set('compact', e.target.checked); applyCompact(); }
+  if (e.target.id === 'animToggle') { Storage.set('animEnabled', e.target.checked); applyAnimations(); }
+  if (e.target.id === 'glowToggle') { Storage.set('glow', e.target.checked); applyGlow(); }
+  if (e.target.id === 'seasonSelect') { Storage.set('season', e.target.value); applySeason(); toast('Сезонная тема применена', 'success'); }
+  if (e.target.id === 'soundToggle') Storage.set('soundEnabled', e.target.checked);
+  if (e.target.id === 'notifyToggle') Storage.set('notifyEnabled', e.target.checked);
+  if (e.target.id === 'hapticToggle') Storage.set('hapticEnabled', e.target.checked);
 });
+
+function resetSettings() {
+  ['theme','accent','radius','fontScale','compact','animEnabled','glow','season'].forEach(k => Storage.del(k));
+  Storage.set('theme', 'dark');
+  Storage.set('accent', 'red');
+  applyTheme();
+  toast('Настройки сброшены', 'success');
+  haptic('medium');
+}
 
 // ==================== AUTH ====================
 function renderAuthForm() {
@@ -458,7 +578,7 @@ function renderAdminTab(tab) {
   } else if (tab === 'orders') {
     c.innerHTML = `<h4>📦 Заказы</h4>` +
       (state.orders.length
-        ? state.orders.map(o => `<div class="admin-row"><span>${o.product}</span><span>${o.price}₽</span></div>`).join('')
+        ? state.orders.map(o => `<div class="admin-row"><span>${o.id}</span><span>${o.total}₽</span></div>`).join('')
         : '<div style="color:var(--muted);font-size:12px;padding:10px 0;">Пока нет заказов</div>');
   } else if (tab === 'products') {
     c.innerHTML = `<h4>🏷 Товары</h4>` +
@@ -468,7 +588,7 @@ function renderAdminTab(tab) {
       <h4>🎟 Промокоды</h4>
       <input type="text" id="promoCodeInput" placeholder="Код (напр. SALE10)">
       <input type="number" id="promoDiscInput" placeholder="Скидка %">
-      <input type="number" id="promoLimitInput" placeholder="Лимит использований (0 = без)">
+      <input type="number" id="promoLimitInput" placeholder="Лимит (0 = без)">
       <button onclick="addPromo()">Добавить</button>
       <div id="promoList" style="margin-top:12px;"></div>
     `;
@@ -487,7 +607,7 @@ function renderAdminTab(tab) {
     const general = state.chat.general || [];
     c.innerHTML = `<h4>🗨️ Чат (${general.length})</h4>` +
       (general.slice(-10).map((m, i) =>
-        `<div class="admin-row"><span>@${m.author}: ${escapeHtml(m.text).slice(0, 30)}...</span><button class="ghost" onclick="delChatMsg('general', ${i})">×</button></div>`
+        `<div class="admin-row"><span>@${m.author}: ${escapeHtml(m.text).slice(0,30)}...</span><button class="ghost" onclick="delChatMsg('general', ${i})">×</button></div>`
       ).join('') || '<div style="color:var(--muted);font-size:12px;">Пусто</div>');
   } else if (tab === 'logs') {
     const logs = Storage.get('logs', []);
@@ -679,7 +799,7 @@ function openProduct(id) {
       ${'<span class="star" style="color:var(--yellow);font-size:16px;">★</span>'.repeat(Math.round(p.rating))}
       <span style="margin-left:6px;font-weight:700;">${p.rating}</span>
     </div>
-    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:16px;">
+    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;">
       <div class="product-tag">⚡ Автовыдача</div>
       <div class="product-tag">🛡 Гарантия 24ч</div>
       ${p.stock <= LOW_STOCK_THRESHOLD ? `<div class="product-tag" style="color:var(--yellow)">⚠ ${p.stock} шт</div>` : ''}
@@ -864,7 +984,6 @@ function renderCart() {
     </div>
   `).join('');
 
-  // Апселл
   const cartIds = state.cart.map(i => i.id);
   const suggestions = PRODUCTS.filter(p => !cartIds.includes(p.id) && p.price < 400).slice(0, 2);
   if (suggestions.length) {
@@ -899,17 +1018,14 @@ function removeCart(i) {
   haptic('light');
 }
 
-function applyPromoInCart() {
-  openModal('modalPromo');
-}
+function applyPromoInCart() { openModal('modalPromo'); }
 
 function applyPromo() {
   const code = document.getElementById('promoInput').value.trim().toUpperCase();
   const resultEl = document.getElementById('promoResult');
   if (!code) return;
-  // Проверка из админских
+
   const promo = state.promos.find(p => p.code === code);
-  // Плюс встроенные
   const builtIn = {
     'CASE5': 5, 'CASE10': 10, 'CASE15': 15, 'CASE3': 3, 'CASE20': 20,
     'WHEEL5': 5, 'WHEEL10': 10, 'WHEEL15': 15, 'WHEEL20': 20, 'WHEEL50': 50,
@@ -917,7 +1033,6 @@ function applyPromo() {
   };
 
   let discount = null;
-  let displayCode = code;
   if (promo) discount = promo.disc;
   else if (builtIn[code]) discount = builtIn[code];
 
@@ -927,7 +1042,6 @@ function applyPromo() {
     return;
   }
 
-  // Проверка использований
   const used = state.usedPromos[code] || 0;
   if (used > 0) {
     resultEl.textContent = '❌ Промокод уже использован';
@@ -935,7 +1049,7 @@ function applyPromo() {
     return;
   }
 
-  state.appliedPromo = { code: displayCode, disc: discount };
+  state.appliedPromo = { code, disc: discount };
   state.usedPromos[code] = 1;
   Storage.set('usedPromos', state.usedPromos);
   resultEl.textContent = `✅ Промокод применён: -${discount}%`;
@@ -951,7 +1065,7 @@ function applyPromo() {
 
 function openPromoModal() { openModal('modalPromo'); }
 
-// ==================== TOP UP ====================
+// ==================== TOP UP / CHECKOUT ====================
 function openTopUp() { openModal('modalTopUp'); }
 
 function submitTopUp() {
@@ -982,8 +1096,7 @@ function checkout() {
     toast('Недостаточно средств. Пополни баланс.', 'error');
     return;
   }
-  const newBalance = balance - total;
-  Storage.set('balance', newBalance);
+  Storage.set('balance', balance - total);
 
   state.orders.push({
     id: 'ORD' + Date.now(),
@@ -1175,7 +1288,7 @@ function addReview() {
   Storage.set('reviews', state.reviews);
   document.getElementById('reviewText').value = '';
   state.reviewRating = 5;
-  document.querySelectorAll('#starsInput span').forEach((x, i) => x.classList.toggle('active', i < 5));
+  document.querySelectorAll('#starsInput span').forEach(x => x.classList.add('active'));
   state.points += 10;
   Storage.set('points', state.points);
   updateProfileUI();
@@ -1532,7 +1645,7 @@ function createTicket() {
   if (!theme || !text) return toast('Заполни все поля', 'error');
   document.getElementById('ticketTheme').value = '';
   document.getElementById('ticketText').value = '';
-  toast('Тикет создан. Мы ответим в течение 24ч.', 'success');
+  toast('Тикет создан. Ответим в течение 24ч.', 'success');
 }
 
 // ==================== TOASTS ====================
@@ -1552,6 +1665,7 @@ function toast(text, type = 'info') {
 
 // ==================== HAPTIC / SOUND ====================
 function haptic(type = 'light') {
+  if (!Storage.get('hapticEnabled', true)) return;
   const h = window.Telegram?.WebApp?.HapticFeedback;
   if (!h) return;
   try {
@@ -1575,11 +1689,6 @@ function playSound() {
   } catch {}
 }
 
-document.addEventListener('change', (e) => {
-  if (e.target.id === 'soundToggle') Storage.set('soundEnabled', e.target.checked);
-  if (e.target.id === 'notifyToggle') Storage.set('notifyEnabled', e.target.checked);
-});
-
 // ==================== HELPERS ====================
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1600,17 +1709,7 @@ function startPromoTimer() {
   }, 1000);
 }
 
-// ==================== BIND EVENTS ====================
-function bindEvents() {
-  // все data-page кнопки
-  document.querySelectorAll('[data-page]').forEach(el => {
-    if (!el.dataset.bound) {
-      el.dataset.bound = '1';
-    }
-  });
-}
-
-// Экспорт в window для inline onclick
+// ==================== WINDOW EXPORTS ====================
 window.go = go;
 window.showAuthForm = showAuthForm;
 window.doLogin = doLogin;
@@ -1647,3 +1746,4 @@ window.sendChat = sendChat;
 window.toggleFaq = toggleFaq;
 window.setSearch = setSearch;
 window.toast = toast;
+window.resetSettings = resetSettings;
