@@ -10,23 +10,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="style.css">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body data-theme="dark">
+<body>
 
-<!-- ============ SPLASH SCREEN ============ -->
 <div id="splash" class="splash">
   <div class="splash-logo">
     <svg viewBox="0 0 64 64" fill="none">
       <defs>
-        <linearGradient id="splashGrad" x1="0" y1="0" x2="64" y2="64">
+        <linearGradient id="sg" x1="0" y1="0" x2="64" y2="64">
           <stop offset="0%" stop-color="#ff2d55"/>
           <stop offset="100%" stop-color="#a80020"/>
         </linearGradient>
       </defs>
-      <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#splashGrad)"/>
+      <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#sg)"/>
       <text x="32" y="42" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
     </svg>
   </div>
@@ -34,12 +32,11 @@
   <div class="splash-loader"><span></span><span></span><span></span></div>
 </div>
 
-<!-- ============ ONBOARDING ============ -->
 <div id="onboarding" class="onboarding hidden">
   <div class="onb-track" id="onbTrack">
     <div class="onb-slide">
       <div class="onb-emoji">🛍️</div>
-      <h2 class="onb-title">Добро пожаловать!</h2>
+      <h2 class="onb-title">Добро пожаловать</h2>
       <p class="onb-text">Маркет звёзд, премиума и аккаунтов. Всё в одном месте, всё с автовыдачей.</p>
     </div>
     <div class="onb-slide">
@@ -50,7 +47,7 @@
     <div class="onb-slide">
       <div class="onb-emoji">💸</div>
       <h2 class="onb-title">Заработай на рефке</h2>
-      <p class="onb-text">Приглашай друзей — получай до 10% с каждой их покупки. Вывод в рубли и крипту.</p>
+      <p class="onb-text">Приглашай друзей — получай до 10% с каждой их покупки.</p>
     </div>
   </div>
   <div class="onb-dots"><span class="onb-dot active"></span><span class="onb-dot"></span><span class="onb-dot"></span></div>
@@ -58,18 +55,17 @@
   <button class="btn-link" id="onbSkip">Пропустить</button>
 </div>
 
-<!-- ============ AUTH SCREEN ============ -->
 <div id="authScreen" class="auth-screen hidden">
   <div class="auth-bg-glow"></div>
   <div class="auth-logo">
     <svg viewBox="0 0 64 64" fill="none">
       <defs>
-        <linearGradient id="lgA" x1="0" y1="0" x2="64" y2="64">
+        <linearGradient id="ag" x1="0" y1="0" x2="64" y2="64">
           <stop offset="0%" stop-color="#ff2d55"/>
           <stop offset="100%" stop-color="#a80020"/>
         </linearGradient>
       </defs>
-      <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#lgA)"/>
+      <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#ag)"/>
       <text x="32" y="42" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
     </svg>
   </div>
@@ -93,9 +89,7 @@
     <h2 class="form-title">Регистрация</h2>
     <input type="text" id="regUsername" placeholder="Имя пользователя" autocomplete="off">
     <input type="password" id="regPassword" placeholder="Пароль" autocomplete="off">
-    <div class="warn-box">
-      ⚠️ Убедитесь, что записали пароль + имя пользователя в надёжное место. Восстановление пароля будет реализовано лишь через поддержку.
-    </div>
+    <div class="warn-box">⚠️ Убедитесь, что записали пароль + имя пользователя в надёжное место. Восстановление пароля будет реализовано лишь через поддержку.</div>
     <label class="checkbox-row">
       <input type="checkbox" id="regConfirm">
       <span>Я записал(а) данные в надёжное место</span>
@@ -105,26 +99,24 @@
   </div>
 </div>
 
-<!-- ============ APP ============ -->
 <div id="app" class="app hidden">
 
-  <!-- TOPBAR -->
   <header class="topbar" id="topbar">
     <div class="brand" id="brandLogo">
       <svg class="logo" viewBox="0 0 64 64" fill="none">
         <defs>
-          <linearGradient id="lgB" x1="0" y1="0" x2="64" y2="64">
+          <linearGradient id="bg1" x1="0" y1="0" x2="64" y2="64">
             <stop offset="0%" stop-color="#ff2d55"/>
             <stop offset="100%" stop-color="#a80020"/>
           </linearGradient>
         </defs>
-        <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#lgB)"/>
+        <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#bg1)"/>
         <text x="32" y="42" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
       </svg>
       <span class="brand-name">desired</span>
     </div>
     <div class="topbar-right">
-      <button class="balance-pill" onclick="go('profile')" id="balancePill">
+      <button class="balance-pill" onclick="go('profile')">
         <span class="plus">+</span>
         <span id="topBalance">0₽</span>
       </button>
@@ -132,7 +124,6 @@
     </div>
   </header>
 
-  <!-- DROPDOWN -->
   <div class="dropdown" id="dropdownMenu">
     <a data-page="reviews">⭐ Отзывы</a>
     <a data-page="favorites">❤️ Избранное</a>
@@ -143,20 +134,19 @@
     <a data-page="chat">🗨️ Чат</a>
     <a data-page="leaderboard">🏆 Лидеры</a>
     <a data-page="achievements">🎖 Достижения</a>
-    <a data-page="diary">📔 Дневник маркета</a>
+    <a data-page="diary">📔 Дневник</a>
     <a data-page="changelog">📋 Ченджлог</a>
     <a data-page="settings">⚙️ Настройки</a>
   </div>
 
-  <!-- ============= PAGE: MAIN ============= -->
   <main id="page-main" class="page active">
     <h1 class="page-title">Маркет <span class="muted">Звёзды и Премиум</span></h1>
 
     <div class="live-strip">
       <span class="live-dot"></span>
-      <span id="liveOnline">1 247</span> человек онлайн
+      <span id="liveOnline">1 247</span> онлайн
       <span class="live-sep">·</span>
-      Продано сегодня: <span id="liveSold">32</span>
+      Продано: <span id="liveSold">32</span>
     </div>
 
     <div class="banner">
@@ -196,7 +186,7 @@
       <button class="btn-case" onclick="spinCase()">Крутить</button>
     </div>
 
-    <div class="case-banner wheel-banner">
+    <div class="case-banner">
       <div class="case-left">
         <div class="case-emoji">🎡</div>
         <div>
@@ -207,12 +197,12 @@
       <button class="btn-case" onclick="spinWheel()">Крутить</button>
     </div>
 
-    <div class="daily-bonus" id="dailyBonus">
-      <div class="daily-left">
-        <div class="daily-emoji">🎁</div>
+    <div class="case-banner">
+      <div class="case-left">
+        <div class="case-emoji">🎁</div>
         <div>
-          <div class="daily-title">Ежедневный бонус</div>
-          <div class="daily-sub" id="dailyStatus">Забери 5 баллов</div>
+          <div class="case-title">Ежедневный бонус</div>
+          <div class="case-sub" id="dailyStatus">Забери 5 баллов</div>
         </div>
       </div>
       <button class="btn-case" onclick="claimDaily()">Забрать</button>
@@ -236,13 +226,12 @@
     </div>
 
     <div class="products" id="productsList"></div>
-    <div class="products-loader hidden" id="productsLoader">Загрузка...</div>
     <div class="products-end hidden" id="productsEnd">— Конец каталога —</div>
 
     <div class="section-title hidden" id="recentTitle">👀 Недавно смотрел</div>
     <div class="hscroll" id="recentList"></div>
 
-    <div class="section-title">🔴 Live — сейчас покупают</div>
+    <div class="section-title">🔴 Сейчас покупают</div>
     <div class="live-feed" id="liveFeed"></div>
 
     <div class="section-title">⭐ Что говорят юзеры</div>
@@ -252,7 +241,6 @@
     <div class="packages" id="packagesList"></div>
   </main>
 
-  <!-- ============= PAGE: PROFILE ============= -->
   <main id="page-profile" class="page">
     <h1 class="page-title center">Профиль</h1>
     <div class="avatar-wrap">
@@ -260,7 +248,7 @@
       <div class="username" id="userName">@desired</div>
       <div class="userid" id="userId">@id0</div>
       <div class="badges-row">
-        <span class="auth-badge" id="authBadge">авторизован</span>
+        <span class="auth-badge">авторизован</span>
         <span class="loyalty-badge" id="loyaltyBadge">🥉 Bronze</span>
         <span class="verified-badge hidden" id="verifiedBadge">✅ Verified</span>
       </div>
@@ -272,7 +260,7 @@
         <span id="loyaltyProgressText">0 / 5000₽</span>
       </div>
       <div class="loyalty-bar"><div class="loyalty-fill" id="loyaltyFill" style="width:0%"></div></div>
-      <div class="loyalty-hint">Кэшбэк: <b id="cashbackPercent">3%</b> с покупок. Потрачено: <b id="loyaltySpent">0₽</b></div>
+      <div class="loyalty-hint">Кэшбэк: <b id="cashbackPercent">3%</b> · Потрачено: <b id="loyaltySpent">0₽</b></div>
     </div>
 
     <div class="balance-card">
@@ -284,25 +272,12 @@
     </div>
 
     <div class="stats">
-      <div class="stat green">
-        <div class="stat-value" id="statTopUp">0₽</div>
-        <div class="stat-label">↗ Пополнено</div>
-      </div>
-      <div class="stat gray">
-        <div class="stat-value" id="statSpent">0₽</div>
-        <div class="stat-label">↘ Потрачено</div>
-      </div>
+      <div class="stat green"><div class="stat-value" id="statTopUp">0₽</div><div class="stat-label">↗ Пополнено</div></div>
+      <div class="stat gray"><div class="stat-value" id="statSpent">0₽</div><div class="stat-label">↘ Потрачено</div></div>
     </div>
-
     <div class="stats">
-      <div class="stat gray">
-        <div class="stat-value" id="statPoints">0</div>
-        <div class="stat-label">💎 Баллы</div>
-      </div>
-      <div class="stat gray">
-        <div class="stat-value" id="statOrders">0</div>
-        <div class="stat-label">📦 Заказов</div>
-      </div>
+      <div class="stat gray"><div class="stat-value" id="statPoints">0</div><div class="stat-label">💎 Баллы</div></div>
+      <div class="stat gray"><div class="stat-value" id="statOrders">0</div><div class="stat-label">📦 Заказов</div></div>
     </div>
 
     <button class="btn-wide" onclick="openPromoModal()">💎 Ввести промокод</button>
@@ -314,7 +289,6 @@
     <button class="btn-wide danger" onclick="logout()">🚪 Выйти из аккаунта</button>
   </main>
 
-  <!-- ============= PAGE: INVENTORY ============= -->
   <main id="page-inventory" class="page">
     <h1 class="page-title">Инвентарь</h1>
     <div class="empty-state">
@@ -325,16 +299,13 @@
     </div>
   </main>
 
-  <!-- ============= PAGE: CART ============= -->
   <main id="page-cart" class="page">
     <h1 class="page-title">Корзина</h1>
     <div id="cartList"></div>
-
     <div class="upsell hidden" id="upsell">
       <div class="upsell-title">🎁 С этим часто берут:</div>
       <div id="upsellList"></div>
     </div>
-
     <div class="cart-summary hidden" id="cartSummary">
       <div class="cart-row"><span>Товары</span><span id="cartCount">0</span></div>
       <div class="cart-row"><span>Скидка лояльности</span><span id="cartLoyalty">0₽</span></div>
@@ -344,7 +315,6 @@
       <div class="cart-note">⚡ Автовыдача после оплаты</div>
       <button class="btn btn-primary btn-full" onclick="checkout()">Оформить заказ</button>
     </div>
-
     <div class="empty-state" id="cartEmpty">
       <div class="empty-emoji">🛒</div>
       <div class="empty-title">Корзина пуста</div>
@@ -353,19 +323,17 @@
     </div>
   </main>
 
-  <!-- ============= PAGE: FAVORITES ============= -->
   <main id="page-favorites" class="page">
     <h1 class="page-title">❤️ Избранное</h1>
     <div id="favList"></div>
     <div class="empty-state" id="favEmpty">
       <div class="empty-emoji">💔</div>
       <div class="empty-title">Пока пусто</div>
-      <div class="empty-sub">Добавляй товары в избранное — узнаешь о скидках</div>
+      <div class="empty-sub">Добавляй товары в избранное</div>
       <button class="btn btn-primary" onclick="go('main')">В каталог</button>
     </div>
   </main>
 
-  <!-- ============= PAGE: TRANSACTIONS ============= -->
   <main id="page-transactions" class="page">
     <h1 class="page-title">Транзакции</h1>
     <div id="txList"></div>
@@ -376,90 +344,69 @@
     </div>
   </main>
 
-  <!-- ============= PAGE: ORDERS ============= -->
   <main id="page-orders" class="page">
     <h1 class="page-title">📦 Мои заказы</h1>
     <div id="ordersList"></div>
     <div class="empty-state" id="ordersEmpty">
       <div class="empty-emoji">📦</div>
       <div class="empty-title">Заказов пока нет</div>
-      <div class="empty-sub">Купи первый товар — он появится здесь</div>
+      <div class="empty-sub">Купи первый товар</div>
       <button class="btn btn-primary" onclick="go('main')">В каталог</button>
     </div>
   </main>
 
-  <!-- ============= PAGE: REF ============= -->
   <main id="page-ref" class="page">
     <h1 class="page-title">Реферальная программа</h1>
     <div class="ref-hero">
       <div class="ref-emoji">📣</div>
-      <div class="ref-title">Зови друзей — получай 10%</div>
-      <div class="ref-sub">+3% со второго уровня. С каждой покупки реферала.</div>
+      <div class="ref-title">Зови друзей — 10%</div>
+      <div class="ref-sub">+3% со второго уровня</div>
     </div>
     <div class="ref-link-box">
       <input type="text" id="refLink" readonly>
       <button class="btn btn-primary" onclick="copyRef()">Копировать</button>
     </div>
     <div class="stats">
-      <div class="stat gray">
-        <div class="stat-value" id="refCount">0</div>
-        <div class="stat-label">Уровень 1</div>
-      </div>
-      <div class="stat gray">
-        <div class="stat-value" id="refCount2">0</div>
-        <div class="stat-label">Уровень 2</div>
-      </div>
+      <div class="stat gray"><div class="stat-value" id="refCount">0</div><div class="stat-label">Уровень 1</div></div>
+      <div class="stat gray"><div class="stat-value" id="refCount2">0</div><div class="stat-label">Уровень 2</div></div>
     </div>
     <div class="stats">
-      <div class="stat green">
-        <div class="stat-value" id="refEarn">0₽</div>
-        <div class="stat-label">Заработано</div>
-      </div>
-      <div class="stat gray">
-        <div class="stat-value">500₽</div>
-        <div class="stat-label">Мин. вывод</div>
-      </div>
+      <div class="stat green"><div class="stat-value" id="refEarn">0₽</div><div class="stat-label">Заработано</div></div>
+      <div class="stat gray"><div class="stat-value">500₽</div><div class="stat-label">Мин. вывод</div></div>
     </div>
     <button class="btn btn-secondary btn-full" onclick="copyRef()">📤 Поделиться ссылкой</button>
   </main>
 
-  <!-- ============= PAGE: REVIEWS ============= -->
   <main id="page-reviews" class="page">
     <h1 class="page-title">Отзывы</h1>
-
     <div class="review-summary">
       <div class="review-avg" id="reviewAvg">5.0</div>
       <div class="review-avg-sub">средняя оценка</div>
       <div class="review-avg-count"><span id="reviewCount">0</span> отзывов</div>
     </div>
-
     <div class="review-filters">
       <button class="quick-chip active" data-rfilter="all">Все</button>
       <button class="quick-chip" data-rfilter="5">5★</button>
       <button class="quick-chip" data-rfilter="4">4★</button>
-      <button class="quick-chip" data-rfilter="photo">С фото</button>
     </div>
-
     <div class="review-form">
       <div class="stars-input" id="starsInput">
         <span data-star="1">★</span><span data-star="2">★</span>
         <span data-star="3">★</span><span data-star="4">★</span>
         <span data-star="5" class="active">★</span>
       </div>
-      <textarea id="reviewText" placeholder="Напиши свой отзыв о маркете..."></textarea>
+      <textarea id="reviewText" placeholder="Напиши свой отзыв..."></textarea>
       <button class="btn btn-primary" onclick="addReview()">Отправить</button>
     </div>
     <div id="reviewsList"></div>
   </main>
 
-  <!-- ============= PAGE: FAQ ============= -->
   <main id="page-faq" class="page">
     <h1 class="page-title">FAQ</h1>
     <input type="text" class="search" id="faqSearch" placeholder="Поиск по вопросам...">
     <div class="faq-list" id="faqList"></div>
   </main>
 
-  <!-- ============= PAGE: INFO ============= -->
   <main id="page-info" class="page">
     <h1 class="page-title">Информация</h1>
     <div class="info-block">
@@ -472,21 +419,14 @@
     </div>
     <div class="info-block">
       <h3>Правила</h3>
-      <p>Возврат возможен только в случае нерабочего товара. Все спорные ситуации решаются через поддержку.</p>
+      <p>Возврат возможен только в случае нерабочего товара. Спорные ситуации решаются через поддержку.</p>
     </div>
     <div class="info-block">
       <h3>Публичная статистика</h3>
-      <p>Продано заказов: <b>12 458</b>. Средняя оценка: <b>4.9</b>. Онлайн: <b id="infoOnline">1 247</b>.</p>
-    </div>
-    <div class="info-block">
-      <h3>Документы</h3>
-      <p><a href="#" onclick="toast('Откроется позже','info');return false;">Пользовательское соглашение</a><br>
-      <a href="#" onclick="toast('Откроется позже','info');return false;">Политика конфиденциальности</a><br>
-      <a href="#" onclick="toast('Откроется позже','info');return false;">Правила возврата</a></p>
+      <p>Продано заказов: <b>12 458</b>. Оценка: <b>4.9</b>. Онлайн: <b id="infoOnline">1 247</b>.</p>
     </div>
   </main>
 
-  <!-- ============= PAGE: SUPPORT ============= -->
   <main id="page-support" class="page">
     <h1 class="page-title">Поддержка</h1>
     <div class="support-hero">
@@ -504,12 +444,9 @@
       <h3>Прямой контакт</h3>
       <button class="btn btn-secondary btn-full" onclick="contactSupport()">💬 Написать в Telegram</button>
     </div>
-    <div class="warn-box">
-      Восстановление пароля возможно только через поддержку. Сохраняй данные в надёжном месте!
-    </div>
+    <div class="warn-box">Восстановление пароля возможно только через поддержку.</div>
   </main>
 
-  <!-- ============= PAGE: CHAT ============= -->
   <main id="page-chat" class="page chat-page">
     <h1 class="page-title">Общий чат</h1>
     <div class="chat-channels">
@@ -524,7 +461,6 @@
     </div>
   </main>
 
-  <!-- ============= PAGE: LEADERBOARD ============= -->
   <main id="page-leaderboard" class="page">
     <h1 class="page-title">🏆 Лидеры</h1>
     <div class="lb-tabs">
@@ -534,33 +470,32 @@
     <div id="lbList"></div>
   </main>
 
-  <!-- ============= PAGE: ACHIEVEMENTS ============= -->
   <main id="page-achievements" class="page">
     <h1 class="page-title">🎖 Достижения</h1>
     <div class="ach-grid" id="achList"></div>
   </main>
 
-  <!-- ============= PAGE: DIARY ============= -->
   <main id="page-diary" class="page">
-    <h1 class="page-title">📔 Дневник маркета</h1>
+    <h1 class="page-title">📔 Дневник</h1>
     <div class="diary-list" id="diaryList"></div>
   </main>
 
-  <!-- ============= PAGE: CHANGELOG ============= -->
   <main id="page-changelog" class="page">
     <h1 class="page-title">📋 Ченджлог</h1>
     <div class="changelog-list" id="changelogList"></div>
   </main>
 
-  <!-- ============= PAGE: SETTINGS ============= -->
   <main id="page-settings" class="page">
     <h1 class="page-title">⚙️ Настройки</h1>
 
     <div class="setting-row col">
-      <span>🎨 Тема оформления</span>
+      <div class="setting-head">
+        <span>🎨 Тема оформления</span>
+        <span class="setting-hint">Меняет всю палитру</span>
+      </div>
       <div class="theme-grid">
-        <div class="theme-swatch swatch-dark" data-theme="dark" data-label="Тёмная"></div>
-        <div class="theme-swatch swatch-light" data-theme="light" data-label="Светлая"></div>
+        <div class="theme-swatch swatch-dark" data-theme="dark" data-label="Dark"></div>
+        <div class="theme-swatch swatch-light" data-theme="light" data-label="Light"></div>
         <div class="theme-swatch swatch-midnight" data-theme="midnight" data-label="Midnight"></div>
         <div class="theme-swatch swatch-cyberpunk" data-theme="cyberpunk" data-label="Cyber"></div>
         <div class="theme-swatch swatch-ocean" data-theme="ocean" data-label="Ocean"></div>
@@ -572,21 +507,27 @@
     </div>
 
     <div class="setting-row col">
-      <span>🌈 Акцентный цвет</span>
+      <div class="setting-head">
+        <span>🌈 Акцентный цвет</span>
+        <span class="setting-hint">Кнопки, границы, свечение</span>
+      </div>
       <div class="accent-grid">
-        <div class="accent-dot active" data-accent="red" style="background:#ff2d55;color:#ff2d55"></div>
-        <div class="accent-dot" data-accent="pink" style="background:#ff4fa3;color:#ff4fa3"></div>
-        <div class="accent-dot" data-accent="purple" style="background:#a855f7;color:#a855f7"></div>
-        <div class="accent-dot" data-accent="blue" style="background:#3b82f6;color:#3b82f6"></div>
-        <div class="accent-dot" data-accent="cyan" style="background:#06b6d4;color:#06b6d4"></div>
-        <div class="accent-dot" data-accent="green" style="background:#22c55e;color:#22c55e"></div>
-        <div class="accent-dot" data-accent="yellow" style="background:#fbbf24;color:#fbbf24"></div>
-        <div class="accent-dot" data-accent="orange" style="background:#f97316;color:#f97316"></div>
+        <div class="accent-dot" data-accent="red" style="background:#ff2d55"></div>
+        <div class="accent-dot" data-accent="pink" style="background:#ff4fa3"></div>
+        <div class="accent-dot" data-accent="purple" style="background:#a855f7"></div>
+        <div class="accent-dot" data-accent="blue" style="background:#3b82f6"></div>
+        <div class="accent-dot" data-accent="cyan" style="background:#06b6d4"></div>
+        <div class="accent-dot" data-accent="green" style="background:#22c55e"></div>
+        <div class="accent-dot" data-accent="orange" style="background:#f97316"></div>
+        <div class="accent-dot" data-accent="white" style="background:#ffffff;border:2px solid #444"></div>
       </div>
     </div>
 
     <div class="setting-row">
-      <span>📐 Радиус углов</span>
+      <div>
+        <div>📐 Радиус углов</div>
+        <div class="setting-hint">Скругление карточек и кнопок</div>
+      </div>
       <select id="radiusSelect" class="season-select">
         <option value="sharp">Острые</option>
         <option value="default" selected>Обычные</option>
@@ -596,7 +537,10 @@
     </div>
 
     <div class="setting-row">
-      <span>🔠 Размер шрифта</span>
+      <div>
+        <div>🔠 Размер шрифта</div>
+        <div class="setting-hint">Для удобного чтения</div>
+      </div>
       <select id="fontScaleSelect" class="season-select">
         <option value="small">Мелкий</option>
         <option value="default" selected>Обычный</option>
@@ -606,22 +550,34 @@
     </div>
 
     <div class="setting-row">
-      <span>📱 Компактный режим</span>
+      <div>
+        <div>📱 Компактный режим</div>
+        <div class="setting-hint">Больше контента на экране</div>
+      </div>
       <label class="switch"><input type="checkbox" id="compactToggle"><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <span>✨ Анимации</span>
+      <div>
+        <div>✨ Анимации</div>
+        <div class="setting-hint">Плавные переходы и эффекты</div>
+      </div>
       <label class="switch"><input type="checkbox" id="animToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <span>💡 Эффект свечения</span>
+      <div>
+        <div>💡 Свечение</div>
+        <div class="setting-hint">Неоновый glow на кнопках</div>
+      </div>
       <label class="switch"><input type="checkbox" id="glowToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <span>🎄 Сезонная тема</span>
+      <div>
+        <div>🎄 Сезонная тема</div>
+        <div class="setting-hint">Акцент под праздник</div>
+      </div>
       <select id="seasonSelect" class="season-select">
         <option value="default">Обычная</option>
         <option value="newyear">🎄 Новый год</option>
@@ -631,29 +587,32 @@
     </div>
 
     <div class="setting-row">
-      <span>🔊 Звук при покупке</span>
+      <div>
+        <div>🔊 Звук покупки</div>
+        <div class="setting-hint">Звук при оплате</div>
+      </div>
       <label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <span>🔔 Уведомления в боте</span>
+      <div>
+        <div>🔔 Уведомления</div>
+        <div class="setting-hint">Пуш-уведомления в боте</div>
+      </div>
       <label class="switch"><input type="checkbox" id="notifyToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <span>📳 Вибрация</span>
+      <div>
+        <div>📳 Вибрация</div>
+        <div class="setting-hint">Тактильный отклик</div>
+      </div>
       <label class="switch"><input type="checkbox" id="hapticToggle" checked><span class="slider"></span></label>
     </div>
 
-    <div class="info-block" style="margin-top:16px;">
-      <h3>💡 Совет</h3>
-      <p>Все настройки сохраняются автоматически. Можешь смело экспериментировать — вернуть дефолт можно в любой момент.</p>
-    </div>
-
-    <button class="btn btn-secondary btn-full" style="margin-top:12px;" onclick="resetSettings()">🔄 Сбросить настройки</button>
+    <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="resetSettings()">🔄 Сбросить настройки</button>
   </main>
 
-  <!-- ============= PAGE: ADMIN ============= -->
   <main id="page-admin" class="page">
     <h1 class="page-title">🛠 Админ-панель</h1>
     <div class="admin-tabs">
@@ -669,7 +628,6 @@
     <div class="admin-content" id="adminContent"></div>
   </main>
 
-  <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <button class="nav-btn active" data-page="main">
       <span class="nav-icon">🏠</span><span>Маркет</span>
@@ -687,15 +645,14 @@
   </nav>
 </div>
 
-<!-- ================= MODALS ================= -->
 <div class="modal" id="modalConfirmReg">
   <div class="modal-box">
     <div class="modal-emoji">⚠️</div>
     <h3>Уверены?</h3>
-    <p class="modal-text">Вы точно записали имя пользователя и пароль в надёжное место? Восстановление возможно только через поддержку.</p>
+    <p class="modal-text">Вы точно записали имя пользователя и пароль? Восстановление возможно только через поддержку.</p>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('modalConfirmReg')">Отмена</button>
-      <button class="btn btn-primary" onclick="confirmRegister()">Да, продолжить</button>
+      <button class="btn btn-primary" onclick="confirmRegister()">Да</button>
     </div>
   </div>
 </div>
@@ -734,7 +691,7 @@
       <button onclick="document.getElementById('topUpAmount').value=500">500₽</button>
       <button onclick="document.getElementById('topUpAmount').value=1000">1000₽</button>
     </div>
-    <p class="modal-text" style="margin-top:12px;">Способы оплаты появятся после переезда на сервер: СБП, карты РФ, Stars, CryptoBot.</p>
+    <p class="modal-text" style="margin-top:12px;">Оплата появится после переезда на сервер: СБП, карты РФ, Stars, CryptoBot.</p>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('modalTopUp')">Отмена</button>
       <button class="btn btn-primary" onclick="submitTopUp()">Пополнить</button>
@@ -746,7 +703,7 @@
   <div class="modal-box">
     <div class="modal-emoji" id="caseResultEmoji">🎉</div>
     <h3 id="caseResultTitle">Поздравляем!</h3>
-    <p class="modal-text" id="caseResultText">Вы выиграли скидку!</p>
+    <p class="modal-text" id="caseResultText"></p>
     <div class="modal-actions">
       <button class="btn btn-primary btn-full" onclick="closeModal('modalCaseResult')">Забрать</button>
     </div>
@@ -756,8 +713,8 @@
 <div class="modal" id="modalWheelResult">
   <div class="modal-box">
     <div class="modal-emoji" id="wheelResultEmoji">🎡</div>
-    <h3 id="wheelResultTitle">Крутим!</h3>
-    <p class="modal-text" id="wheelResultText">...</p>
+    <h3 id="wheelResultTitle"></h3>
+    <p class="modal-text" id="wheelResultText"></p>
     <div class="modal-actions">
       <button class="btn btn-primary btn-full" onclick="closeModal('modalWheelResult')">Забрать</button>
     </div>
@@ -784,7 +741,6 @@
   </div>
 </div>
 
-<!-- TOASTS -->
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script src="script.js"></script>
