@@ -1,39 +1,36 @@
-// ==================== ИНИЦИАЛИЗАЦИЯ ====================
+// ==================== TELEGRAM ====================
 const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
 
-// ==================== ТОКЕН БОТА ====================
-const BOT_TOKEN = "8298081906:AAH6jojHJxQoxtWckyRxWOX72VN72-lWDdw";
-const CHAT_ID_SUPPORT = "@твой_поддержка_физа";
-const CHAT_ID_FAQ = "@твой_faq_канал";
-const CHAT_ID_REVIEWS = "@твой_отзывы_канал";
-const CHAT_ID_CHAT = "@твой_чат";
+// ==================== НАСТРОЙКИ ====================
+const CHAT_ID_SUPPORT = "твой_физа";
+const CHAT_ID_FAQ = "твой_канал_faq";
+const CHAT_ID_REVIEWS = "твой_канал_отзывы";
 
-// ==================== ДАННЫЕ (ЗАГЛУШКА) ====================
+// ==================== ДАННЫЕ ====================
 let userData = {
     id: tg.initDataUnsafe?.user?.id || 1,
     username: tg.initDataUnsafe?.user?.username || "desired",
     firstName: tg.initDataUnsafe?.user?.first_name || "Гость",
-    balance: 1500,
-    referrals: 5,
+    balance: 0,
+    referrals: 0,
     refCode: "REF_" + (tg.initDataUnsafe?.user?.id || 1),
-    joined: "01.09.2026"
+    joined: new Date().toLocaleDateString("ru-RU")
 };
 
 let products = [
-    { id: 1, name: "Telegram Stars 100", desc: "100 звёзд на ваш аккаунт", price: 150, category: "stars", reviews: 12 },
-    { id: 2, name: "Telegram Stars 500", desc: "500 звёзд на ваш аккаунт", price: 700, category: "stars", reviews: 8 },
-    { id: 3, name: "Telegram Premium 1 мес", desc: "Premium на 1 месяц", price: 350, category: "premium", reviews: 34 },
-    { id: 4, name: "Telegram Premium 3 мес", desc: "Premium на 3 месяца", price: 950, category: "premium", reviews: 22 },
-    { id: 5, name: "Аккаунт США (новый)", desc: "Свежий аккаунт США", price: 90, category: "accounts", reviews: 56 },
-    { id: 6, name: "Аккаунт Англия", desc: "Аккаунт Великобритании", price: 120, category: "accounts", reviews: 18 },
-    { id: 7, name: "Аккаунт Колумбия", desc: "Аккаунт Колумбии", price: 100, category: "accounts", reviews: 9 },
-    { id: 8, name: "Аккаунт Казахстан", desc: "Аккаунт Казахстана", price: 80, category: "accounts", reviews: 14 }
+    { id: 1, name: "США", desc: "2078 покупок · автовыдача", price: 89, oldPrice: 99, discount: 10, flag: "🇺🇸", category: "accounts" },
+    { id: 2, name: "Великобритания", desc: "107 покупок · автовыдача", price: 159, flag: "🇬🇧", category: "accounts" },
+    { id: 3, name: "Япония", desc: "52 покупки · автовыдача", price: 349, flag: "🇯🇵", category: "accounts" },
+    { id: 4, name: "Telegram Stars 100", desc: "100 звёзд на аккаунт", price: 150, flag: "⭐", category: "stars" },
+    { id: 5, name: "Telegram Premium 1 мес", desc: "Premium на 1 месяц", price: 350, flag: "💎", category: "premium" },
+    { id: 6, name: "Аренда NFT", desc: "Подарок в профиль", price: 500, flag: "🎁", category: "nft" },
 ];
 
 let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 let history = JSON.parse(localStorage.getItem("history") || "[]");
+let chatMessages = JSON.parse(localStorage.getItem("chatMessages") || "[]");
 
 // ==================== НАВИГАЦИЯ ====================
 let currentPage = "catalog";
@@ -41,40 +38,64 @@ let currentPage = "catalog";
 function render(page) {
     currentPage = page;
     const main = document.getElementById("mainContent");
-
-    // Обновляем активный пункт нижней навигации
     document.querySelectorAll(".nav-item").forEach(el => {
         el.classList.toggle("active", el.dataset.page === page);
     });
+    document.getElementById("headerBalance").innerHTML = `<span>+</span> ${userData.balance}₽`;
 
-    // Обновляем счётчик корзины
-    document.getElementById("cartCount").innerText = cart.length;
-
-    // Обновляем баланс в шапке
-    document.getElementById("headerBalance").innerText = `💰 ${userData.balance} ₽`;
-
-    // Рендер страницы
     if (page === "catalog") renderCatalog(main);
-    else if (page === "cart") renderCart(main);
+    else if (page === "inventory") renderInventory(main);
     else if (page === "profile") renderProfile(main);
-    else if (page === "support") renderSupport(main);
-    else if (page === "faq") renderFAQ(main);
-    else if (page === "reviews") renderReviews(main);
+    else if (page === "cart") renderCart(main);
     else if (page === "chat") renderChat(main);
-    else if (page === "referral") renderReferral(main);
+    else if (page === "reviews") renderReviews(main);
+    else if (page === "faq") renderFAQ(main);
+    else if (page === "support") renderSupport(main);
     else if (page === "rules") renderRules(main);
-    else if (page === "instructions") renderInstructions(main);
+    else if (page === "referral") renderReferral(main);
 }
 
 // ==================== КАТАЛОГ ====================
 function renderCatalog(container) {
     container.innerHTML = `
-        <div class="filters">
-            <button class="filter-btn active" data-cat="all">Все</button>
-            <button class="filter-btn" data-cat="stars">Stars</button>
-            <button class="filter-btn" data-cat="premium">Premium</button>
-            <button class="filter-btn" data-cat="accounts">Аккаунты</button>
+        <div class="banner">
+            <div class="banner-text">
+                <h3>Скидки до 62%</h3>
+                <p>на аккаунты и подписки</p>
+                <div class="timer">ещё 41:27:35</div>
+            </div>
+            <div class="banner-img">%</div>
         </div>
+
+        <div class="categories">
+            <div class="category-card" onclick="filterCatalog('accounts')">
+                <div class="category-icon">📱</div>
+                <div class="category-name">Аккаунты</div>
+                <div class="category-desc">Юзернеймы и +888</div>
+            </div>
+            <div class="category-card" onclick="filterCatalog('premium')">
+                <div class="category-icon">💎</div>
+                <div class="category-name">Подписки</div>
+                <div class="category-desc">На сервисы</div>
+            </div>
+            <div class="category-card" onclick="filterCatalog('nft')">
+                <div class="category-icon">🎁</div>
+                <div class="category-name">Аренда NFT</div>
+                <div class="category-desc">Подарок в профиль</div>
+            </div>
+        </div>
+
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Поиск по каталогу" id="searchInput" oninput="searchProducts(this.value)">
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" data-cat="all">🔥 Популярное</button>
+            <button class="filter-btn" data-cat="cheap">💰 Дешевле</button>
+            <button class="filter-btn" data-cat="expensive">💵 Дороже</button>
+        </div>
+
         <div id="productList"></div>
     `;
 
@@ -89,21 +110,59 @@ function renderCatalog(container) {
     renderProducts("all");
 }
 
-function renderProducts(category) {
+function filterCatalog(cat) {
+    render("catalog");
+    setTimeout(() => {
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        renderProducts(cat);
+    }, 50);
+}
+
+function renderProducts(sort) {
     const list = document.getElementById("productList");
-    const filtered = category === "all" ? products : products.filter(p => p.category === category);
+    if (!list) return;
+    let filtered = [...products];
+    if (sort === "cheap") filtered.sort((a, b) => a.price - b.price);
+    else if (sort === "expensive") filtered.sort((a, b) => b.price - a.price);
+    else if (sort !== "all") filtered = filtered.filter(p => p.category === sort);
 
     list.innerHTML = filtered.map(p => `
         <div class="product">
             <div class="product-info">
-                <div class="product-name">${p.name}</div>
-                <div class="product-desc">${p.desc}</div>
-                <div class="product-price">${p.price} ₽</div>
-                <div class="product-desc">⭐ ${p.reviews} отзывов</div>
+                <div class="product-flag">${p.flag}</div>
+                <div>
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-desc">${p.desc}</div>
+                </div>
+            </div>
+            <div class="product-price-block">
+                <div class="product-price" style="position:relative;">
+                    ${p.price}₽
+                    ${p.oldPrice ? `<span class="product-price-old">${p.oldPrice}₽</span>` : ''}
+                    ${p.discount ? `<span class="product-discount">-${p.discount}%</span>` : ''}
+                </div>
             </div>
             <div class="product-actions">
-                <button class="btn" onclick="addToCart(${p.id})">В корзину</button>
-                <button class="btn-info" onclick="showProductInfo(${p.id})">ℹ️</button>
+                <button class="btn" onclick="addToCart(${p.id})">Купить</button>
+            </div>
+        </div>
+    `).join("");
+}
+
+function searchProducts(query) {
+    const list = document.getElementById("productList");
+    const filtered = products.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+    list.innerHTML = filtered.map(p => `
+        <div class="product">
+            <div class="product-info">
+                <div class="product-flag">${p.flag}</div>
+                <div>
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-desc">${p.desc}</div>
+                </div>
+            </div>
+            <div class="product-actions">
+                <button class="btn" onclick="addToCart(${p.id})">Купить</button>
             </div>
         </div>
     `).join("");
@@ -114,43 +173,38 @@ function addToCart(id) {
     if (product) {
         cart.push(product);
         localStorage.setItem("cart", JSON.stringify(cart));
-        document.getElementById("cartCount").innerText = cart.length;
         tg.showAlert(`✅ ${product.name} добавлен в корзину`);
     }
-}
-
-function showProductInfo(id) {
-    const p = products.find(x => x.id === id);
-    if (!p) return;
-    openModal(`
-        <h3 style="color:#ff1a1a;margin-bottom:15px;">${p.name}</h3>
-        <p style="color:#8a8a9a;font-size:13px;line-height:1.6;">${p.desc}</p>
-        <p style="margin-top:15px;font-size:13px;"><b>Цена:</b> ${p.price} ₽</p>
-        <p style="margin-top:5px;font-size:13px;"><b>Отзывов:</b> ${p.reviews}</p>
-        <p style="margin-top:15px;font-size:12px;color:#8a8a9a;">При покупке вы соглашаетесь с правилами и условиями сервиса.</p>
-    `);
 }
 
 // ==================== КОРЗИНА ====================
 function renderCart(container) {
     if (cart.length === 0) {
-        container.innerHTML = `<div class="empty">🛒 Корзина пуста</div>`;
+        container.innerHTML = `<div class="empty"><div class="empty-icon">🛒</div>Корзина пуста</div>`;
         return;
     }
     const total = cart.reduce((sum, p) => sum + p.price, 0);
     container.innerHTML = `
         <div class="section-title">Корзина (${cart.length})</div>
         ${cart.map((p, i) => `
-            <div class="cart-item">
-                <div>
-                    <div class="product-name">${p.name}</div>
-                    <div class="product-price">${p.price} ₽</div>
+            <div class="product">
+                <div class="product-info">
+                    <div class="product-flag">${p.flag}</div>
+                    <div>
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">${p.price}₽</div>
+                    </div>
                 </div>
-                <button class="cart-remove" onclick="removeFromCart(${i})">Удалить</button>
+                <button class="btn btn-outline" onclick="removeFromCart(${i})">Удалить</button>
             </div>
         `).join("")}
-        <div class="section-title">Итого: ${total} ₽</div>
-        <button class="btn" style="width:100%;padding:15px;" onclick="checkout()">Оплатить</button>
+        <div class="balance-card" style="margin-top:15px;">
+            <div class="balance-card-left">
+                <div class="balance-card-label">Итого</div>
+                <div class="balance-card-value">${total}₽</div>
+            </div>
+            <button class="balance-card-btn" onclick="checkout()">Оплатить</button>
+        </div>
     `;
 }
 
@@ -163,67 +217,184 @@ function removeFromCart(i) {
 function checkout() {
     const total = cart.reduce((sum, p) => sum + p.price, 0);
     if (total > userData.balance) {
-        tg.showAlert("❌ Недостаточно средств. Пополните баланс.");
+        tg.showAlert("❌ Недостаточно средств");
         return;
     }
     userData.balance -= total;
-    cart.forEach(p => {
-        history.push({
-            product: p.name,
-            price: p.price,
-            date: new Date().toLocaleDateString("ru-RU")
-        });
-    });
+    cart.forEach(p => history.push({ product: p.name, price: p.price, date: new Date().toLocaleDateString("ru-RU") }));
     cart = [];
     localStorage.setItem("cart", JSON.stringify(cart));
     localStorage.setItem("history", JSON.stringify(history));
-    tg.showAlert("✅ Покупка успешна! Товар выдан.");
+    tg.showAlert("✅ Покупка успешна!");
     render("profile");
 }
 
-// ==================== ПРОФИЛЬ ====================
-function renderProfile(container) {
+// ==================== ИНВЕНТАРЬ ====================
+function renderInventory(container) {
+    if (history.length === 0) {
+        container.innerHTML = `<div class="empty"><div class="empty-icon">📦</div>Инвентарь пуст</div>`;
+        return;
+    }
     container.innerHTML = `
-        <div class="profile-card">
-            <div class="profile-row"><span>Юзернейм</span><b>@${userData.username}</b></div>
-            <div class="profile-row"><span>Имя</span><b>${userData.firstName}</b></div>
-            <div class="profile-row"><span>ID</span><b>${userData.id}</b></div>
-            <div class="profile-row"><span>Баланс</span><b>${userData.balance} ₽</b></div>
-            <div class="profile-row"><span>Рефералов</span><b>${userData.referrals}</b></div>
-            <div class="profile-row"><span>Дата регистрации</span><b>${userData.joined}</b></div>
-        </div>
-        <button class="btn" style="width:100%;padding:15px;margin-bottom:10px;" onclick="topup()">💳 Пополнить баланс</button>
-        <button class="btn btn-outline" style="width:100%;padding:15px;" onclick="render('history')">📜 История заказов</button>
-        <div class="section-title">История заказов</div>
-        ${history.length === 0 ? '<div class="empty">Пока ничего не куплено</div>' : history.map(h => `
-            <div class="history-item">
-                <div>
-                    <div class="product-name">${h.product}</div>
-                    <div class="product-desc">${h.date}</div>
+        <div class="section-title">Инвентарь</div>
+        ${history.map(h => `
+            <div class="product">
+                <div class="product-info">
+                    <div>
+                        <div class="product-name">${h.product}</div>
+                        <div class="product-desc">${h.date}</div>
+                    </div>
                 </div>
-                <div class="product-price">${h.price} ₽</div>
+                <div class="product-price">${h.price}₽</div>
             </div>
         `).join("")}
     `;
 }
 
+// ==================== ПРОФИЛЬ ====================
+function renderProfile(container) {
+    const letter = (userData.username[0] || "U").toUpperCase();
+    container.innerHTML = `
+        <div class="profile-avatar">${letter}</div>
+        <div class="profile-name">@${userData.username}</div>
+        <div class="profile-id-wrapper">
+            <div class="profile-id">@id${userData.id}</div>
+        </div>
+
+        <div class="balance-card">
+            <div class="balance-card-left">
+                <div class="balance-card-label">💰 Баланс</div>
+                <div class="balance-card-value">${userData.balance}₽</div>
+            </div>
+            <button class="balance-card-btn" onclick="topup()">Пополнить</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card green">
+                <div class="stat-icon">💵</div>
+                <div class="stat-value">${userData.balance}₽</div>
+                <div class="stat-label">↗ Пополнено</div>
+            </div>
+            <div class="stat-card gray">
+                <div class="stat-icon">🪙</div>
+                <div class="stat-value">0₽</div>
+                <div class="stat-label">↙ Потрачено</div>
+            </div>
+        </div>
+
+        <div class="transactions-btn" onclick="showTransactions()">📄 Все транзакции</div>
+
+        <div class="menu-section-title">Рефералы</div>
+        <div class="menu-list-item" onclick="render('referral')">
+            <div class="menu-list-icon">👥</div>
+            <div class="menu-list-text">Реферальная программа</div>
+            <div class="menu-list-arrow">›</div>
+        </div>
+
+        <div class="menu-section-title" style="margin-top:15px;">Ещё</div>
+        <div class="menu-list-item" onclick="render('reviews')">
+            <div class="menu-list-icon">⭐</div>
+            <div class="menu-list-text">Отзывы</div>
+            <div class="menu-list-arrow">›</div>
+        </div>
+        <div class="menu-list-item" onclick="render('rules')">
+            <div class="menu-list-icon">ℹ️</div>
+            <div class="menu-list-text">Информация</div>
+            <div class="menu-list-arrow">›</div>
+        </div>
+
+        <div class="support-banner">
+            <div class="support-badge">🕐 24/7</div>
+            <h3>Поддержка</h3>
+            <p>Обратитесь к нам, если есть вопросы</p>
+        </div>
+    `;
+}
+
 function topup() {
     openModal(`
-        <h3 style="color:#ff1a1a;margin-bottom:15px;">Пополнение баланса</h3>
-        <p style="font-size:13px;color:#8a8a9a;margin-bottom:15px;">Выберите способ оплаты:</p>
-        <button class="btn" style="width:100%;padding:12px;margin-bottom:8px;">💳 СБП</button>
-        <button class="btn" style="width:100%;padding:12px;margin-bottom:8px;">💳 Банковская карта РФ</button>
-        <button class="btn" style="width:100%;padding:12px;margin-bottom:8px;">⭐ Telegram Stars</button>
-        <button class="btn" style="width:100%;padding:12px;">₿ CryptoBot</button>
+        <h3>Пополнение баланса</h3>
+        <p style="color:#8a8a8a;font-size:13px;margin-bottom:15px;">Выберите способ:</p>
+        <button class="btn" style="width:100%;padding:15px;margin-bottom:8px;">💳 СБП</button>
+        <button class="btn" style="width:100%;padding:15px;margin-bottom:8px;">💳 Банковская карта РФ</button>
+        <button class="btn" style="width:100%;padding:15px;margin-bottom:8px;">⭐ Telegram Stars</button>
+        <button class="btn" style="width:100%;padding:15px;">₿ CryptoBot</button>
     `);
 }
 
-// ==================== ПОДДЕРЖКА ====================
-function renderSupport(container) {
+function showTransactions() {
+    openModal(`
+        <h3>Транзакции</h3>
+        <div class="empty"><div class="empty-icon">📄</div>Здесь появятся пополнения и покупки</div>
+    `);
+}
+
+// ==================== ЧАТ ====================
+function renderChat(container) {
     container.innerHTML = `
-        <div class="section-title">🆘 Тех. поддержка</div>
-        <p style="font-size:13px;color:#8a8a9a;margin-bottom:15px;">Если у вас возникли вопросы — напишите нам.</p>
-        <a class="btn" style="display:block;text-align:center;text-decoration:none;padding:15px;" href="https://t.me/${CHAT_ID_SUPPORT.replace("@","")}" target="_blank">Написать в поддержку</a>
+        <div class="section-title">💬 Общий чат</div>
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-wrapper">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Написать сообщение..." onkeypress="if(event.key==='Enter')sendMessage()">
+                <button class="chat-send" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    `;
+    renderChatMessages();
+    scrollChatToBottom();
+}
+
+function renderChatMessages() {
+    const box = document.getElementById("chatMessages");
+    if (!box) return;
+    if (chatMessages.length === 0) {
+        box.innerHTML = `<div class="empty" style="padding:30px;font-size:13px;">Пока сообщений нет. Напиши первым!</div>`;
+        return;
+    }
+    box.innerHTML = chatMessages.map(m => `
+        <div class="chat-message ${m.own ? 'own' : ''}">
+            <div class="chat-message-name">${m.own ? 'Ты' : '@' + m.name}</div>
+            <div class="chat-message-text">${m.text}</div>
+        </div>
+    `).join("");
+}
+
+function sendMessage() {
+    const input = document.getElementById("chatInput");
+    const text = input.value.trim();
+    if (!text) return;
+    chatMessages.push({ name: userData.username, text: text, own: true });
+    localStorage.setItem("chatMessages", JSON.stringify(chatMessages));
+    input.value = "";
+    renderChatMessages();
+    scrollChatToBottom();
+}
+
+function scrollChatToBottom() {
+    const box = document.getElementById("chatMessages");
+    if (box) box.scrollTop = box.scrollHeight;
+}
+
+// ==================== ОТЗЫВЫ ====================
+function renderReviews(container) {
+    container.innerHTML = `
+        <div class="section-title">⭐ Отзывы</div>
+        <div class="menu-list-item">
+            <div class="menu-list-icon">⭐</div>
+            <div>
+                <div class="menu-list-text">@user123</div>
+                <div class="product-desc">Всё пришло быстро, рекомендую</div>
+            </div>
+        </div>
+        <div class="menu-list-item">
+            <div class="menu-list-icon">⭐</div>
+            <div>
+                <div class="menu-list-text">@buyer_99</div>
+                <div class="product-desc">Premium купил, всё чётко</div>
+            </div>
+        </div>
+        <button class="btn" style="width:100%;padding:15px;margin-top:15px;" onclick="tg.openTelegramLink('https://t.me/${CHAT_ID_REVIEWS}')">Написать отзыв</button>
     `;
 }
 
@@ -231,42 +402,43 @@ function renderSupport(container) {
 function renderFAQ(container) {
     container.innerHTML = `
         <div class="section-title">❓ FAQ</div>
-        <div class="profile-card">
-            <div class="profile-row"><b>Как купить товар?</b></div>
-            <div style="padding:10px 0;color:#8a8a9a;font-size:13px;">Добавьте в корзину → оплатите → товар выдаётся автоматически.</div>
-            <div class="profile-row"><b>Что делать, если товар не пришёл?</b></div>
-            <div style="padding:10px 0;color:#8a8a9a;font-size:13px;">Напишите в тех. поддержку, мы разберёмся в течение 24 часов.</div>
-            <div class="profile-row"><b>Как пополнить баланс?</b></div>
-            <div style="padding:10px 0;color:#8a8a9a;font-size:13px;">Через СБП, карту РФ, Telegram Stars или CryptoBot.</div>
-            <div class="profile-row"><b>Можно ли вернуть деньги?</b></div>
-            <div style="padding:10px 0;color:#8a8a9a;font-size:13px;">Возврат только если товар не был выдан или не работает.</div>
+        <div class="menu-list-item">
+            <div>
+                <div class="menu-list-text">Как купить товар?</div>
+                <div class="product-desc">Добавь в корзину → оплати → товар выдаётся автоматически</div>
+            </div>
         </div>
-        <a class="btn btn-outline" style="display:block;text-align:center;text-decoration:none;padding:15px;margin-top:10px;" href="https://t.me/${CHAT_ID_FAQ.replace("@","")}" target="_blank">📖 Все вопросы в канале</a>
+        <div class="menu-list-item">
+            <div>
+                <div class="menu-list-text">Что делать, если товар не пришёл?</div>
+                <div class="product-desc">Напиши в поддержку, разберёмся за 24 часа</div>
+            </div>
+        </div>
+        <div class="menu-list-item">
+            <div>
+                <div class="menu-list-text">Как пополнить баланс?</div>
+                <div class="product-desc">СБП, карта РФ, Telegram Stars, CryptoBot</div>
+            </div>
+        </div>
     `;
 }
 
-// ==================== ОТЗЫВЫ ====================
-function renderReviews(container) {
+// ==================== ПОДДЕРЖКА ====================
+function renderSupport(container) {
     container.innerHTML = `
-        <div class="section-title">⭐ Отзывы</div>
-        <div class="profile-card">
-            <div class="profile-row"><b>@user123</b> <span style="color:#ff1a1a;">★★★★★</span></div>
-            <div style="padding:10px 0;color:#8a8a9a;font-size:13px;">Всё пришло быстро, рекомендую!</div>
-            <div class="profile-row"><b>@buyer_99</b> <span style="color:#ff1a1a;">★★★★★</span></div>
-            <div style="padding:10px 0;color:#8a8a9a;font-size:13px;">Premium купил, всё чётко.</div>
-        </div>
-        <a class="btn" style="display:block;text-align:center;text-decoration:none;padding:15px;margin-top:10px;" href="https://t.me/${CHAT_ID_REVIEWS.replace("@","")}" target="_blank">Написать отзыв в канале</a>
+        <div class="section-title">🆘 Поддержка</div>
+        <p style="color:#8a8a8a;font-size:13px;margin-bottom:15px;">Если есть вопросы — пиши нам.</p>
+        <button class="btn" style="width:100%;padding:15px;" onclick="tg.openTelegramLink('https://t.me/${CHAT_ID_SUPPORT}')">Написать в поддержку</button>
     `;
 }
 
-// ==================== ЧАТ ====================
-function renderChat(container) {
+// ==================== ПРАВИЛА ====================
+function renderRules(container) {
     container.innerHTML = `
-        <div class="section-title">💬 Чат</div>
-        <div class="profile-card">
-            <p style="font-size:13px;color:#8a8a9a;">Общий чат для общения покупателей и администрации.</p>
-        </div>
-        <a class="btn" style="display:block;text-align:center;text-decoration:none;padding:15px;margin-top:10px;" href="https://t.me/${CHAT_ID_CHAT.replace("@","")}" target="_blank">Перейти в чат</a>
+        <div class="section-title">📜 Информация</div>
+        <div class="menu-list-item"><div class="menu-list-text">1. Запрещено мошенничество</div></div>
+        <div class="menu-list-item"><div class="menu-list-text">2. Возврат — только если товар не выдан</div></div>
+        <div class="menu-list-item"><div class="menu-list-text">3. Уважайте других пользователей</div></div>
     `;
 }
 
@@ -274,13 +446,20 @@ function renderChat(container) {
 function renderReferral(container) {
     const refLink = `https://t.me/твой_бот?start=${userData.refCode}`;
     container.innerHTML = `
-        <div class="section-title">👥 Реферальная система</div>
-        <div class="profile-card">
-            <p style="font-size:13px;color:#8a8a9a;">Приглашай друзей и получай 5-10% с каждой их покупки!</p>
-            <div class="profile-row" style="margin-top:15px;"><span>Твоя ссылка:</span></div>
-            <div style="padding:10px;background:#0a0a0f;border-radius:8px;font-size:11px;word-break:break-all;margin-top:5px;">${refLink}</div>
-            <button class="btn" style="width:100%;padding:12px;margin-top:10px;" onclick="copyRef('${refLink}')">📋 Копировать ссылку</button>
-            <div class="profile-row" style="margin-top:15px;"><span>Рефералов:</span><b>${userData.referrals}</b></div>
+        <div class="section-title">👥 Реферальная программа</div>
+        <p style="color:#8a8a8a;font-size:13px;margin-bottom:15px;">Приглашай друзей — получай 5-10% с их покупок.</p>
+        <div class="balance-card">
+            <div class="balance-card-left">
+                <div class="balance-card-label">Твоя ссылка</div>
+                <div style="font-size:11px;word-break:break-all;color:#8a8a8a;margin-top:5px;">${refLink}</div>
+            </div>
+        </div>
+        <button class="btn" style="width:100%;padding:15px;margin-top:10px;" onclick="copyRef('${refLink}')">📋 Копировать</button>
+        <div class="balance-card" style="margin-top:15px;">
+            <div class="balance-card-left">
+                <div class="balance-card-label">Рефералов</div>
+                <div class="balance-card-value">${userData.referrals}</div>
+            </div>
         </div>
     `;
 }
@@ -288,35 +467,6 @@ function renderReferral(container) {
 function copyRef(link) {
     navigator.clipboard.writeText(link);
     tg.showAlert("✅ Ссылка скопирована!");
-}
-
-// ==================== ПРАВИЛА ====================
-function renderRules(container) {
-    container.innerHTML = `
-        <div class="section-title">📜 Правила</div>
-        <div class="profile-card">
-            <div class="profile-row"><b>1. Запрещено мошенничество</b></div>
-            <div class="profile-row"><b>2. Запрещена реклама без согласования</b></div>
-            <div class="profile-row"><b>3. Уважайте других покупателей</b></div>
-            <div class="profile-row"><b>4. Возврат — только если товар не выдан</b></div>
-            <div class="profile-row"><b>5. Администрация вправе заблокировать за нарушения</b></div>
-        </div>
-    `;
-}
-
-// ==================== ИНСТРУКЦИИ ====================
-function renderInstructions(container) {
-    container.innerHTML = `
-        <div class="section-title">📖 Инструкции</div>
-        <div class="profile-card">
-            <div class="profile-row"><b>Как купить Stars?</b></div>
-            <div style="padding:10px 0;color:#8a8a9a;font-size:13px;">Выбери → купи → звёзды придут на твой аккаунт через 5 минут.</div>
-            <div class="profile-row"><b>Как купить Premium?</b></div>
-            <div style="padding:10px 0;color:#8a8a9a;font-size:13px;">Выбери срок → оплати → Premium активируется автоматически.</div>
-            <div class="profile-row"><b>Как купить аккаунт?</b></div>
-            <div style="padding:10px 0;color:#8a8a9a;font-size:13px;">Выбери страну → оплати → получишь логин/пароль в чате.</div>
-        </div>
-    `;
 }
 
 // ==================== МОДАЛКА ====================
