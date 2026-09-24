@@ -7,31 +7,38 @@
 }
 
 body {
-    background: #0a0a0f;
+    background: #0a0a0a;
     color: #fff;
-    padding-bottom: 70px;
+    padding-bottom: 80px;
     min-height: 100vh;
     overflow-x: hidden;
 }
 
-/* HEADER */
+/* ==================== ШАПКА ==================== */
 .header {
-    background: linear-gradient(135deg, #1a0000, #4d0000);
-    padding: 15px 20px;
+    background: #0a0a0a;
+    padding: 15px 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #ff1a1a;
     position: sticky;
     top: 0;
     z-index: 100;
 }
 
 .logo {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 800;
-    color: #ff1a1a;
-    letter-spacing: 1px;
+    color: #fff;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo::before {
+    content: "💎";
+    font-size: 24px;
 }
 
 .header-right {
@@ -40,36 +47,46 @@ body {
     gap: 10px;
 }
 
-.balance {
-    background: #1a1a24;
-    padding: 6px 14px;
+.balance-pill {
+    background: linear-gradient(135deg, #b30000, #ff1a1a);
+    padding: 8px 16px;
     border-radius: 20px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: bold;
-    color: #ff1a1a;
-    border: 1px solid #ff1a1a44;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 15px rgba(255, 26, 26, 0.3);
+}
+
+.balance-pill span {
+    font-size: 16px;
 }
 
 .menu-btn {
-    background: #1a1a24;
-    border: 1px solid #ff1a1a44;
-    color: #ff1a1a;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     font-size: 20px;
     cursor: pointer;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* SIDE MENU */
+/* ==================== МЕНЮ 3 ТОЧКИ ==================== */
 .side-menu {
     position: fixed;
     top: 0;
-    right: -280px;
-    width: 280px;
+    right: -300px;
+    width: 300px;
     height: 100%;
-    background: #14141c;
+    background: #141414;
     border-left: 2px solid #ff1a1a;
     z-index: 200;
     transition: right 0.3s ease;
@@ -86,57 +103,200 @@ body {
     font-size: 18px;
     font-weight: bold;
     color: #ff1a1a;
-    border-bottom: 1px solid #2a2a3a;
+    border-bottom: 1px solid #2a2a2a;
     margin-bottom: 10px;
 }
 
 .side-item {
-    display: block;
-    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
     color: #fff;
     text-decoration: none;
     font-size: 14px;
-    border-bottom: 1px solid #1a1a24;
+    border-bottom: 1px solid #1a1a1a;
     cursor: pointer;
     transition: background 0.2s;
 }
 
 .side-item:hover {
-    background: #1a1a24;
+    background: #1a1a1a;
     color: #ff1a1a;
 }
 
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.7);
     z-index: 150;
     display: none;
+    backdrop-filter: blur(3px);
 }
 
 .overlay.open {
     display: block;
 }
 
-/* MAIN */
+/* ==================== MAIN ==================== */
 main {
     padding: 15px;
 }
 
 .section-title {
-    font-size: 16px;
-    font-weight: bold;
-    color: #ff1a1a;
-    margin: 15px 0 10px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #fff;
+    margin: 20px 0 12px;
 }
 
-/* КАТАЛОГ */
-.product {
-    background: #14141c;
-    border: 1px solid #2a2a3a;
+/* ==================== БАННЕР ==================== */
+.banner {
+    background: linear-gradient(135deg, #b30000, #ff1a1a);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-text h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.banner-text p {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.banner-img {
+    font-size: 50px;
+}
+
+.timer {
+    background: rgba(0,0,0,0.3);
+    padding: 4px 10px;
     border-radius: 12px;
+    font-size: 11px;
+    margin-top: 8px;
+    display: inline-block;
+}
+
+/* ==================== КАТЕГОРИИ ==================== */
+.categories {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.category-card {
+    background: linear-gradient(135deg, #1a0000, #2a0000);
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 15px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.category-card:active {
+    transform: scale(0.95);
+}
+
+.category-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.category-name {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.category-desc {
+    font-size: 10px;
+    color: #8a8a8a;
+}
+
+/* ==================== ПОИСК ==================== */
+.search-box {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 100%;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-box input::placeholder {
+    color: #555;
+}
+
+.search-icon {
+    color: #555;
+    font-size: 16px;
+}
+
+/* ==================== ФИЛЬТРЫ ==================== */
+.filters {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-btn {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    color: #8a8a8a;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, #b30000, #ff1a1a);
+    color: #fff;
+    border-color: #ff1a1a;
+    box-shadow: 0 4px 15px rgba(255, 26, 26, 0.3);
+}
+
+/* ==================== ТОВАР ==================== */
+.product {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
     padding: 15px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -145,39 +305,73 @@ main {
 
 .product-info {
     flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.product-flag {
+    font-size: 28px;
 }
 
 .product-name {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 5px;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
 }
 
 .product-desc {
-    font-size: 12px;
-    color: #8a8a9a;
+    font-size: 11px;
+    color: #8a8a8a;
+}
+
+.product-price-block {
+    text-align: right;
 }
 
 .product-price {
-    color: #ff1a1a;
+    background: linear-gradient(135deg, #b30000, #ff1a1a);
+    color: #fff;
     font-weight: bold;
-    font-size: 16px;
-    margin-top: 5px;
+    font-size: 14px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    display: inline-block;
+    position: relative;
+}
+
+.product-price-old {
+    font-size: 11px;
+    color: #8a8a8a;
+    text-decoration: line-through;
+    margin-left: 5px;
+}
+
+.product-discount {
+    background: #fff;
+    color: #000;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 6px;
+    position: absolute;
+    bottom: -8px;
+    right: 0;
 }
 
 .product-actions {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 
 .btn {
     background: linear-gradient(135deg, #b30000, #ff1a1a);
     border: none;
     color: #fff;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-weight: bold;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: 700;
     font-size: 12px;
     cursor: pointer;
     transition: transform 0.1s;
@@ -189,147 +383,368 @@ main {
 
 .btn-outline {
     background: transparent;
-    border: 1px solid #ff1a1a;
-    color: #ff1a1a;
+    border: 1px solid #2a2a2a;
+    color: #fff;
 }
 
 .btn-info {
-    background: #1a1a24;
-    border: 1px solid #2a2a3a;
-    color: #8a8a9a;
-    width: 30px;
-    height: 30px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #8a8a8a;
+    width: 32px;
+    height: 32px;
     padding: 0;
     border-radius: 50%;
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: bold;
 }
 
-/* ФИЛЬТРЫ */
-.filters {
+/* ==================== ПРОФИЛЬ ==================== */
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00d4aa, #00a888);
     display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    font-weight: 800;
+    color: #fff;
+    margin: 20px auto 15px;
+    border: 3px solid #ff1a1a;
+    box-shadow: 0 0 30px rgba(255, 26, 26, 0.4);
 }
 
-.filter-btn {
-    background: #14141c;
-    border: 1px solid #2a2a3a;
-    color: #8a8a9a;
-    padding: 8px 16px;
-    border-radius: 20px;
+.profile-name {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.profile-id {
+    text-align: center;
     font-size: 12px;
-    white-space: nowrap;
+    color: #8a8a8a;
+    margin-bottom: 20px;
+    background: #141414;
+    padding: 4px 12px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.profile-id-wrapper {
+    text-align: center;
+}
+
+.balance-card {
+    background: linear-gradient(135deg, #1a0000, #2a0000);
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.balance-card-left {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.balance-card-label {
+    font-size: 13px;
+    color: #8a8a8a;
+}
+
+.balance-card-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.balance-card-btn {
+    background: linear-gradient(135deg, #b30000, #ff1a1a);
+    border: none;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
     cursor: pointer;
 }
 
-.filter-btn.active {
-    background: linear-gradient(135deg, #b30000, #ff1a1a);
-    color: #fff;
-    border-color: #ff1a1a;
-}
-
-/* ПРОФИЛЬ */
-.profile-card {
-    background: #14141c;
-    border: 1px solid #2a2a3a;
-    border-radius: 12px;
-    padding: 20px;
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
     margin-bottom: 15px;
 }
 
-.profile-row {
+.stat-card {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 15px;
     display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #1a1a24;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card.green {
+    background: linear-gradient(135deg, #001a0d, #003a1d);
+}
+
+.stat-card.gray {
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+}
+
+.stat-icon {
+    font-size: 32px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #8a8a8a;
+}
+
+.transactions-btn {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
     font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 20px;
 }
 
-.profile-row:last-child {
-    border-bottom: none;
+.menu-section-title {
+    font-size: 14px;
+    color: #8a8a8a;
+    font-weight: 700;
+    margin-bottom: 10px;
 }
 
-.profile-row span {
-    color: #8a8a9a;
+.menu-list-item {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 15px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
-.profile-row b {
+.menu-list-item:hover {
+    background: #1a1a1a;
+}
+
+.menu-list-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #b30000, #ff1a1a);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.menu-list-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.menu-list-arrow {
+    color: #555;
+    font-size: 18px;
+}
+
+.support-banner {
+    background: linear-gradient(135deg, #1a0000, #4d0000);
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.support-banner h3 {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.support-banner p {
+    font-size: 12px;
+    color: #ffb3b3;
+}
+
+.support-badge {
+    background: #ff1a1a;
     color: #fff;
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-bottom: 10px;
+    font-weight: 700;
 }
 
-/* ИСТОРИЯ */
-.history-item {
-    background: #14141c;
-    border: 1px solid #2a2a3a;
+/* ==================== ЧАТ ==================== */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 160px);
+    background: #0a0a0a;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-message {
+    background: #141414;
+    border-radius: 14px;
+    padding: 10px 14px;
+    max-width: 80%;
+    align-self: flex-start;
+    border: 1px solid #2a2a2a;
+}
+
+.chat-message.own {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #b30000, #ff1a1a);
+    border: none;
+}
+
+.chat-message-name {
+    font-size: 11px;
+    color: #ff1a1a;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.chat-message.own .chat-message-name {
+    color: #fff;
+    opacity: 0.8;
+}
+
+.chat-message-text {
+    font-size: 13px;
+    word-wrap: break-word;
+}
+
+.chat-input-wrapper {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    background: #141414;
+    border-top: 1px solid #2a2a2a;
+    position: sticky;
+    bottom: 0;
+}
+
+.chat-input {
+    flex: 1;
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
     border-radius: 12px;
     padding: 12px 15px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
 }
 
-/* КОРЗИНА */
-.cart-item {
-    background: #14141c;
-    border: 1px solid #2a2a3a;
-    border-radius: 12px;
-    padding: 12px 15px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.cart-remove {
-    background: #b30000;
+.chat-send {
+    background: linear-gradient(135deg, #b30000, #ff1a1a);
     border: none;
     color: #fff;
-    padding: 5px 10px;
-    border-radius: 6px;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    font-size: 18px;
     cursor: pointer;
-    font-size: 12px;
 }
 
-/* BOTTOM NAV */
+/* ==================== НИЖНЯЯ НАВИГАЦИЯ ==================== */
 .bottom-nav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #14141c;
+    bottom: 10px;
+    left: 15px;
+    right: 15px;
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(20px);
     display: flex;
     justify-content: space-around;
-    padding: 12px 0;
-    border-top: 1px solid #2a2a3a;
+    padding: 10px 0;
+    border-radius: 20px;
+    border: 1px solid #2a2a2a;
     z-index: 100;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 .nav-item {
-    color: #8a8a9a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    color: #555;
     text-decoration: none;
-    font-size: 12px;
+    font-size: 11px;
     cursor: pointer;
-    padding: 5px 15px;
+    padding: 5px 20px;
     transition: color 0.2s;
+    border-radius: 12px;
+    position: relative;
 }
 
 .nav-item.active {
     color: #ff1a1a;
+    background: rgba(255, 26, 26, 0.1);
 }
 
-/* МОДАЛКА */
+.nav-icon {
+    font-size: 20px;
+}
+
+.nav-label {
+    font-weight: 600;
+}
+
+/* ==================== МОДАЛКА ==================== */
 .modal {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.85);
     z-index: 300;
     display: none;
     justify-content: center;
-    align-items: center;
-    padding: 20px;
+    align-items: flex-end;
+    backdrop-filter: blur(5px);
 }
 
 .modal.open {
@@ -337,48 +752,59 @@ main {
 }
 
 .modal-content {
-    background: #14141c;
-    border: 1px solid #ff1a1a;
-    border-radius: 16px;
+    background: #141414;
+    border-radius: 24px 24px 0 0;
     padding: 25px;
-    max-width: 400px;
     width: 100%;
-    position: relative;
-    max-height: 80vh;
+    max-height: 85vh;
     overflow-y: auto;
+    position: relative;
+    border-top: 2px solid #ff1a1a;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
 }
 
 .modal-close {
     position: absolute;
-    top: 10px;
-    right: 15px;
+    top: 15px;
+    right: 20px;
     cursor: pointer;
     color: #ff1a1a;
-    font-size: 18px;
+    font-size: 22px;
+    font-weight: bold;
 }
 
-/* ПУСТО */
+.modal h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+/* ==================== ПУСТО ==================== */
 .empty {
     text-align: center;
-    color: #8a8a9a;
-    padding: 40px 20px;
+    color: #555;
+    padding: 60px 20px;
     font-size: 14px;
 }
 
-/* ЗАГРУЗКА */
-.loader {
-    text-align: center;
-    padding: 40px;
-    color: #ff1a1a;
+.empty-icon {
+    font-size: 60px;
+    margin-bottom: 15px;
+    opacity: 0.3;
 }
 
-/* СКРОЛЛБАР */
+/* ==================== СКРОЛЛБАР ==================== */
 ::-webkit-scrollbar {
     width: 4px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #0a0a0f;
+    background: #0a0a0a;
 }
 
 ::-webkit-scrollbar-thumb {
