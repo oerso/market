@@ -2,153 +2,403 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Market</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#08080a">
+<title>desired — Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
-<!-- Шапка -->
-<header class="topbar">
-  <div class="brand" id="brandLogo">
-    <span class="logo">◆</span>
-    <span class="brand-name">Market</span>
+<!-- ================= AUTH SCREEN ================= -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-bg-glow"></div>
+  <div class="auth-logo">
+    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lg" x1="0" y1="0" x2="64" y2="64">
+          <stop offset="0%" stop-color="#ff2d55"/>
+          <stop offset="100%" stop-color="#a80020"/>
+        </linearGradient>
+      </defs>
+      <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#lg)" stroke="#ff2d55" stroke-width="1"/>
+      <text x="32" y="42" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
+    </svg>
   </div>
-  <div class="topbar-right">
-    <div class="balance-pill">
-      <span class="plus">+</span>
-      <span id="topBalance">0₽</span>
-    </div>
-    <button class="dots-btn" id="dotsBtn">⋮</button>
-  </div>
-</header>
+  <h1 class="auth-title">desired</h1>
+  <p class="auth-sub">Маркет звёзд, премиума и аккаунтов</p>
 
-<!-- Меню из 3 точек -->
-<div class="dropdown" id="dropdownMenu">
-  <a href="#" data-page="reviews">⭐ Отзывы</a>
-  <a href="#" data-page="favorites">❤️ Избранные подарки</a>
-  <a href="#" data-page="info">ℹ️ Информация</a>
-  <a href="#" data-page="support">💬 Поддержка</a>
-  <a href="#" data-page="ref">👥 Реферальная программа</a>
+  <div class="auth-form" id="authChoice">
+    <button class="btn btn-primary btn-full" onclick="showAuthForm('login')">Войти</button>
+    <button class="btn btn-secondary btn-full" onclick="showAuthForm('register')">Зарегистрироваться</button>
+  </div>
+
+  <!-- Вход -->
+  <div class="auth-form hidden" id="loginForm">
+    <h2 class="form-title">Вход</h2>
+    <input type="text" id="loginUsername" placeholder="Имя пользователя" autocomplete="off">
+    <input type="password" id="loginPassword" placeholder="Пароль" autocomplete="off">
+    <button class="btn btn-primary btn-full" onclick="doLogin()">Войти</button>
+    <button class="btn-link" onclick="showAuthForm('choice')">← Назад</button>
+  </div>
+
+  <!-- Регистрация -->
+  <div class="auth-form hidden" id="registerForm">
+    <h2 class="form-title">Регистрация</h2>
+    <input type="text" id="regUsername" placeholder="Имя пользователя" autocomplete="off">
+    <input type="password" id="regPassword" placeholder="Пароль" autocomplete="off">
+    <div class="warn-box">
+      ⚠️ Убедитесь, что записали пароль + имя пользователя в надёжное место. Восстановление пароля будет реализовано лишь через поддержку.
+    </div>
+    <label class="checkbox-row">
+      <input type="checkbox" id="regConfirm">
+      <span>Я записал(а) данные в надёжное место</span>
+    </label>
+    <button class="btn btn-primary btn-full" id="regBtn" disabled onclick="doRegister()">Создать аккаунт</button>
+    <button class="btn-link" onclick="showAuthForm('choice')">← Назад</button>
+  </div>
 </div>
 
-<!-- Главная страница -->
-<main id="page-main" class="page active">
-  <h1 class="title">Маркет <span class="muted">Звезды и Премиум</span></h1>
+<!-- ================= APP ================= -->
+<div id="app" class="app hidden">
 
-  <!-- Баннер -->
-  <div class="banner">
-    <div class="banner-text">
-      <h3>Скидки до 62% на аккаунты и подписки</h3>
-      <div class="timer" id="promoTimer">ещё 41:27:35</div>
+  <!-- HEADER -->
+  <header class="topbar">
+    <div class="brand" id="brandLogo">
+      <svg class="logo" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="lg2" x1="0" y1="0" x2="64" y2="64">
+            <stop offset="0%" stop-color="#ff2d55"/>
+            <stop offset="100%" stop-color="#a80020"/>
+          </linearGradient>
+        </defs>
+        <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#lg2)"/>
+        <text x="32" y="42" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
+      </svg>
+      <span class="brand-name">desired</span>
     </div>
-    <div class="banner-icon">%</div>
-  </div>
-
-  <!-- Категории -->
-  <div class="cats">
-    <div class="cat-card">
-      <div class="cat-icon">📱</div>
-      <div class="cat-name">Аренда имён</div>
-      <div class="cat-sub">Юзернеймы и +888</div>
+    <div class="topbar-right">
+      <button class="balance-pill" onclick="go('profile')">
+        <span class="plus">+</span>
+        <span id="topBalance">0₽</span>
+      </button>
+      <button class="dots-btn" id="dotsBtn" aria-label="Меню">⋮</button>
     </div>
-    <div class="cat-card">
-      <div class="cat-icon">⭐</div>
-      <div class="cat-name">Подписки</div>
-      <div class="cat-sub">На сервисы</div>
+  </header>
+
+  <!-- DROPDOWN -->
+  <div class="dropdown" id="dropdownMenu">
+    <a data-page="reviews">⭐ Отзывы</a>
+    <a data-page="favorites">❤️ Избранное</a>
+    <a data-page="faq">❓ FAQ</a>
+    <a data-page="info">ℹ️ Информация</a>
+    <a data-page="support">💬 Поддержка</a>
+    <a data-page="ref">👥 Реферальная программа</a>
+    <a data-page="chat">🗨️ Чат</a>
+  </div>
+
+  <!-- ============= PAGE: MAIN ============= -->
+  <main id="page-main" class="page active">
+    <h1 class="page-title">Маркет <span class="muted">Звёзды и Премиум</span></h1>
+
+    <div class="banner">
+      <div class="banner-text">
+        <h3>Скидки до 62% на аккаунты и подписки</h3>
+        <div class="timer" id="promoTimer">ещё 41:27:35</div>
+      </div>
+      <div class="banner-icon">%</div>
     </div>
-    <div class="cat-card">
-      <div class="cat-icon">🎁</div>
-      <div class="cat-name">Аренда NFT</div>
-      <div class="cat-sub">Подарок в профиль</div>
+
+    <div class="cats">
+      <div class="cat-card" data-cat="names">
+        <div class="cat-icon">📱</div>
+        <div class="cat-name">Аренда имён</div>
+        <div class="cat-sub">Юзернеймы и +888</div>
+      </div>
+      <div class="cat-card" data-cat="subs">
+        <div class="cat-icon">⭐</div>
+        <div class="cat-name">Подписки</div>
+        <div class="cat-sub">На сервисы</div>
+      </div>
+      <div class="cat-card" data-cat="nft">
+        <div class="cat-icon">🎁</div>
+        <div class="cat-name">Аренда NFT</div>
+        <div class="cat-sub">Подарок в профиль</div>
+      </div>
     </div>
-  </div>
 
-  <!-- Поиск -->
-  <input type="text" class="search" placeholder="Поиск по каталогу" id="searchInput">
-
-  <!-- Фильтры -->
-  <div class="filters">
-    <button class="filter active">🔥 Популярное</button>
-    <button class="filter">💵 Дешевле</button>
-    <button class="filter">💰 Дороже</button>
-  </div>
-
-  <!-- Товары -->
-  <div class="products" id="productsList"></div>
-</main>
-
-<!-- Страница профиля -->
-<main id="page-profile" class="page">
-  <h1 class="title center">Профиль</h1>
-  <div class="avatar-wrap">
-    <div class="avatar" id="userAvatar">D</div>
-    <div class="username" id="userName">@desired</div>
-    <div class="userid" id="userId">@id912559442</div>
-  </div>
-
-  <div class="balance-card">
-    <div>
-      <div class="label">Баланс</div>
-      <div class="amount" id="profileBalance">0₽</div>
+    <div class="case-banner" id="caseBanner">
+      <div class="case-left">
+        <div class="case-emoji">🎰</div>
+        <div>
+          <div class="case-title">Кейс дня</div>
+          <div class="case-sub" id="caseStatus">Крутить раз в 24 часа</div>
+        </div>
+      </div>
+      <button class="btn-case" onclick="spinCase()">Крутить</button>
     </div>
-    <button class="btn-red">Пополнить</button>
-  </div>
 
-  <div class="stats">
-    <div class="stat green">
-      <div class="stat-value">0₽</div>
-      <div class="stat-label">↗ Пополнено</div>
+    <input type="text" class="search" placeholder="Поиск по каталогу" id="searchInput">
+
+    <div class="filters">
+      <button class="filter active" data-filter="popular">🔥 Популярное</button>
+      <button class="filter" data-filter="cheap">💵 Дешевле</button>
+      <button class="filter" data-filter="expensive">💰 Дороже</button>
     </div>
-    <div class="stat gray">
-      <div class="stat-value">0₽</div>
-      <div class="stat-label">↘ Потрачено</div>
+
+    <div class="products" id="productsList"></div>
+  </main>
+
+  <!-- ============= PAGE: PROFILE ============= -->
+  <main id="page-profile" class="page">
+    <h1 class="page-title center">Профиль</h1>
+    <div class="avatar-wrap">
+      <div class="avatar" id="userAvatar">d</div>
+      <div class="username" id="userName">@desired</div>
+      <div class="userid" id="userId">@id0</div>
+      <div class="auth-badge" id="authBadge">авторизован</div>
     </div>
-  </div>
 
-  <button class="btn-wide" data-page="transactions">📋 Все транзакции</button>
-</main>
+    <div class="balance-card">
+      <div>
+        <div class="label">Баланс</div>
+        <div class="amount" id="profileBalance">0₽</div>
+      </div>
+      <button class="btn btn-primary" onclick="openTopUp()">Пополнить</button>
+    </div>
 
-<!-- Страница админки -->
-<main id="page-admin" class="page">
-  <h1 class="title">🛠 Админ-панель</h1>
-  <div class="admin-tabs">
-    <button class="admin-tab active" data-tab="stats">📊 Статистика</button>
-    <button class="admin-tab" data-tab="promo">🎟 Промокоды</button>
-    <button class="admin-tab" data-tab="products">📦 Товары</button>
-    <button class="admin-tab" data-tab="users">👤 Юзеры</button>
-  </div>
+    <div class="stats">
+      <div class="stat green">
+        <div class="stat-value" id="statTopUp">0₽</div>
+        <div class="stat-label">↗ Пополнено</div>
+      </div>
+      <div class="stat gray">
+        <div class="stat-value" id="statSpent">0₽</div>
+        <div class="stat-label">↘ Потрачено</div>
+      </div>
+    </div>
 
-  <div class="admin-content" id="adminContent">
-    <!-- заполняется через JS -->
-  </div>
-</main>
+    <button class="btn-wide" onclick="go('transactions')">📋 Все транзакции</button>
+    <button class="btn-wide" onclick="go('ref')">👥 Реферальная программа</button>
+    <button class="btn-wide danger" onclick="logout()">🚪 Выйти из аккаунта</button>
+  </main>
 
-<!-- Модалка пароля -->
-<div class="modal" id="passModal">
+  <!-- ============= PAGE: INVENTORY ============= -->
+  <main id="page-inventory" class="page">
+    <h1 class="page-title">Инвентарь</h1>
+    <div class="empty-state">
+      <div class="empty-emoji">📦</div>
+      <div class="empty-title">Пока пусто</div>
+      <div class="empty-sub">Купленные товары появятся здесь</div>
+      <button class="btn btn-primary" onclick="go('main')">В каталог</button>
+    </div>
+  </main>
+
+  <!-- ============= PAGE: CART ============= -->
+  <main id="page-cart" class="page">
+    <h1 class="page-title">Корзина</h1>
+    <div id="cartList"></div>
+    <div class="cart-summary hidden" id="cartSummary">
+      <div class="cart-row"><span>Товары</span><span id="cartCount">0</span></div>
+      <div class="cart-row"><span>Промокод</span><span id="cartPromo">—</span></div>
+      <div class="cart-row total"><span>Итого</span><span id="cartTotal">0₽</span></div>
+      <button class="btn btn-primary btn-full" onclick="checkout()">Оформить заказ</button>
+    </div>
+    <div class="empty-state" id="cartEmpty">
+      <div class="empty-emoji">🛒</div>
+      <div class="empty-title">Корзина пуста</div>
+      <div class="empty-sub">Добавь товары из каталога</div>
+      <button class="btn btn-primary" onclick="go('main')">В каталог</button>
+    </div>
+  </main>
+
+  <!-- ============= PAGE: TRANSACTIONS ============= -->
+  <main id="page-transactions" class="page">
+    <h1 class="page-title">Транзакции</h1>
+    <div id="txList"></div>
+    <div class="empty-state" id="txEmpty">
+      <div class="empty-emoji">💳</div>
+      <div class="empty-title">Здесь появятся пополнения и покупки</div>
+      <div class="empty-sub">История пуста</div>
+    </div>
+  </main>
+
+  <!-- ============= PAGE: REF ============= -->
+  <main id="page-ref" class="page">
+    <h1 class="page-title">Реферальная программа</h1>
+    <div class="ref-hero">
+      <div class="ref-emoji">📣</div>
+      <div class="ref-title">Зови друзей — получай 10%</div>
+      <div class="ref-sub">С каждой покупки твоего реферала</div>
+    </div>
+    <div class="ref-link-box">
+      <input type="text" id="refLink" readonly>
+      <button class="btn btn-primary" onclick="copyRef()">Копировать</button>
+    </div>
+    <div class="stats">
+      <div class="stat gray">
+        <div class="stat-value" id="refCount">0</div>
+        <div class="stat-label">Рефералов</div>
+      </div>
+      <div class="stat green">
+        <div class="stat-value" id="refEarn">0₽</div>
+        <div class="stat-label">Заработано</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============= PAGE: REVIEWS ============= -->
+  <main id="page-reviews" class="page">
+    <h1 class="page-title">Отзывы</h1>
+    <div class="review-form">
+      <textarea id="reviewText" placeholder="Напиши свой отзыв о маркете..."></textarea>
+      <button class="btn btn-primary" onclick="addReview()">Отправить</button>
+    </div>
+    <div id="reviewsList"></div>
+  </main>
+
+  <!-- ============= PAGE: FAQ ============= -->
+  <main id="page-faq" class="page">
+    <h1 class="page-title">FAQ</h1>
+    <div class="faq-list" id="faqList"></div>
+  </main>
+
+  <!-- ============= PAGE: INFO ============= -->
+  <main id="page-info" class="page">
+    <h1 class="page-title">Информация</h1>
+    <div class="info-block">
+      <h3>О маркете</h3>
+      <p>desired — маркет цифровых товаров: Telegram-аккаунты, звёзды, премиум, аренда NFT.</p>
+    </div>
+    <div class="info-block">
+      <h3>Гарантии</h3>
+      <p>Автовыдача 24/7. Поддержка отвечает в течение 24 часов.</p>
+    </div>
+    <div class="info-block">
+      <h3>Правила</h3>
+      <p>Возврат возможен только в случае нерабочего товара. Все спорные ситуации решаются через поддержку.</p>
+    </div>
+  </main>
+
+  <!-- ============= PAGE: SUPPORT ============= -->
+  <main id="page-support" class="page">
+    <h1 class="page-title">Поддержка</h1>
+    <div class="empty-state">
+      <div class="empty-emoji">💬</div>
+      <div class="empty-title">Обратитесь к нам</div>
+      <div class="empty-sub">Ответим в течение 24 часов</div>
+      <button class="btn btn-primary" onclick="contactSupport()">Написать в поддержку</button>
+    </div>
+    <div class="warn-box">
+      Восстановление пароля от аккаунта в маркете возможно только через поддержку. Сохраняй данные в надёжном месте!
+    </div>
+  </main>
+
+  <!-- ============= PAGE: CHAT ============= -->
+  <main id="page-chat" class="page chat-page">
+    <h1 class="page-title">Общий чат</h1>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Сообщение...">
+      <button class="btn btn-primary" onclick="sendChat()">➤</button>
+    </div>
+  </main>
+
+  <!-- ============= PAGE: ADMIN ============= -->
+  <main id="page-admin" class="page">
+    <h1 class="page-title">🛠 Админ-панель</h1>
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="stats">📊 Статистика</button>
+      <button class="admin-tab" data-tab="orders">📦 Заказы</button>
+      <button class="admin-tab" data-tab="products">🏷 Товары</button>
+      <button class="admin-tab" data-tab="promo">🎟 Промокоды</button>
+      <button class="admin-tab" data-tab="users">👤 Юзеры</button>
+      <button class="admin-tab" data-tab="reviews">⭐ Отзывы</button>
+    </div>
+    <div class="admin-content" id="adminContent"></div>
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-page="main">
+      <span class="nav-icon">🏠</span><span>Маркет</span>
+    </button>
+    <button class="nav-btn" data-page="inventory">
+      <span class="nav-icon">⭐</span><span>Инвентарь</span>
+    </button>
+    <button class="nav-btn" data-page="cart">
+      <span class="nav-icon">🛒</span><span>Корзина</span>
+      <span class="cart-badge hidden" id="cartBadge">0</span>
+    </button>
+    <button class="nav-btn" data-page="profile">
+      <span class="nav-icon">👤</span><span>Профиль</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ================= MODALS ================= -->
+<div class="modal" id="modalConfirmReg">
   <div class="modal-box">
-    <h3>Введите пароль</h3>
-    <input type="password" id="adminPass" placeholder="••••••">
+    <div class="modal-emoji">⚠️</div>
+    <h3>Уверены?</h3>
+    <p class="modal-text">Вы точно записали имя пользователя и пароль в надёжное место? Восстановление возможно только через поддержку.</p>
     <div class="modal-actions">
-      <button class="btn-cancel" id="passCancel">Отмена</button>
-      <button class="btn-red" id="passOk">Войти</button>
+      <button class="btn btn-secondary" onclick="closeModal('modalConfirmReg')">Отмена</button>
+      <button class="btn btn-primary" onclick="confirmRegister()">Да, продолжить</button>
     </div>
   </div>
 </div>
 
-<!-- Нижняя навигация -->
-<nav class="bottom-nav">
-  <button class="nav-btn active" data-page="main">
-    <span>🏠</span><span>Маркеты</span>
-  </button>
-  <button class="nav-btn" data-page="inventory">
-    <span>⭐</span><span>Инвентарь</span>
-  </button>
-  <button class="nav-btn" data-page="profile">
-    <span>👤</span><span>Профиль</span>
-  </button>
-</nav>
+<div class="modal" id="modalAdminPass">
+  <div class="modal-box">
+    <div class="modal-emoji">🔐</div>
+    <h3>Введите пароль</h3>
+    <input type="password" id="adminPassInput" placeholder="••••••" autocomplete="off">
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modalAdminPass')">Отмена</button>
+      <button class="btn btn-primary" onclick="checkAdminPass()">Войти</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modalDenied">
+  <div class="modal-box">
+    <div class="modal-emoji">⛔</div>
+    <h3>Доступ запрещён</h3>
+    <p class="modal-text">У вас нет прав администратора.</p>
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-full" onclick="closeModal('modalDenied')">Понятно</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modalTopUp">
+  <div class="modal-box">
+    <div class="modal-emoji">💳</div>
+    <h3>Пополнение баланса</h3>
+    <p class="modal-text">Способы оплаты появятся после переезда на сервер.</p>
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-full" onclick="closeModal('modalTopUp')">ОК</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modalCaseResult">
+  <div class="modal-box">
+    <div class="modal-emoji" id="caseResultEmoji">🎉</div>
+    <h3 id="caseResultTitle">Поздравляем!</h3>
+    <p class="modal-text" id="caseResultText">Вы выиграли скидку!</p>
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-full" onclick="closeModal('modalCaseResult')">Забрать</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toastWrap"></div>
 
 <script src="script.js"></script>
 </body>
