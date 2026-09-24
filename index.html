@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#08080a">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>desired — Market</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +12,7 @@
 <link rel="stylesheet" href="style.css">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body data-theme="dark">
+<body data-theme="dark" data-accent="red">
 
 <div id="splash" class="splash">
   <div class="splash-logo">
@@ -51,29 +50,26 @@
   <p class="auth-sub">Маркет звёзд, премиума и аккаунтов</p>
 
   <div class="auth-form" id="authChoice">
-    <button class="btn btn-primary btn-full" onclick="showAuthForm('login')">Войти</button>
-    <button class="btn btn-secondary btn-full" onclick="showAuthForm('register')">Зарегистрироваться</button>
+    <button class="btn btn-primary btn-full" data-action="show-login">Войти</button>
+    <button class="btn btn-secondary btn-full" data-action="show-register">Зарегистрироваться</button>
   </div>
 
   <div class="auth-form hidden" id="loginForm">
     <h2 class="form-title">Вход</h2>
     <input type="text" id="loginUsername" placeholder="Имя пользователя" autocomplete="off">
     <input type="password" id="loginPassword" placeholder="Пароль" autocomplete="off">
-    <button class="btn btn-primary btn-full" onclick="doLogin()">Войти</button>
-    <button class="btn-link" onclick="showAuthForm('choice')">← Назад</button>
+    <button class="btn btn-primary btn-full" data-action="do-login">Войти</button>
+    <button class="btn-link" data-action="show-choice">← Назад</button>
   </div>
 
   <div class="auth-form hidden" id="registerForm">
     <h2 class="form-title">Регистрация</h2>
     <input type="text" id="regUsername" placeholder="Имя пользователя" autocomplete="off">
     <input type="password" id="regPassword" placeholder="Пароль" autocomplete="off">
-    <div class="warn-box">⚠️ Убедитесь, что записали пароль + имя пользователя в надёжное место. Восстановление пароля будет реализовано лишь через поддержку.</div>
-    <label class="checkbox-row">
-      <input type="checkbox" id="regConfirm">
-      <span>Я записал(а) данные в надёжное место</span>
-    </label>
-    <button class="btn btn-primary btn-full" id="regBtn" disabled onclick="doRegister()">Создать аккаунт</button>
-    <button class="btn-link" onclick="showAuthForm('choice')">← Назад</button>
+    <div class="warn-box">⚠️ Запишите пароль и имя в надёжное место. Восстановление только через поддержку.</div>
+    <label class="checkbox-row"><input type="checkbox" id="regConfirm"><span>Я записал(а) данные</span></label>
+    <button class="btn btn-primary btn-full" id="regBtn" disabled data-action="do-register">Создать аккаунт</button>
+    <button class="btn-link" data-action="show-choice">← Назад</button>
   </div>
 </div>
 
@@ -89,7 +85,7 @@
       <span class="brand-name">desired</span>
     </div>
     <div class="topbar-right">
-      <button class="balance-pill" onclick="go('profile')" id="balancePill">
+      <button class="balance-pill" id="balancePill">
         <span class="plus">+</span>
         <span id="topBalance">0₽</span>
       </button>
@@ -97,29 +93,69 @@
     </div>
   </header>
 
-  <div class="dropdown" id="dropdownMenu">
-    <a data-page="reviews">⭐ Отзывы</a>
-    <a data-page="favorites">❤️ Избранное</a>
-    <a data-page="faq">❓ FAQ</a>
-    <a data-page="info">ℹ️ Информация</a>
-    <a data-page="support">💬 Поддержка</a>
-    <a data-page="ref">👥 Реферальная программа</a>
-    <a data-page="chat">🗨️ Чат</a>
-    <a data-page="leaderboard">🏆 Лидеры</a>
-    <a data-page="achievements">🎖 Достижения</a>
-    <a data-page="diary">📔 Дневник</a>
-    <a data-page="changelog">📋 Ченджлог</a>
-    <a data-page="settings">⚙️ Настройки</a>
+  <!-- MEGA MENU -->
+  <div class="mega-menu" id="megaMenu">
+    <div class="mega-menu-sheet">
+      <div class="mega-handle"></div>
+      <div class="mega-header">
+        <div class="mega-title">Меню</div>
+        <div class="mega-user" id="megaUser">@user</div>
+      </div>
+
+      <div class="mega-section">
+        <div class="mega-section-title">Магазин</div>
+        <div class="mega-grid">
+          <button class="mega-item" data-page="main"><span class="mega-icon">🏠</span><span>Каталог</span></button>
+          <button class="mega-item" data-page="favorites"><span class="mega-icon">❤️</span><span>Избранное</span></button>
+          <button class="mega-item" data-page="inventory"><span class="mega-icon">📦</span><span>Инвентарь</span></button>
+          <button class="mega-item" data-page="orders"><span class="mega-icon">🛒</span><span>Заказы</span></button>
+          <button class="mega-item" data-page="transactions"><span class="mega-icon">📋</span><span>Транзакции</span></button>
+          <button class="mega-item" data-page="reviews"><span class="mega-icon">⭐</span><span>Отзывы</span></button>
+        </div>
+      </div>
+
+      <div class="mega-section">
+        <div class="mega-section-title">Заработок</div>
+        <div class="mega-grid">
+          <button class="mega-item" data-page="ref"><span class="mega-icon">👥</span><span>Рефералка</span></button>
+          <button class="mega-item" data-page="leaderboard"><span class="mega-icon">🏆</span><span>Лидеры</span></button>
+          <button class="mega-item" data-page="achievements"><span class="mega-icon">🎖</span><span>Достижения</span></button>
+          <button class="mega-item" data-page="diary"><span class="mega-icon">📔</span><span>Дневник</span></button>
+        </div>
+      </div>
+
+      <div class="mega-section">
+        <div class="mega-section-title">Информация</div>
+        <div class="mega-grid">
+          <button class="mega-item" data-page="faq"><span class="mega-icon">❓</span><span>FAQ</span></button>
+          <button class="mega-item" data-page="info"><span class="mega-icon">ℹ️</span><span>Инфо</span></button>
+          <button class="mega-item" data-page="support"><span class="mega-icon">💬</span><span>Поддержка</span></button>
+          <button class="mega-item" data-page="chat"><span class="mega-icon">🗨️</span><span>Чат</span></button>
+          <button class="mega-item" data-page="changelog"><span class="mega-icon">📋</span><span>Обновления</span></button>
+          <button class="mega-item" data-page="settings"><span class="mega-icon">⚙️</span><span>Настройки</span></button>
+        </div>
+      </div>
+
+      <div class="mega-footer">
+        <button class="btn btn-secondary btn-full" data-action="logout">🚪 Выйти</button>
+      </div>
+    </div>
   </div>
 
   <main id="page-main" class="page active">
-    <h1 class="page-title">Маркет <span class="muted">Звёзды и Премиум</span></h1>
+    <div class="hello-line"><span id="helloText">Привет, user 👋</span></div>
 
-    <div class="live-strip">
-      <span class="live-dot"></span>
-      <span id="liveOnline">1 247</span> онлайн
-      <span class="live-sep">·</span>
-      Продано: <span id="liveSold">32</span>
+    <div class="catalog-tabs">
+      <button class="catalog-tab active" data-cat="accounts">
+        <span class="tab-icon">👤</span>
+        <span class="tab-label">Аккаунты</span>
+        <span class="tab-count" id="countAccounts">0</span>
+      </button>
+      <button class="catalog-tab" data-cat="stars">
+        <span class="tab-icon">⭐</span>
+        <span class="tab-label">Звёзды и Премиум</span>
+        <span class="tab-count" id="countStars">0</span>
+      </button>
     </div>
 
     <div class="banner">
@@ -130,64 +166,51 @@
       <div class="banner-icon">%</div>
     </div>
 
-    <div class="cats">
-      <div class="cat-card" data-cat="names">
-        <div class="cat-icon">📱</div>
-        <div class="cat-name">Аренда имён</div>
-        <div class="cat-sub">Юзернеймы и +888</div>
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-card-icon">🔥</div>
+        <div>
+          <div class="stat-card-value" id="statSoldToday">32</div>
+          <div class="stat-card-label">Продано сегодня</div>
+        </div>
       </div>
-      <div class="cat-card" data-cat="subs">
-        <div class="cat-icon">⭐</div>
-        <div class="cat-name">Подписки</div>
-        <div class="cat-sub">На сервисы</div>
-      </div>
-      <div class="cat-card" data-cat="nft">
-        <div class="cat-icon">🎁</div>
-        <div class="cat-name">Аренда NFT</div>
-        <div class="cat-sub">Подарок в профиль</div>
+      <div class="stat-card">
+        <div class="stat-card-icon">👥</div>
+        <div>
+          <div class="stat-card-value" id="statOnline">1 247</div>
+          <div class="stat-card-label">Онлайн</div>
+        </div>
       </div>
     </div>
 
-    <div class="case-banner">
-      <div class="case-left">
-        <div class="case-emoji">🎰</div>
-        <div><div class="case-title">Кейс дня</div><div class="case-sub" id="caseStatus">Крутить раз в 24 часа</div></div>
+    <div class="sale-card" id="saleCard" data-sale="1">
+      <div class="sale-card-left">
+        <div class="sale-card-badge">🔥 СКИДКА ДНЯ</div>
+        <div class="sale-card-title" id="saleTitle">Загрузка...</div>
+        <div class="sale-card-sub" id="saleSub">Лучшее предложение</div>
       </div>
-      <button class="btn-case" onclick="spinCase()">Крутить</button>
-    </div>
-
-    <div class="case-banner">
-      <div class="case-left">
-        <div class="case-emoji">🎡</div>
-        <div><div class="case-title">Колесо фортуны</div><div class="case-sub" id="wheelStatus">Доступно раз в 24 часа</div></div>
+      <div class="sale-card-right">
+        <div class="sale-card-price" id="salePrice">—</div>
+        <button class="btn btn-primary btn-sm" id="saleBtn">Забрать</button>
       </div>
-      <button class="btn-case" onclick="spinWheel()">Крутить</button>
-    </div>
-
-    <div class="case-banner">
-      <div class="case-left">
-        <div class="case-emoji">🎁</div>
-        <div><div class="case-title">Ежедневный бонус</div><div class="case-sub" id="dailyStatus">Забери 5 баллов</div></div>
-      </div>
-      <button class="btn-case" onclick="claimDaily()">Забрать</button>
     </div>
 
     <div class="quick-filters">
       <button class="quick-chip active" data-quick="all">Все</button>
-      <button class="quick-chip" data-quick="cheap">Дешевле 100₽</button>
+      <button class="quick-chip" data-quick="cheap">До 100₽</button>
       <button class="quick-chip" data-quick="hit">🔥 Хиты</button>
       <button class="quick-chip" data-quick="new">🆕 Новинки</button>
       <button class="quick-chip" data-quick="sale">💸 Скидки</button>
     </div>
 
-    <input type="text" class="search" placeholder="Поиск по каталогу" id="searchInput" autocomplete="off">
-    <div class="search-history hidden" id="searchHistory"></div>
-
-    <div class="filters">
-      <button class="filter active" data-filter="popular">🔥 Популярное</button>
-      <button class="filter" data-filter="cheap">💵 Дешевле</button>
-      <button class="filter" data-filter="expensive">💰 Дороже</button>
+    <div class="search-row">
+      <input type="text" class="search" placeholder="Поиск по каталогу" id="searchInput" autocomplete="off">
+      <button class="filter-btn" id="filterBtn" data-action="open-filters">
+        <span>⚙️</span>
+        <span class="filter-badge hidden" id="filterBadge">0</span>
+      </button>
     </div>
+    <div class="search-history hidden" id="searchHistory"></div>
 
     <div class="products" id="productsList"></div>
     <div class="products-end hidden" id="productsEnd">— Конец каталога —</div>
@@ -200,9 +223,6 @@
 
     <div class="section-title">⭐ Что говорят юзеры</div>
     <div class="reviews-mini" id="reviewsMini"></div>
-
-    <div class="section-title">🎁 Готовые пакеты</div>
-    <div class="packages" id="packagesList"></div>
   </main>
 
   <main id="page-profile" class="page">
@@ -226,7 +246,7 @@
 
     <div class="balance-card">
       <div><div class="label">Баланс</div><div class="amount" id="profileBalance">0₽</div></div>
-      <button class="btn btn-primary" onclick="openTopUp()">Пополнить</button>
+      <button class="btn btn-primary" data-action="open-topup">Пополнить</button>
     </div>
 
     <div class="stats">
@@ -238,49 +258,62 @@
       <div class="stat gray"><div class="stat-value" id="statOrders">0</div><div class="stat-label">📦 Заказов</div></div>
     </div>
 
-    <button class="btn-wide" onclick="openPromoModal()">💎 Ввести промокод</button>
-    <button class="btn-wide" onclick="go('transactions')">📋 Все транзакции</button>
-    <button class="btn-wide" onclick="go('orders')">📦 Мои заказы</button>
-    <button class="btn-wide" onclick="go('ref')">👥 Реферальная программа</button>
-    <button class="btn-wide" onclick="go('favorites')">❤️ Избранное</button>
-    <button class="btn-wide" onclick="go('achievements')">🎖 Достижения</button>
-    <button class="btn-wide danger" onclick="logout()">🚪 Выйти из аккаунта</button>
+    <button class="btn-wide" data-action="open-promo">💎 Ввести промокод</button>
+    <button class="btn-wide" data-page="inventory">📦 Инвентарь</button>
+    <button class="btn-wide" data-page="orders">🛒 Мои заказы</button>
+    <button class="btn-wide" data-page="transactions">📋 Транзакции</button>
+    <button class="btn-wide" data-page="ref">👥 Реферальная программа</button>
+    <button class="btn-wide" data-page="favorites">❤️ Избранное</button>
+    <button class="btn-wide" data-page="achievements">🎖 Достижения</button>
+    <button class="btn-wide danger" data-action="logout">🚪 Выйти</button>
   </main>
 
   <main id="page-inventory" class="page">
-    <h1 class="page-title">Инвентарь</h1>
-    <div class="empty-state">
+    <h1 class="page-title">📦 Инвентарь</h1>
+    <div class="inv-filters">
+      <button class="inv-filter active" data-inv="all">Все</button>
+      <button class="inv-filter" data-inv="active">Активные</button>
+      <button class="inv-filter" data-inv="history">История</button>
+    </div>
+    <div id="inventoryList"></div>
+    <div class="empty-state" id="inventoryEmpty">
       <div class="empty-emoji">📦</div>
       <div class="empty-title">Пока пусто</div>
       <div class="empty-sub">Купленные товары появятся здесь</div>
-      <button class="btn btn-primary" onclick="go('main')">В каталог</button>
+      <button class="btn btn-primary" data-page="main">В каталог</button>
     </div>
   </main>
 
   <main id="page-cart" class="page">
     <h1 class="page-title">Корзина</h1>
+    <div class="cart-stepper">
+      <div class="step active" id="step1"><span>1</span>Товары</div>
+      <div class="step" id="step2"><span>2</span>Оплата</div>
+      <div class="step" id="step3"><span>3</span>Готово</div>
+    </div>
     <div id="cartList"></div>
-
     <div class="upsell hidden" id="upsell">
-      <div class="upsell-title">🎁 С этим часто берут:</div>
+      <div class="upsell-title">🎁 С этим часто берут</div>
       <div id="upsellList"></div>
     </div>
-
     <div class="cart-summary hidden" id="cartSummary">
       <div class="cart-row"><span>Товары</span><span id="cartCount">0</span></div>
-      <div class="cart-row"><span>Скидка лояльности</span><span id="cartLoyalty">0₽</span></div>
+      <div class="cart-row"><span>Кэшбэк-скидка</span><span id="cartLoyalty">0₽</span></div>
       <div class="cart-row"><span>Промокод</span><span id="cartPromo">—</span></div>
-      <button class="btn btn-secondary btn-full promo-btn" onclick="applyPromoInCart()">💎 Применить промокод</button>
+      <button class="btn btn-secondary btn-full promo-btn" data-action="open-promo">💎 Применить промокод</button>
       <div class="cart-row total"><span>Итого</span><span id="cartTotal">0₽</span></div>
+      <div class="balance-check" id="balanceCheck">
+        <div class="balance-check-info"><span id="balanceCheckText">Баланс: 0₽</span></div>
+        <button class="btn btn-primary btn-sm hidden" id="topUpQuick" data-action="open-topup">Докинуть</button>
+      </div>
       <div class="cart-note">⚡ Автовыдача после оплаты</div>
-      <button class="btn btn-primary btn-full" onclick="checkout()">Оформить заказ</button>
+      <button class="btn btn-primary btn-full" data-action="checkout">Оформить заказ</button>
     </div>
-
     <div class="empty-state" id="cartEmpty">
       <div class="empty-emoji">🛒</div>
       <div class="empty-title">Корзина пуста</div>
       <div class="empty-sub">Добавь товары из каталога</div>
-      <button class="btn btn-primary" onclick="go('main')">В каталог</button>
+      <button class="btn btn-primary" data-page="main">В каталог</button>
     </div>
   </main>
 
@@ -291,33 +324,33 @@
       <div class="empty-emoji">💔</div>
       <div class="empty-title">Пока пусто</div>
       <div class="empty-sub">Добавляй товары в избранное</div>
-      <button class="btn btn-primary" onclick="go('main')">В каталог</button>
+      <button class="btn btn-primary" data-page="main">В каталог</button>
     </div>
   </main>
 
   <main id="page-transactions" class="page">
-    <h1 class="page-title">Транзакции</h1>
+    <h1 class="page-title">📋 Транзакции</h1>
     <div id="txList"></div>
     <div class="empty-state" id="txEmpty">
       <div class="empty-emoji">💳</div>
-      <div class="empty-title">Здесь появятся пополнения и покупки</div>
-      <div class="empty-sub">История пуста</div>
+      <div class="empty-title">История пуста</div>
+      <div class="empty-sub">Здесь появятся пополнения и покупки</div>
     </div>
   </main>
 
   <main id="page-orders" class="page">
-    <h1 class="page-title">📦 Мои заказы</h1>
+    <h1 class="page-title">🛒 Мои заказы</h1>
     <div id="ordersList"></div>
     <div class="empty-state" id="ordersEmpty">
-      <div class="empty-emoji">📦</div>
+      <div class="empty-emoji">🛒</div>
       <div class="empty-title">Заказов пока нет</div>
       <div class="empty-sub">Купи первый товар</div>
-      <button class="btn btn-primary" onclick="go('main')">В каталог</button>
+      <button class="btn btn-primary" data-page="main">В каталог</button>
     </div>
   </main>
 
   <main id="page-ref" class="page">
-    <h1 class="page-title">Реферальная программа</h1>
+    <h1 class="page-title">👥 Реферальная программа</h1>
     <div class="ref-hero">
       <div class="ref-emoji">📣</div>
       <div class="ref-title">Зови друзей — 10%</div>
@@ -325,7 +358,7 @@
     </div>
     <div class="ref-link-box">
       <input type="text" id="refLink" readonly>
-      <button class="btn btn-primary" onclick="copyRef()">Копировать</button>
+      <button class="btn btn-primary" data-action="copy-ref">Копировать</button>
     </div>
     <div class="stats">
       <div class="stat gray"><div class="stat-value" id="refCount">0</div><div class="stat-label">Уровень 1</div></div>
@@ -335,11 +368,11 @@
       <div class="stat green"><div class="stat-value" id="refEarn">0₽</div><div class="stat-label">Заработано</div></div>
       <div class="stat gray"><div class="stat-value">500₽</div><div class="stat-label">Мин. вывод</div></div>
     </div>
-    <button class="btn btn-secondary btn-full" onclick="copyRef()">📤 Поделиться ссылкой</button>
+    <button class="btn btn-secondary btn-full" data-action="copy-ref">📤 Поделиться</button>
   </main>
 
   <main id="page-reviews" class="page">
-    <h1 class="page-title">Отзывы</h1>
+    <h1 class="page-title">⭐ Отзывы</h1>
     <div class="review-summary">
       <div class="review-avg" id="reviewAvg">5.0</div>
       <div class="review-avg-sub">средняя оценка</div>
@@ -355,39 +388,24 @@
         <span data-star="1">★</span><span data-star="2">★</span><span data-star="3">★</span><span data-star="4">★</span><span data-star="5" class="active">★</span>
       </div>
       <textarea id="reviewText" placeholder="Напиши свой отзыв..."></textarea>
-      <button class="btn btn-primary" onclick="addReview()">Отправить</button>
+      <button class="btn btn-primary" data-action="add-review">Отправить</button>
     </div>
     <div id="reviewsList"></div>
   </main>
 
   <main id="page-faq" class="page">
-    <h1 class="page-title">FAQ</h1>
+    <h1 class="page-title">❓ FAQ</h1>
     <input type="text" class="search" id="faqSearch" placeholder="Поиск по вопросам...">
     <div class="faq-list" id="faqList"></div>
   </main>
 
   <main id="page-info" class="page">
-    <h1 class="page-title">Информация</h1>
-    <div class="info-block">
-      <h3>О маркете</h3>
-      <p>desired — маркет цифровых товаров: Telegram-аккаунты, звёзды, премиум, аренда NFT. Автовыдача 24/7.</p>
-    </div>
-    <div class="info-block">
-      <h3>Гарантии</h3>
-      <p>100% возврат, если товар не работает. Заявку подаёшь в течение 24 часов после покупки.</p>
-    </div>
-    <div class="info-block">
-      <h3>Правила</h3>
-      <p>Возврат возможен только в случае нерабочего товара. Спорные ситуации решаются через поддержку.</p>
-    </div>
-    <div class="info-block">
-      <h3>Публичная статистика</h3>
-      <p>Продано заказов: <b>12 458</b>. Оценка: <b>4.9</b>. Онлайн: <b id="infoOnline">1 247</b>.</p>
-    </div>
+    <h1 class="page-title">ℹ️ Информация</h1>
+    <div class="faq-list" id="infoList"></div>
   </main>
 
   <main id="page-support" class="page">
-    <h1 class="page-title">Поддержка</h1>
+    <h1 class="page-title">💬 Поддержка</h1>
     <div class="support-hero">
       <div class="empty-emoji">💬</div>
       <div class="empty-title">Мы на связи</div>
@@ -397,11 +415,11 @@
       <h3>Создать тикет</h3>
       <input type="text" class="search" id="ticketTheme" placeholder="Тема">
       <textarea class="support-textarea" id="ticketText" placeholder="Опиши проблему..."></textarea>
-      <button class="btn btn-primary btn-full" onclick="createTicket()">Отправить</button>
+      <button class="btn btn-primary btn-full" data-action="create-ticket">Отправить</button>
     </div>
     <div class="info-block">
       <h3>Прямой контакт</h3>
-      <button class="btn btn-secondary btn-full" onclick="contactSupport()">💬 Написать в Telegram</button>
+      <button class="btn btn-secondary btn-full" data-action="contact-support">💬 Написать в Telegram</button>
     </div>
     <div class="warn-box">Восстановление пароля возможно только через поддержку.</div>
   </main>
@@ -416,7 +434,7 @@
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input">
       <input type="text" id="chatInput" placeholder="Сообщение...">
-      <button class="btn btn-primary" onclick="sendChat()">➤</button>
+      <button class="btn btn-primary" data-action="send-chat">➤</button>
     </div>
   </main>
 
@@ -440,7 +458,7 @@
   </main>
 
   <main id="page-changelog" class="page">
-    <h1 class="page-title">📋 Ченджлог</h1>
+    <h1 class="page-title">📋 Обновления</h1>
     <div class="changelog-list" id="changelogList"></div>
   </main>
 
@@ -448,7 +466,7 @@
     <h1 class="page-title">⚙️ Настройки</h1>
 
     <div class="setting-row col">
-      <div class="setting-head"><span>🎨 Тема оформления</span><span class="setting-hint">Меняет всю палитру</span></div>
+      <div class="setting-head"><span>🎨 Тема</span><span class="setting-hint">Палитра интерфейса</span></div>
       <div class="theme-grid">
         <div class="theme-swatch swatch-dark" data-theme="dark" data-label="Dark"></div>
         <div class="theme-swatch swatch-light" data-theme="light" data-label="Light"></div>
@@ -463,7 +481,7 @@
     </div>
 
     <div class="setting-row col">
-      <div class="setting-head"><span>🌈 Акцентный цвет</span><span class="setting-hint">Кнопки, границы, свечение</span></div>
+      <div class="setting-head"><span>🌈 Акцент</span><span class="setting-hint">Кнопки и границы</span></div>
       <div class="accent-grid">
         <div class="accent-dot" data-accent="red" style="background:#ff2d55"></div>
         <div class="accent-dot" data-accent="pink" style="background:#ff4fa3"></div>
@@ -477,7 +495,7 @@
     </div>
 
     <div class="setting-row">
-      <div><div>📐 Радиус углов</div><div class="setting-hint">Скругление карточек и кнопок</div></div>
+      <div><div>📐 Радиус углов</div><div class="setting-hint">Скругление элементов</div></div>
       <select id="radiusSelect" class="season-select">
         <option value="sharp">Острые</option>
         <option value="default">Обычные</option>
@@ -487,7 +505,7 @@
     </div>
 
     <div class="setting-row">
-      <div><div>🔠 Размер шрифта</div><div class="setting-hint">Для удобного чтения</div></div>
+      <div><div>🔠 Размер текста</div><div class="setting-hint">Крупнее или мельче</div></div>
       <select id="fontScaleSelect" class="season-select">
         <option value="small">Мелкий</option>
         <option value="default" selected>Обычный</option>
@@ -497,22 +515,22 @@
     </div>
 
     <div class="setting-row">
-      <div><div>📱 Компактный режим</div><div class="setting-hint">Больше контента на экране</div></div>
+      <div><div>📱 Компактный режим</div><div class="setting-hint">Больше контента</div></div>
       <label class="switch"><input type="checkbox" id="compactToggle"><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div><div>✨ Анимации</div><div class="setting-hint">Плавные переходы и эффекты</div></div>
+      <div><div>✨ Анимации</div><div class="setting-hint">Плавные переходы</div></div>
       <label class="switch"><input type="checkbox" id="animToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div><div>💡 Свечение</div><div class="setting-hint">Неоновый glow на кнопках</div></div>
+      <div><div>💡 Свечение</div><div class="setting-hint">Glow на кнопках</div></div>
       <label class="switch"><input type="checkbox" id="glowToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div><div>🎄 Сезонная тема</div><div class="setting-hint">Акцент под праздник</div></div>
+      <div><div>🎄 Сезон</div><div class="setting-hint">Акцент под праздник</div></div>
       <select id="seasonSelect" class="season-select">
         <option value="default">Обычная</option>
         <option value="newyear">🎄 Новый год</option>
@@ -522,12 +540,12 @@
     </div>
 
     <div class="setting-row">
-      <div><div>🔊 Звук покупки</div><div class="setting-hint">Звук при оплате</div></div>
+      <div><div>🔊 Звук покупки</div><div class="setting-hint">При оплате</div></div>
       <label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div><div>🔔 Уведомления</div><div class="setting-hint">Пуш-уведомления в боте</div></div>
+      <div><div>🔔 Уведомления</div><div class="setting-hint">Пуш в бота</div></div>
       <label class="switch"><input type="checkbox" id="notifyToggle" checked><span class="slider"></span></label>
     </div>
 
@@ -536,7 +554,7 @@
       <label class="switch"><input type="checkbox" id="hapticToggle" checked><span class="slider"></span></label>
     </div>
 
-    <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="resetSettings()">🔄 Сбросить настройки</button>
+    <button class="btn btn-secondary btn-full" style="margin-top:16px;" data-action="reset-settings">🔄 Сбросить настройки</button>
   </main>
 
   <main id="page-admin" class="page">
@@ -562,14 +580,15 @@
   </nav>
 </div>
 
+<!-- MODALS -->
 <div class="modal" id="modalConfirmReg">
   <div class="modal-box">
     <div class="modal-emoji">⚠️</div>
     <h3>Уверены?</h3>
-    <p class="modal-text">Вы точно записали имя пользователя и пароль в надёжное место? Восстановление возможно только через поддержку.</p>
+    <p class="modal-text">Вы точно записали имя пользователя и пароль в надёжное место? Восстановление только через поддержку.</p>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal('modalConfirmReg')">Отмена</button>
-      <button class="btn btn-primary" onclick="confirmRegister()">Да</button>
+      <button class="btn btn-secondary" data-action="close-modal" data-modal="modalConfirmReg">Отмена</button>
+      <button class="btn btn-primary" data-action="confirm-register">Да</button>
     </div>
   </div>
 </div>
@@ -577,11 +596,11 @@
 <div class="modal" id="modalAdminPass">
   <div class="modal-box">
     <div class="modal-emoji">🔐</div>
-    <h3>Введите пароль</h3>
+    <h3>Пароль админа</h3>
     <input type="password" id="adminPassInput" placeholder="••••••" autocomplete="off">
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal('modalAdminPass')">Отмена</button>
-      <button class="btn btn-primary" onclick="checkAdminPass()">Войти</button>
+      <button class="btn btn-secondary" data-action="close-modal" data-modal="modalAdminPass">Отмена</button>
+      <button class="btn btn-primary" data-action="check-admin-pass">Войти</button>
     </div>
   </div>
 </div>
@@ -591,7 +610,7 @@
     <div class="modal-emoji">⛔</div>
     <h3>Доступ запрещён</h3>
     <p class="modal-text">У вас нет прав администратора.</p>
-    <div class="modal-actions"><button class="btn btn-primary btn-full" onclick="closeModal('modalDenied')">Понятно</button></div>
+    <div class="modal-actions"><button class="btn btn-primary btn-full" data-action="close-modal" data-modal="modalDenied">Понятно</button></div>
   </div>
 </div>
 
@@ -601,15 +620,15 @@
     <h3>Пополнение баланса</h3>
     <input type="number" id="topUpAmount" placeholder="Сумма" min="25">
     <div class="topup-quick">
-      <button onclick="document.getElementById('topUpAmount').value=100">100₽</button>
-      <button onclick="document.getElementById('topUpAmount').value=300">300₽</button>
-      <button onclick="document.getElementById('topUpAmount').value=500">500₽</button>
-      <button onclick="document.getElementById('topUpAmount').value=1000">1000₽</button>
+      <button data-topup="100">100₽</button>
+      <button data-topup="300">300₽</button>
+      <button data-topup="500">500₽</button>
+      <button data-topup="1000">1000₽</button>
     </div>
     <p class="modal-text" style="margin-top:12px;">СБП, карты РФ, Stars, CryptoBot. Появятся после переезда на сервер.</p>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal('modalTopUp')">Отмена</button>
-      <button class="btn btn-primary" onclick="submitTopUp()">Пополнить</button>
+      <button class="btn btn-secondary" data-action="close-modal" data-modal="modalTopUp">Отмена</button>
+      <button class="btn btn-primary" data-action="submit-topup">Пополнить</button>
     </div>
   </div>
 </div>
@@ -619,7 +638,7 @@
     <div class="modal-emoji" id="caseResultEmoji">🎉</div>
     <h3 id="caseResultTitle">Поздравляем!</h3>
     <p class="modal-text" id="caseResultText"></p>
-    <div class="modal-actions"><button class="btn btn-primary btn-full" onclick="closeModal('modalCaseResult')">Забрать</button></div>
+    <div class="modal-actions"><button class="btn btn-primary btn-full" data-action="close-modal" data-modal="modalCaseResult">Забрать</button></div>
   </div>
 </div>
 
@@ -628,7 +647,7 @@
     <div class="modal-emoji" id="wheelResultEmoji">🎡</div>
     <h3 id="wheelResultTitle"></h3>
     <p class="modal-text" id="wheelResultText"></p>
-    <div class="modal-actions"><button class="btn btn-primary btn-full" onclick="closeModal('modalWheelResult')">Забрать</button></div>
+    <div class="modal-actions"><button class="btn btn-primary btn-full" data-action="close-modal" data-modal="modalWheelResult">Забрать</button></div>
   </div>
 </div>
 
@@ -639,16 +658,59 @@
     <input type="text" id="promoInput" placeholder="ПРОМОКОД" style="letter-spacing:2px;text-transform:uppercase;">
     <p class="modal-text" id="promoResult"></p>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal('modalPromo')">Закрыть</button>
-      <button class="btn btn-primary" onclick="applyPromo()">Применить</button>
+      <button class="btn btn-secondary" data-action="close-modal" data-modal="modalPromo">Закрыть</button>
+      <button class="btn btn-primary" data-action="apply-promo">Применить</button>
     </div>
   </div>
 </div>
 
 <div class="modal" id="modalProduct">
   <div class="modal-box modal-product">
-    <button class="modal-close" onclick="closeModal('modalProduct')">✕</button>
+    <button class="modal-close" data-action="close-modal" data-modal="modalProduct">✕</button>
     <div id="productModalContent"></div>
+  </div>
+</div>
+
+<div class="modal" id="modalFilters">
+  <div class="modal-box modal-filters">
+    <button class="modal-close" data-action="close-modal" data-modal="modalFilters">✕</button>
+    <h3>Фильтры</h3>
+
+    <div class="filter-section">
+      <label>Цена</label>
+      <div class="price-range">
+        <input type="number" id="filterPriceMin" placeholder="От">
+        <span>—</span>
+        <input type="number" id="filterPriceMax" placeholder="До">
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <label>Сортировка</label>
+      <select id="filterSort" class="season-select" style="width:100%;">
+        <option value="popular">По популярности</option>
+        <option value="cheap">Сначала дешёвые</option>
+        <option value="expensive">Сначала дорогие</option>
+        <option value="rating">По рейтингу</option>
+      </select>
+    </div>
+
+    <div class="filter-section">
+      <label>Метки</label>
+      <label class="filter-check"><input type="checkbox" id="filterHit"><span>🔥 Только хиты</span></label>
+      <label class="filter-check"><input type="checkbox" id="filterNew"><span>🆕 Только новинки</span></label>
+      <label class="filter-check"><input type="checkbox" id="filterSale"><span>💸 Только со скидкой</span></label>
+    </div>
+
+    <div class="filter-section">
+      <label>Рейтинг</label>
+      <label class="filter-check"><input type="checkbox" id="filterRating45"><span>⭐ 4.5 и выше</span></label>
+    </div>
+
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn btn-secondary" data-action="reset-filters">Сбросить</button>
+      <button class="btn btn-primary" data-action="apply-filters">Применить</button>
+    </div>
   </div>
 </div>
 
