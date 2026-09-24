@@ -20,11 +20,11 @@ const state = {
   favorites: Storage.get('favorites', []),
   recent: Storage.get('recent', []),
   reviews: Storage.get('reviews', []),
-  chat: Storage.get('chat', { general: [], trade: [], offtop: [] }),
   promos: Storage.get('promos', []),
   usedPromos: Storage.get('usedPromos', {}),
   transactions: Storage.get('transactions', []),
   orders: Storage.get('orders', []),
+  inventory: Storage.get('inventory', []),
   points: Storage.get('points', 0),
   stats: Storage.get('stats', { topUp: 0, spent: 0, orders: 0 }),
   achievements: Storage.get('achievements', []),
@@ -35,36 +35,35 @@ const state = {
   onlineCount: 1247,
   tgUser: null,
   appliedPromo: null,
-  chatChannel: 'general',
   reviewRating: 5,
   reviewFilter: 'all',
-  loyaltyLevel: 'bronze'
+  inventoryFilter: 'all',
+  catalogTab: 'accounts',
+  loyaltyLevel: 'bronze',
+  filters: { priceMin: 0, priceMax: 0, sort: 'popular', hit: false, isNew: false, sale: false, rating45: false }
 };
 
-// ==================== DATA ====================
-const PRODUCTS = [
-  { id: 1, flag: '🇺🇸', name: 'США', sub: '2078 покупок · автовыдача', price: 89, oldPrice: 99, rating: 5, badge: 'ХИТ', stock: 42, tags: ['⚡ автовыдача', '🛡 гарантия'] },
-  { id: 2, flag: '🇬🇧', name: 'Великобритания', sub: '107 покупок · автовыдача', price: 159, rating: 4.8, stock: 18, tags: ['⚡ автовыдача'] },
-  { id: 3, flag: '🇯🇵', name: 'Япония', sub: '52 покупки · автовыдача', price: 349, rating: 4.9, stock: 7, tags: ['⚡ автовыдача', '🛡 гарантия'] },
-  { id: 4, flag: '🇨🇴', name: 'Колумбия', sub: '34 покупки · автовыдача', price: 129, rating: 4.7, stock: 12, tags: ['⚡ автовыдача'] },
-  { id: 5, flag: '🇰🇿', name: 'Казахстан', sub: '88 покупок · автовыдача', price: 99, rating: 4.8, stock: 25, tags: ['⚡ автовыдача'] },
-  { id: 6, flag: '⭐', name: 'Telegram Stars 100', sub: 'Мгновенная выдача', price: 145, rating: 5, badge: 'NEW', stock: 89, tags: ['⚡ автовыдача'] },
-  { id: 7, flag: '⭐', name: 'Telegram Stars 500', sub: 'Мгновенная выдача', price: 690, rating: 5, stock: 45, tags: ['⚡ автовыдача'] },
-  { id: 8, flag: '💎', name: 'Telegram Premium 3 мес', sub: 'Активация на аккаунт', price: 590, rating: 4.9, badge: 'ХИТ', stock: 30, tags: ['⚡ автовыдача', '🛡 гарантия'] },
-  { id: 9, flag: '💎', name: 'Telegram Premium 12 мес', sub: 'Активация на аккаунт', price: 1890, rating: 4.9, stock: 15, tags: ['⚡ автовыдача', '🛡 гарантия'] },
-  { id: 10, flag: '🎁', name: 'NFT подарок Basic', sub: 'Аренда 30 дней', price: 249, rating: 4.6, stock: 22, tags: ['🎁 аренда'] },
-  { id: 11, flag: '🎁', name: 'NFT подарок Rare', sub: 'Аренда 30 дней', price: 890, rating: 4.8, badge: 'NEW', stock: 8, tags: ['🎁 аренда'] }
+// ==================== PRODUCTS ====================
+let PRODUCTS = Storage.get('products', null) || [
+  { id: 1, flag: '🇺🇸', name: 'США', sub: '2078 покупок · автовыдача', price: 89, oldPrice: 99, rating: 5, badge: 'ХИТ', stock: 42, category: 'accounts', tags: ['⚡ автовыдача', '🛡 гарантия'] },
+  { id: 2, flag: '🇬🇧', name: 'Великобритания', sub: '107 покупок · автовыдача', price: 159, rating: 4.8, stock: 18, category: 'accounts', tags: ['⚡ автовыдача'] },
+  { id: 3, flag: '🇯🇵', name: 'Япония', sub: '52 покупки · автовыдача', price: 349, rating: 4.9, stock: 7, category: 'accounts', tags: ['⚡ автовыдача', '🛡 гарантия'] },
+  { id: 4, flag: '🇨🇴', name: 'Колумбия', sub: '34 покупки · автовыдача', price: 129, rating: 4.7, stock: 12, category: 'accounts', tags: ['⚡ автовыдача'] },
+  { id: 5, flag: '🇰🇿', name: 'Казахстан', sub: '88 покупок · автовыдача', price: 99, rating: 4.8, stock: 25, category: 'accounts', tags: ['⚡ автовыдача'] },
+  { id: 6, flag: '⭐', name: 'Telegram Stars 100', sub: 'Мгновенная выдача', price: 145, rating: 5, badge: 'NEW', stock: 89, category: 'stars', tags: ['⚡ автовыдача'] },
+  { id: 7, flag: '⭐', name: 'Telegram Stars 500', sub: 'Мгновенная выдача', price: 690, rating: 5, stock: 45, category: 'stars', tags: ['⚡ автовыдача'] },
+  { id: 8, flag: '💎', name: 'Telegram Premium 3 мес', sub: 'Активация на аккаунт', price: 590, rating: 4.9, badge: 'ХИТ', stock: 30, category: 'stars', tags: ['⚡ автовыдача', '🛡 гарантия'] },
+  { id: 9, flag: '💎', name: 'Telegram Premium 12 мес', sub: 'Активация на аккаунт', price: 1890, rating: 4.9, stock: 15, category: 'stars', tags: ['⚡ автовыдача', '🛡 гарантия'] },
+  { id: 10, flag: '🎁', name: 'NFT подарок Basic', sub: 'Аренда 30 дней', price: 249, rating: 4.6, stock: 22, category: 'stars', tags: ['🎁 аренда'] },
+  { id: 11, flag: '🎁', name: 'NFT подарок Rare', sub: 'Аренда 30 дней', price: 890, rating: 4.8, badge: 'NEW', stock: 8, category: 'stars', tags: ['🎁 аренда'] }
 ];
 
-const PACKAGES = [
-  { id: 'p1', title: 'Стартовый пакет', sub: '3 USA + 2 UK + Premium 3 мес', price: 990, oldPrice: 1287 },
-  { id: 'p2', title: 'Набор для накрутки', sub: 'Stars 500 + Premium 3 мес', price: 1190, oldPrice: 1280 },
-  { id: 'p3', title: 'Оптовый VIP', sub: '10 USA + 5 UK + 5 KZ', price: 2490, oldPrice: 3350 }
-];
+function saveProducts() { Storage.set('products', PRODUCTS); }
 
+// ==================== FAQ ====================
 const FAQ = [
   { q: 'Как получить товар?', a: 'После оплаты товар выдаётся автоматически в разделе «Инвентарь».' },
-  { q: 'Способы оплаты?', a: 'СБП, карты РФ, Telegram Stars, CryptoBot. Появятся после переезда на сервер.' },
+  { q: 'Способы оплаты?', a: 'СБП, карты РФ, Telegram Stars, CryptoBot.' },
   { q: 'Товар не работает?', a: 'Напишите в поддержку с номером заказа. Решим в течение 24 часов.' },
   { q: 'Реферальная программа?', a: '10% с покупок рефералов 1 уровня и 3% со 2 уровня. Вывод от 500₽.' },
   { q: 'Восстановление пароля?', a: 'Только через поддержку. Сохраняйте данные в надёжном месте!' },
@@ -73,7 +72,7 @@ const FAQ = [
   { q: 'Возврат денег?', a: 'Да, если товар не работает — в течение 24 часов.' },
   { q: 'Какие аккаунты?', a: 'Отлежавшиеся, с полным доступом. Логин, пароль, почта.' },
   { q: 'Оптовые скидки?', a: 'От 10 штук — 15%, от 50 — 25%. Пишите в поддержку.' },
-  { q: 'Как пополнить?', a: 'Профиль → «Пополнить». СБП, карты, Stars, CryptoBot.' },
+  { q: 'Как пополнить?', a: 'Нажмите на баланс сверху или Профиль → «Пополнить».' },
   { q: 'Оплата не прошла?', a: 'Проверь баланс. Если списалось — в поддержку.' },
   { q: 'Гарантия?', a: 'От 24ч до 7 дней в зависимости от типа товара.' },
   { q: 'Перепродажа?', a: 'Да, без раскрытия источника и без демпинга.' },
@@ -92,9 +91,18 @@ const FAQ = [
   { q: 'Обманул продавец?', a: 'У нас нет продавцов. Пишите в поддержку.' },
   { q: 'Оплата с чужой карты?', a: 'Только с разрешения. За чарджбэки — бан.' },
   { q: 'Есть приложение?', a: 'Работает в Telegram как Mini App.' },
-  { q: 'Новые товары?', a: 'Следи за ченджлогом и каналом.' },
-  { q: 'Что за чат?', a: 'Общение юзеров. Три канала: Общий, Купля-продажа, Оффтоп.' },
+  { q: 'Новые товары?', a: 'Следи за обновлениями в разделе «Обновления».' },
   { q: 'Стать модератором?', a: 'Активным юзерам по приглашению.' }
+];
+
+const INFO_ITEMS = [
+  { q: 'О маркете', a: 'desired — маркет цифровых товаров: Telegram-аккаунты, звёзды, премиум, аренда NFT. Автовыдача 24/7.' },
+  { q: 'Гарантии', a: '100% возврат, если товар не работает. Заявку подаёшь в течение 24 часов после покупки.' },
+  { q: 'Правила', a: 'Возврат возможен только в случае нерабочего товара. Спорные ситуации решаются через поддержку.' },
+  { q: 'Публичная статистика', a: 'Продано заказов: 12 458. Оценка: 4.9. Онлайн: постоянно растёт.' },
+  { q: 'Пользовательское соглашение', a: 'Открывается после переезда на сервер.' },
+  { q: 'Политика конфиденциальности', a: 'Открывается после переезда на сервер.' },
+  { q: 'Правила возврата', a: 'Заявка в течение 24 часов после покупки. Возврат на баланс или на карту.' }
 ];
 
 const ACHIEVEMENTS = [
@@ -108,19 +116,11 @@ const ACHIEVEMENTS = [
   { id: 'loyal', icon: '👑', name: 'Loyal', desc: 'Достигни Gold' }
 ];
 
-const DIARY = [
-  { date: 'Сегодня', text: 'Обновили дизайн, добавили 9 тем, 8 акцентов, кастомизацию под каждого юзера. Настройки применяются мгновенно.' },
-  { date: 'Вчера', text: 'Тест с кентом. Чат между юзерами пока не работает — ждём бэкенд.' },
-  { date: '2 дня назад', text: 'Собрали новую дизайн-систему на Manrope.' },
-  { date: '3 дня назад', text: 'Старт разработки маркета.' }
-];
-
 const CHANGELOG = [
-  { ver: 'v0.5.0', date: 'Сегодня', changes: ['9 тем оформления', '8 акцентных цветов', 'Радиус, шрифт, компактный режим', 'Glow-эффект и анимации', 'Сезонные темы', 'Мгновенное применение настроек', 'Сброс одним тапом', 'Описание к каждой настройке'] },
-  { ver: 'v0.4.0', date: '2 дня назад', changes: ['Кейс дня и колесо фортуны', 'Ежедневный бонус', 'Баллы и лояльность', 'Избранное, недавние', 'Пакеты и апселл', 'Достижения и лидерборд'] },
-  { ver: 'v0.3.0', date: '4 дня назад', changes: ['Полный редизайн', 'Авторизация', 'Админ-панель на 2 юзера', 'Корзина и профиль'] },
-  { ver: 'v0.2.0', date: '6 дней назад', changes: ['Отзывы и FAQ', 'Рефералка', 'Каталог'] },
-  { ver: 'v0.1.0', date: 'Неделю назад', changes: ['Первый каркас Mini App'] }
+  { ver: 'v0.6.0', date: 'Сегодня', changes: ['Табы каталога: Аккаунты / Звёзды и Премиум', 'Расширенные фильтры', 'Инвентарь с фильтрами', 'Корзина-степпер', 'Полная админка с CRUD', 'Бэкап и восстановление БД', 'Логи действий', 'Убран общий чат', 'Фикс размера текста'] },
+  { ver: 'v0.5.0', date: '3 дня назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек', 'Сезонные ивенты'] },
+  { ver: 'v0.4.0', date: '5 дней назад', changes: ['Кейс дня и колесо', 'Ежедневный бонус', 'Лояльность и баллы'] },
+  { ver: 'v0.3.0', date: 'Неделю назад', changes: ['Полный редизайн', 'Авторизация', 'Корзина и профиль'] }
 ];
 
 const LIVE_BUYERS = [
@@ -156,12 +156,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initCase();
   initWheel();
   initDaily();
-  renderLiveFeed();
-  renderReviewsMini();
-  bindSettingsListeners();
-  bindNavListeners();
-  bindCartListeners();
-  bindMiscListeners();
+  bindAllListeners();
 });
 
 function initTelegram() {
@@ -176,119 +171,49 @@ function initTelegram() {
 
 // ==================== SETTINGS ====================
 function applyAllSettings() {
-  // Тема
-  const theme = Storage.get('theme', 'dark');
-  document.body.setAttribute('data-theme', theme);
+  document.body.setAttribute('data-theme', Storage.get('theme', 'dark'));
+  document.body.setAttribute('data-accent', Storage.get('accent', 'red'));
 
-  // Акцент
-  const accent = Storage.get('accent', 'red');
-  document.body.setAttribute('data-accent', accent);
-
-  // Сезон
   const season = Storage.get('season', 'default');
   if (season === 'default') document.body.removeAttribute('data-season');
   else document.body.setAttribute('data-season', season);
 
-  // Радиус
-  const r = Storage.get('radius', 'default');
-  const rmap = { sharp: '6px', default: '16px', round: '24px', pill: '32px' };
-  const rval = rmap[r] || rmap.default;
+  const r = Storage.get('radius', 'round');
+  const rmap = { sharp: '6px', default: '16px', round: '20px', pill: '32px' };
+  const rval = rmap[r] || rmap.round;
   document.body.style.setProperty('--radius', rval);
-  document.body.style.setProperty('--radius-sm', `calc(${rval} - 4px)`);
+  document.body.style.setProperty('--radius-sm', `calc(${rval} - 6px)`);
   document.body.style.setProperty('--radius-lg', `calc(${rval} + 6px)`);
 
-  // Шрифт
   const s = Storage.get('fontScale', 'default');
   const smap = { small: '0.9', default: '1', large: '1.1', xlarge: '1.2' };
   document.body.style.setProperty('--font-scale', smap[s] || '1');
 
-  // Компакт / анимации / glow
   document.body.classList.toggle('compact', Storage.get('compact', false));
   document.body.classList.toggle('no-anim', !Storage.get('animEnabled', true));
   document.body.classList.toggle('glow', Storage.get('glow', true));
 
-  // Синхронизация UI
   syncSettingsUI();
 }
 
 function syncSettingsUI() {
   const t = Storage.get('theme', 'dark');
-  document.querySelectorAll('.theme-swatch').forEach(el => {
-    el.classList.toggle('active', el.dataset.theme === t);
-  });
-
+  document.querySelectorAll('.theme-swatch').forEach(el => el.classList.toggle('active', el.dataset.theme === t));
   const a = Storage.get('accent', 'red');
-  document.querySelectorAll('.accent-dot').forEach(el => {
-    el.classList.toggle('active', el.dataset.accent === a);
-  });
+  document.querySelectorAll('.accent-dot').forEach(el => el.classList.toggle('active', el.dataset.accent === a));
 
-  setVal('radiusSelect', Storage.get('radius', 'default'));
-  setVal('fontScaleSelect', Storage.get('fontScale', 'default'));
-  setVal('seasonSelect', Storage.get('season', 'default'));
-  setCheck('compactToggle', Storage.get('compact', false));
-  setCheck('animToggle', Storage.get('animEnabled', true));
-  setCheck('glowToggle', Storage.get('glow', true));
-  setCheck('soundToggle', Storage.get('soundEnabled', true));
-  setCheck('notifyToggle', Storage.get('notifyEnabled', true));
-  setCheck('hapticToggle', Storage.get('hapticEnabled', true));
-}
+  const setV = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+  const setC = (id, v) => { const el = document.getElementById(id); if (el) el.checked = v; };
 
-function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val; }
-function setCheck(id, val) { const el = document.getElementById(id); if (el) el.checked = val; }
-
-function bindSettingsListeners() {
-  document.addEventListener('click', (e) => {
-    const swatch = e.target.closest('.theme-swatch');
-    if (swatch) {
-      Storage.set('theme', swatch.dataset.theme);
-      applyAllSettings();
-      toast('Тема изменена', 'success');
-      haptic('light');
-      return;
-    }
-    const dot = e.target.closest('.accent-dot');
-    if (dot) {
-      Storage.set('accent', dot.dataset.accent);
-      applyAllSettings();
-      haptic('light');
-      return;
-    }
-    // Ripple
-    const btn = e.target.closest('.btn');
-    if (btn && Storage.get('animEnabled', true)) {
-      const rect = btn.getBoundingClientRect();
-      const x = (e.clientX || rect.left + rect.width / 2) - rect.left;
-      const y = (e.clientY || rect.top + rect.height / 2) - rect.top;
-      const size = Math.max(rect.width, rect.height);
-      const ripple = document.createElement('span');
-      ripple.className = 'ripple';
-      ripple.style.width = ripple.style.height = size + 'px';
-      ripple.style.left = (x - size / 2) + 'px';
-      ripple.style.top = (y - size / 2) + 'px';
-      btn.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 600);
-    }
-  });
-
-  document.addEventListener('change', (e) => {
-    const id = e.target.id;
-    const v = e.target.value;
-    const c = e.target.checked;
-
-    if (id === 'radiusSelect') Storage.set('radius', v);
-    else if (id === 'fontScaleSelect') Storage.set('fontScale', v);
-    else if (id === 'seasonSelect') Storage.set('season', v);
-    else if (id === 'compactToggle') Storage.set('compact', c);
-    else if (id === 'animToggle') Storage.set('animEnabled', c);
-    else if (id === 'glowToggle') Storage.set('glow', c);
-    else if (id === 'soundToggle') Storage.set('soundEnabled', c);
-    else if (id === 'notifyToggle') Storage.set('notifyEnabled', c);
-    else if (id === 'hapticToggle') Storage.set('hapticEnabled', c);
-    else return;
-
-    applyAllSettings();
-    if (id === 'seasonSelect') toast('Сезон применён', 'success');
-  });
+  setV('radiusSelect', Storage.get('radius', 'round'));
+  setV('fontScaleSelect', Storage.get('fontScale', 'default'));
+  setV('seasonSelect', Storage.get('season', 'default'));
+  setC('compactToggle', Storage.get('compact', false));
+  setC('animToggle', Storage.get('animEnabled', true));
+  setC('glowToggle', Storage.get('glow', true));
+  setC('soundToggle', Storage.get('soundEnabled', true));
+  setC('notifyToggle', Storage.get('notifyEnabled', true));
+  setC('hapticToggle', Storage.get('hapticEnabled', true));
 }
 
 function resetSettings() {
@@ -300,30 +225,21 @@ function resetSettings() {
 
 // ==================== AUTH ====================
 function showAuthForm(which) {
-  ['authChoice', 'loginForm', 'registerForm'].forEach(id => {
-    document.getElementById(id)?.classList.add('hidden');
-  });
+  ['authChoice', 'loginForm', 'registerForm'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
   if (which === 'choice') document.getElementById('authChoice')?.classList.remove('hidden');
   if (which === 'login') document.getElementById('loginForm')?.classList.remove('hidden');
   if (which === 'register') document.getElementById('registerForm')?.classList.remove('hidden');
   haptic('light');
 }
 
-document.addEventListener('input', (e) => {
-  if (e.target.id === 'regConfirm') {
-    const btn = document.getElementById('regBtn');
-    if (btn) btn.disabled = !e.target.checked;
-  }
-});
-
 function doRegister() {
-  const username = document.getElementById('regUsername').value.trim();
-  const password = document.getElementById('regPassword').value.trim();
-  if (!username || !password) return toast('Заполни все поля', 'error');
-  if (username.length < 3) return toast('Имя минимум 3 символа', 'error');
-  if (password.length < 4) return toast('Пароль минимум 4 символа', 'error');
-  if (state.users[username]) return toast('Имя занято', 'error');
-  state._pendingReg = { username, password };
+  const u = document.getElementById('regUsername').value.trim();
+  const p = document.getElementById('regPassword').value.trim();
+  if (!u || !p) return toast('Заполни все поля', 'error');
+  if (u.length < 3) return toast('Имя минимум 3', 'error');
+  if (p.length < 4) return toast('Пароль минимум 4', 'error');
+  if (state.users[u]) return toast('Имя занято', 'error');
+  state._pendingReg = { username: u, password: p };
   openModal('modalConfirmReg');
 }
 
@@ -331,7 +247,7 @@ function confirmRegister() {
   closeModal('modalConfirmReg');
   const { username, password } = state._pendingReg || {};
   if (!username) return;
-  state.users[username] = { password, createdAt: Date.now() };
+  state.users[username] = { password, createdAt: Date.now(), balance: 0, banned: false, points: 0 };
   Storage.set('users', state.users);
   state.currentUser = { username, tgId: state.tgUser?.id || null, createdAt: Date.now() };
   Storage.set('currentUser', state.currentUser);
@@ -341,12 +257,13 @@ function confirmRegister() {
 }
 
 function doLogin() {
-  const username = document.getElementById('loginUsername').value.trim();
-  const password = document.getElementById('loginPassword').value.trim();
-  if (!username || !password) return toast('Заполни все поля', 'error');
-  const u = state.users[username];
-  if (!u || u.password !== password) return toast('Неверные данные', 'error');
-  state.currentUser = { username, tgId: state.tgUser?.id || null, createdAt: u.createdAt };
+  const u = document.getElementById('loginUsername').value.trim();
+  const p = document.getElementById('loginPassword').value.trim();
+  if (!u || !p) return toast('Заполни все поля', 'error');
+  const user = state.users[u];
+  if (!user || user.password !== p) return toast('Неверные данные', 'error');
+  if (user.banned) return toast('Аккаунт заблокирован', 'error');
+  state.currentUser = { username: u, tgId: state.tgUser?.id || null, createdAt: user.createdAt };
   Storage.set('currentUser', state.currentUser);
   toast('Добро пожаловать!', 'success');
   if (!Storage.get('onboarded', false)) showOnboarding();
@@ -371,21 +288,21 @@ function enterApp() {
   renderProducts();
   renderFavorites();
   renderRecent();
-  renderPackages();
   renderReviewsMini();
   renderReviews();
   renderFAQ();
-  renderChat();
+  renderInfo();
   renderTransactions();
   renderOrders();
+  renderInventory();
   renderRefLink();
   renderCart();
   renderCartBadge();
   renderAchievements();
   renderLeaderboard('buyers');
-  renderDiary();
   renderChangelog();
   renderLiveFeed();
+  updateCatalogCounts();
   checkLoyalty();
   checkAchievements();
   routeFromHash();
@@ -443,134 +360,6 @@ function go(page) {
   closeDropdown();
 }
 
-function bindNavListeners() {
-  document.querySelectorAll('.nav-btn').forEach(b => {
-    b.addEventListener('click', () => go(b.dataset.page));
-  });
-  document.querySelectorAll('[data-page]').forEach(el => {
-    el.addEventListener('click', (e) => {
-      e.preventDefault();
-      go(el.dataset.page);
-    });
-  });
-
-  const dotsBtn = document.getElementById('dotsBtn');
-  const dropdown = document.getElementById('dropdownMenu');
-  dotsBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    dropdown.classList.toggle('show');
-    haptic('light');
-  });
-  document.addEventListener('click', () => dropdown?.classList.remove('show'));
-  dropdown?.addEventListener('click', (e) => e.stopPropagation());
-
-  window.addEventListener('scroll', () => {
-    document.getElementById('topbar')?.classList.toggle('scrolled', window.scrollY > 10);
-  });
-
-  window.addEventListener('hashchange', routeFromHash);
-
-  // Admin
-  let taps = 0, tapTimer = null;
-  document.getElementById('brandLogo')?.addEventListener('click', () => {
-    taps++;
-    clearTimeout(tapTimer);
-    tapTimer = setTimeout(() => taps = 0, 900);
-    if (taps >= 5) {
-      taps = 0;
-      haptic('medium');
-      const tgId = state.tgUser?.id;
-      if (tgId && !ADMIN_IDS.includes(tgId)) {
-        openModal('modalDenied');
-        return;
-      }
-      openModal('modalAdminPass');
-    }
-  });
-
-  // Admin tabs
-  document.querySelectorAll('.admin-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      renderAdminTab(tab.dataset.tab);
-    });
-  });
-
-  // Leaderboard tabs
-  document.querySelectorAll('.lb-tab').forEach(t => {
-    t.addEventListener('click', () => {
-      document.querySelectorAll('.lb-tab').forEach(x => x.classList.remove('active'));
-      t.classList.add('active');
-      renderLeaderboard(t.dataset.lb);
-    });
-  });
-
-  // Chat channels
-  document.querySelectorAll('.chat-ch').forEach(ch => {
-    ch.addEventListener('click', () => {
-      document.querySelectorAll('.chat-ch').forEach(x => x.classList.remove('active'));
-      ch.classList.add('active');
-      state.chatChannel = ch.dataset.ch;
-      renderChat();
-    });
-  });
-
-  // Review filters
-  document.querySelectorAll('.quick-chip[data-rfilter]').forEach(c => {
-    c.addEventListener('click', () => {
-      document.querySelectorAll('.quick-chip[data-rfilter]').forEach(x => x.classList.remove('active'));
-      c.classList.add('active');
-      state.reviewFilter = c.dataset.rfilter;
-      renderReviews();
-    });
-  });
-
-  // Stars input
-  document.querySelectorAll('#starsInput span').forEach(s => {
-    s.addEventListener('click', () => {
-      state.reviewRating = +s.dataset.star;
-      document.querySelectorAll('#starsInput span').forEach(x => {
-        x.classList.toggle('active', +x.dataset.star <= state.reviewRating);
-      });
-      haptic('light');
-    });
-  });
-
-  // Product filters
-  document.querySelectorAll('.filter').forEach(f => {
-    f.addEventListener('click', () => {
-      document.querySelectorAll('.filter').forEach(x => x.classList.remove('active'));
-      f.classList.add('active');
-      currentFilter = f.dataset.filter;
-      visibleProducts = 6;
-      renderProducts();
-    });
-  });
-
-  document.querySelectorAll('.quick-chip[data-quick]').forEach(c => {
-    c.addEventListener('click', () => {
-      document.querySelectorAll('.quick-chip[data-quick]').forEach(x => x.classList.remove('active'));
-      c.classList.add('active');
-      currentQuick = c.dataset.quick;
-      visibleProducts = 6;
-      renderProducts();
-    });
-  });
-
-  document.getElementById('searchInput')?.addEventListener('input', (e) => {
-    searchQuery = e.target.value.toLowerCase().trim();
-    visibleProducts = 6;
-    renderProducts();
-    saveSearchHistory(searchQuery);
-  });
-  document.getElementById('searchInput')?.addEventListener('focus', renderSearchHistory);
-
-  document.getElementById('faqSearch')?.addEventListener('input', renderFAQ);
-
-  document.getElementById('onbTrack');
-}
-
 function routeFromHash() {
   const h = location.hash.replace('#', '');
   if (h && document.getElementById('page-' + h)) go(h);
@@ -578,127 +367,95 @@ function routeFromHash() {
 
 function closeDropdown() { document.getElementById('dropdownMenu')?.classList.remove('show'); }
 
-// ==================== ADMIN ====================
-function checkAdminPass() {
-  const val = document.getElementById('adminPassInput').value;
-  if (val === ADMIN_PASSWORD) {
-    document.getElementById('adminPassInput').value = '';
-    closeModal('modalAdminPass');
-    logAction('admin_login');
-    go('admin');
-    renderAdminTab('stats');
-    toast('Добро пожаловать', 'success');
-  } else {
-    document.getElementById('adminPassInput').value = '';
-    toast('Неверный пароль', 'error');
-    haptic('heavy');
+// ==================== CATALOG TABS ====================
+document.querySelectorAll('.catalog-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.catalog-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    state.catalogTab = tab.dataset.cat;
+    renderProducts();
+    haptic('light');
+  });
+});
+
+function updateCatalogCounts() {
+  const acc = PRODUCTS.filter(p => p.category === 'accounts').length;
+  const stars = PRODUCTS.filter(p => p.category === 'stars').length;
+  const a = document.getElementById('countAccounts');
+  const s = document.getElementById('countStars');
+  if (a) a.textContent = acc;
+  if (s) s.textContent = stars;
+}
+
+// ==================== FILTERS ====================
+function openFilters() {
+  document.getElementById('filterPriceMin').value = state.filters.priceMin || '';
+  document.getElementById('filterPriceMax').value = state.filters.priceMax || '';
+  document.getElementById('filterSort').value = state.filters.sort || 'popular';
+  document.getElementById('filterHit').checked = state.filters.hit || false;
+  document.getElementById('filterNew').checked = state.filters.isNew || false;
+  document.getElementById('filterSale').checked = state.filters.sale || false;
+  document.getElementById('filterRating45').checked = state.filters.rating45 || false;
+  openModal('modalFilters');
+}
+
+function applyFilters() {
+  state.filters.priceMin = +document.getElementById('filterPriceMin').value || 0;
+  state.filters.priceMax = +document.getElementById('filterPriceMax').value || 0;
+  state.filters.sort = document.getElementById('filterSort').value;
+  state.filters.hit = document.getElementById('filterHit').checked;
+  state.filters.isNew = document.getElementById('filterNew').checked;
+  state.filters.sale = document.getElementById('filterSale').checked;
+  state.filters.rating45 = document.getElementById('filterRating45').checked;
+  closeModal('modalFilters');
+  renderProducts();
+  updateFilterBadge();
+  toast('Фильтры применены', 'success');
+}
+
+function resetFilters() {
+  state.filters = { priceMin: 0, priceMax: 0, sort: 'popular', hit: false, isNew: false, sale: false, rating45: false };
+  document.getElementById('filterPriceMin').value = '';
+  document.getElementById('filterPriceMax').value = '';
+  document.getElementById('filterSort').value = 'popular';
+  document.getElementById('filterHit').checked = false;
+  document.getElementById('filterNew').checked = false;
+  document.getElementById('filterSale').checked = false;
+  document.getElementById('filterRating45').checked = false;
+  updateFilterBadge();
+  toast('Фильтры сброшены', 'success');
+}
+
+function updateFilterBadge() {
+  let count = 0;
+  if (state.filters.priceMin) count++;
+  if (state.filters.priceMax) count++;
+  if (state.filters.sort !== 'popular') count++;
+  if (state.filters.hit) count++;
+  if (state.filters.isNew) count++;
+  if (state.filters.sale) count++;
+  if (state.filters.rating45) count++;
+  const badge = document.getElementById('filterBadge');
+  if (badge) {
+    if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); }
+    else badge.classList.add('hidden');
   }
 }
 
-function logAction(action) {
-  const logs = Storage.get('logs', []);
-  logs.push({ action, user: state.currentUser?.username || 'anon', date: Date.now() });
-  if (logs.length > 100) logs.shift();
-  Storage.set('logs', logs);
-}
-
-function renderAdminTab(tab) {
-  const c = document.getElementById('adminContent');
-  if (!c) return;
-  if (tab === 'stats') {
-    c.innerHTML = `
-      <h4>📊 Статистика</h4>
-      <div class="admin-row"><span>Юзеров</span><span>${Object.keys(state.users).length}</span></div>
-      <div class="admin-row"><span>Заказов</span><span>${state.orders.length}</span></div>
-      <div class="admin-row"><span>Выручка</span><span>${state.stats.spent}₽</span></div>
-      <div class="admin-row"><span>Промокодов</span><span>${state.promos.length}</span></div>
-      <div class="admin-row"><span>Отзывов</span><span>${state.reviews.length}</span></div>
-      <div class="admin-row"><span>Баллов</span><span>${state.points}</span></div>
-    `;
-  } else if (tab === 'orders') {
-    c.innerHTML = `<h4>📦 Заказы</h4>` + (state.orders.length
-      ? state.orders.map(o => `<div class="admin-row"><span>${o.id}</span><span>${o.total}₽</span></div>`).join('')
-      : '<div style="color:var(--muted);font-size:12px;padding:10px 0;">Нет заказов</div>');
-  } else if (tab === 'products') {
-    c.innerHTML = `<h4>🏷 Товары</h4>` + PRODUCTS.map(p =>
-      `<div class="admin-row"><span>${p.flag} ${p.name}</span><span>${p.price}₽ · ${p.stock} шт</span></div>`
-    ).join('');
-  } else if (tab === 'promo') {
-    c.innerHTML = `
-      <h4>🎟 Промокоды</h4>
-      <input type="text" id="promoCodeInput" placeholder="Код">
-      <input type="number" id="promoDiscInput" placeholder="Скидка %">
-      <input type="number" id="promoLimitInput" placeholder="Лимит (0 = без)">
-      <button onclick="addPromo()">Добавить</button>
-      <div id="promoList" style="margin-top:12px;"></div>
-    `;
-    renderPromoListAdmin();
-  } else if (tab === 'users') {
-    const list = Object.entries(state.users).map(([n, u]) =>
-      `<div class="admin-row"><span>@${n}</span><span>${new Date(u.createdAt).toLocaleDateString()}</span></div>`
-    ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет юзеров</div>';
-    c.innerHTML = `<h4>👤 Юзеры</h4>${list}`;
-  } else if (tab === 'reviews') {
-    const list = state.reviews.map((r, i) =>
-      `<div class="admin-row"><span>@${r.author} · ${r.rating}★</span><button class="ghost" onclick="delReview(${i})">Удалить</button></div>`
-    ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет отзывов</div>';
-    c.innerHTML = `<h4>⭐ Отзывы</h4>${list}`;
-  } else if (tab === 'chat') {
-    const g = state.chat.general || [];
-    c.innerHTML = `<h4>🗨️ Чат (${g.length})</h4>` + (g.slice(-10).map((m, i) =>
-      `<div class="admin-row"><span>@${m.author}: ${escapeHtml(m.text).slice(0, 30)}</span><button class="ghost" onclick="delChatMsg('general', ${i})">×</button></div>`
-    ).join('') || '<div style="color:var(--muted);font-size:12px;">Пусто</div>');
-  } else if (tab === 'logs') {
-    const logs = Storage.get('logs', []);
-    c.innerHTML = `<h4>📜 Логи (${logs.length})</h4>` + (logs.slice(-20).reverse().map(l =>
-      `<div class="admin-row"><span>${l.action}</span><span>${new Date(l.date).toLocaleTimeString()}</span></div>`
-    ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет логов</div>');
-  }
-}
-
-function addPromo() {
-  const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
-  const disc = +document.getElementById('promoDiscInput').value;
-  const limit = +document.getElementById('promoLimitInput').value || 0;
-  if (!code || !disc) return toast('Заполни поля', 'error');
-  state.promos.push({ code, disc, limit, used: 0 });
-  Storage.set('promos', state.promos);
-  document.getElementById('promoCodeInput').value = '';
-  document.getElementById('promoDiscInput').value = '';
-  document.getElementById('promoLimitInput').value = '';
-  renderPromoListAdmin();
-  toast('Промокод добавлен', 'success');
-}
-
-function renderPromoListAdmin() {
-  const el = document.getElementById('promoList');
-  if (!el) return;
-  el.innerHTML = state.promos.length
-    ? state.promos.map(p => `<div class="admin-row"><span>${p.code}</span><span>-${p.disc}%</span></div>`).join('')
-    : '<div style="color:var(--muted);font-size:12px;">Нет промокодов</div>';
-}
-
-function delReview(i) {
-  state.reviews.splice(i, 1);
-  Storage.set('reviews', state.reviews);
-  renderAdminTab('reviews');
-  renderReviews();
-  renderReviewsMini();
-  toast('Отзыв удалён', 'success');
-}
-
-function delChatMsg(channel, i) {
-  state.chat[channel].splice(i, 1);
-  Storage.set('chat', state.chat);
-  renderChat();
-  renderAdminTab('chat');
-}
-
-// ==================== PRODUCTS ====================
-let currentFilter = 'popular';
-let currentQuick = 'all';
+// ==================== PRODUCTS RENDER ====================
 let searchQuery = '';
 let visibleProducts = 6;
+let currentQuick = 'all';
+
+document.querySelectorAll('.quick-chip[data-quick]').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('.quick-chip[data-quick]').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    currentQuick = c.dataset.quick;
+    visibleProducts = 6;
+    renderProducts();
+  });
+});
 
 function saveSearchHistory(q) {
   if (!q) return;
@@ -728,14 +485,26 @@ function renderProducts() {
   list.innerHTML = Array(4).fill('<div class="skeleton"></div>').join('');
 
   setTimeout(() => {
-    let items = [...PRODUCTS];
+    let items = PRODUCTS.filter(p => p.category === state.catalogTab);
+
     if (searchQuery) items = items.filter(p => p.name.toLowerCase().includes(searchQuery));
     if (currentQuick === 'cheap') items = items.filter(p => p.price < 100);
     if (currentQuick === 'hit') items = items.filter(p => p.badge === 'ХИТ');
     if (currentQuick === 'new') items = items.filter(p => p.badge === 'NEW');
     if (currentQuick === 'sale') items = items.filter(p => p.oldPrice);
-    if (currentFilter === 'cheap') items.sort((a,b) => a.price - b.price);
-    else if (currentFilter === 'expensive') items.sort((a,b) => b.price - a.price);
+
+    if (state.filters.priceMin) items = items.filter(p => p.price >= state.filters.priceMin);
+    if (state.filters.priceMax) items = items.filter(p => p.price <= state.filters.priceMax);
+    if (state.filters.hit) items = items.filter(p => p.badge === 'ХИТ');
+    if (state.filters.isNew) items = items.filter(p => p.badge === 'NEW');
+    if (state.filters.sale) items = items.filter(p => p.oldPrice);
+    if (state.filters.rating45) items = items.filter(p => p.rating >= 4.5);
+
+    const s = state.filters.sort;
+    if (s === 'cheap') items.sort((a,b) => a.price - b.price);
+    else if (s === 'expensive') items.sort((a,b) => b.price - a.price);
+    else if (s === 'rating') items.sort((a,b) => b.rating - a.rating);
+    else if (s === 'new') items.sort((a,b) => (b.badge === 'NEW' ? 1 : 0) - (a.badge === 'NEW' ? 1 : 0));
 
     if (!items.length) {
       list.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:30px;">Ничего не найдено</div>';
@@ -799,10 +568,6 @@ function openProduct(id) {
       ${'<span class="star" style="color:var(--yellow);font-size:16px;">★</span>'.repeat(Math.round(p.rating))}
       <span style="margin-left:6px;font-weight:700;">${p.rating}</span>
     </div>
-    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;">
-      <div class="product-tag">⚡ Автовыдача</div>
-      <div class="product-tag">🛡 Гарантия 24ч</div>
-    </div>
     <div style="text-align:center;font-size:28px;font-weight:800;margin-bottom:16px;">
       ${p.price}₽ ${p.oldPrice ? `<span style="font-size:16px;color:var(--muted);text-decoration:line-through;margin-left:8px;">${p.oldPrice}₽</span>` : ''}
     </div>
@@ -820,12 +585,8 @@ function shareProduct(id) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!p) return;
   const link = `${BOT_LINK}?startapp=product_${id}`;
-  if (navigator.share) {
-    navigator.share({ title: p.name, text: `${p.name} за ${p.price}₽`, url: link }).catch(()=>{});
-  } else {
-    navigator.clipboard?.writeText(link);
-    toast('Ссылка скопирована', 'success');
-  }
+  if (navigator.share) navigator.share({ title: p.name, text: `${p.name} за ${p.price}₽`, url: link }).catch(()=>{});
+  else { navigator.clipboard?.writeText(link); toast('Ссылка скопирована', 'success'); }
 }
 
 // ==================== FAVORITES / RECENT ====================
@@ -843,21 +604,14 @@ function renderFavorites() {
   const list = document.getElementById('favList');
   const empty = document.getElementById('favEmpty');
   if (!list) return;
-  if (!state.favorites.length) {
-    list.innerHTML = '';
-    empty.classList.remove('hidden');
-    return;
-  }
+  if (!state.favorites.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
   const items = state.favorites.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean);
   list.innerHTML = items.map(p => `
     <div class="cart-item">
       <div class="cart-item-info">
         <span style="font-size:24px;">${p.flag}</span>
-        <div>
-          <div class="cart-item-name">${p.name}</div>
-          <div class="cart-item-price">${p.price}₽</div>
-        </div>
+        <div><div class="cart-item-name">${p.name}</div><div class="cart-item-price">${p.price}₽</div></div>
       </div>
       <button class="cart-remove" onclick="toggleFav(${p.id})">✕</button>
     </div>
@@ -887,39 +641,7 @@ function renderRecent() {
   }).join('');
 }
 
-// ==================== PACKAGES ====================
-function renderPackages() {
-  const el = document.getElementById('packagesList');
-  if (!el) return;
-  el.innerHTML = PACKAGES.map(pkg => `
-    <div class="package">
-      <div class="package-info">
-        <div class="package-title">${pkg.title}</div>
-        <div class="package-sub">${pkg.sub}</div>
-        <div class="package-price-row">
-          <div class="package-price">${pkg.price}₽</div>
-          <div class="package-old">${pkg.oldPrice}₽</div>
-        </div>
-      </div>
-      <button class="btn btn-primary" onclick="addPackageToCart('${pkg.id}')">Взять</button>
-    </div>
-  `).join('');
-}
-
-function addPackageToCart(id) {
-  const pkg = PACKAGES.find(p => p.id === id);
-  if (!pkg) return;
-  state.cart.push({ id: pkg.id, name: pkg.title, flag: '🎁', price: pkg.price });
-  Storage.set('cart', state.cart);
-  renderCartBadge();
-  renderCart();
-  toast(`${pkg.title} в корзине`, 'success');
-  haptic('light');
-}
-
 // ==================== CART ====================
-function bindCartListeners() {}
-
 function addToCart(id) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!p) return;
@@ -927,6 +649,7 @@ function addToCart(id) {
   Storage.set('cart', state.cart);
   renderCartBadge();
   renderCart();
+  updateStepper();
   toast(`${p.name} в корзине`, 'success');
   haptic('light');
   playSound();
@@ -939,6 +662,17 @@ function renderCartBadge() {
   const count = state.cart.length;
   if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); }
   else badge.classList.add('hidden');
+}
+
+function updateStepper() {
+  const s1 = document.getElementById('step1');
+  const s2 = document.getElementById('step2');
+  const s3 = document.getElementById('step3');
+  if (!s1) return;
+  s1.classList.add('active');
+  if (state.cart.length > 0) s2.classList.add('active');
+  else s2.classList.remove('active');
+  s3.classList.remove('active');
 }
 
 function renderCart() {
@@ -995,6 +729,21 @@ function renderCart() {
   document.getElementById('cartLoyalty').textContent = `-${loyaltyDiscount}₽`;
   document.getElementById('cartPromo').textContent = state.appliedPromo ? `${state.appliedPromo.code} (-${state.appliedPromo.disc}%)` : '—';
   document.getElementById('cartTotal').textContent = Math.max(0, total) + '₽';
+
+  const balance = Storage.get('balance', 0);
+  const check = document.getElementById('balanceCheck');
+  const text = document.getElementById('balanceCheckText');
+  const topUpBtn = document.getElementById('topUpQuick');
+  if (balance >= total) {
+    check.classList.remove('insufficient');
+    text.textContent = `✅ Баланс: ${balance}₽ — хватает`;
+    topUpBtn.classList.add('hidden');
+  } else {
+    check.classList.add('insufficient');
+    text.textContent = `❌ Баланс: ${balance}₽ — не хватает ${total - balance}₽`;
+    topUpBtn.classList.remove('hidden');
+    topUpBtn.textContent = `+${total - balance}₽`;
+  }
 }
 
 function removeCart(i) {
@@ -1002,6 +751,7 @@ function removeCart(i) {
   Storage.set('cart', state.cart);
   renderCart();
   renderCartBadge();
+  updateStepper();
   haptic('light');
 }
 
@@ -1012,26 +762,14 @@ function applyPromo() {
   const resultEl = document.getElementById('promoResult');
   if (!code) return;
   const promo = state.promos.find(p => p.code === code);
-  const builtIn = {
-    'CASE5': 5, 'CASE10': 10, 'CASE15': 15, 'CASE3': 3, 'CASE20': 20,
-    'WHEEL5': 5, 'WHEEL10': 10, 'WHEEL15': 15, 'WHEEL20': 20, 'WHEEL50': 50,
-    'WELCOME10': 10, 'DESIRED5': 5
-  };
+  const builtIn = { 'CASE5': 5, 'CASE10': 10, 'CASE15': 15, 'CASE3': 3, 'CASE20': 20, 'WHEEL5': 5, 'WHEEL10': 10, 'WHEEL15': 15, 'WHEEL20': 20, 'WHEEL50': 50, 'WELCOME10': 10, 'DESIRED5': 5 };
   let discount = promo ? promo.disc : (builtIn[code] || null);
-  if (!discount) {
-    resultEl.textContent = '❌ Промокод не найден';
-    resultEl.style.color = 'var(--accent)';
-    return;
-  }
-  if (state.usedPromos[code]) {
-    resultEl.textContent = '❌ Уже использован';
-    resultEl.style.color = 'var(--accent)';
-    return;
-  }
+  if (!discount) { resultEl.textContent = '❌ Не найден'; resultEl.style.color = 'var(--accent)'; return; }
+  if (state.usedPromos[code]) { resultEl.textContent = '❌ Уже использован'; resultEl.style.color = 'var(--accent)'; return; }
   state.appliedPromo = { code, disc: discount };
   state.usedPromos[code] = 1;
   Storage.set('usedPromos', state.usedPromos);
-  resultEl.textContent = `✅ Применён: -${discount}%`;
+  resultEl.textContent = `✅ -${discount}%`;
   resultEl.style.color = 'var(--green)';
   toast(`Промокод -${discount}%`, 'success');
   setTimeout(() => {
@@ -1050,14 +788,14 @@ function openTopUp() { openModal('modalTopUp'); }
 function submitTopUp() {
   const amount = +document.getElementById('topUpAmount').value;
   if (!amount || amount < 25) return toast('Минимум 25₽', 'error');
-  const balance = Storage.get('balance', 0) + amount;
-  Storage.set('balance', balance);
+  Storage.set('balance', Storage.get('balance', 0) + amount);
   state.stats.topUp += amount;
   Storage.set('stats', state.stats);
   state.transactions.unshift({ type: 'in', title: 'Пополнение', amount, date: Date.now() });
   Storage.set('transactions', state.transactions);
   updateProfileUI();
   renderTransactions();
+  renderCart();
   closeModal('modalTopUp');
   document.getElementById('topUpAmount').value = '';
   toast(`+${amount}₽`, 'success');
@@ -1072,10 +810,28 @@ function checkout() {
   const total = Math.max(0, subtotal - loyaltyDiscount - promoDiscount);
   const balance = Storage.get('balance', 0);
   if (balance < total) return toast('Недостаточно средств', 'error');
-  Storage.set('balance', balance - total);
 
-  state.orders.push({ id: 'ORD' + Date.now(), items: state.cart, total, status: 'Выдан', date: Date.now() });
+  Storage.set('balance', balance - total);
+  const orderId = 'ORD' + Date.now();
+  state.orders.push({ id: orderId, items: [...state.cart], total, status: 'Выдан', date: Date.now() });
   Storage.set('orders', state.orders);
+
+  // инвентарь
+  state.cart.forEach(item => {
+    state.inventory.push({
+      id: 'INV' + Date.now() + Math.random().toString(36).slice(2,6),
+      orderId,
+      name: item.name,
+      flag: item.flag,
+      price: item.price,
+      status: 'active',
+      guarantee: '24ч',
+      date: Date.now(),
+      data: 'Логин: example@user\nПароль: ' + Math.random().toString(36).slice(2, 12)
+    });
+  });
+  Storage.set('inventory', state.inventory);
+
   state.transactions.unshift({ type: 'out', title: `Заказ ${total}₽`, amount: total, date: Date.now() });
   Storage.set('transactions', state.transactions);
 
@@ -1084,6 +840,13 @@ function checkout() {
   state.points += Math.round(total * 0.05);
   Storage.set('stats', state.stats);
   Storage.set('points', state.points);
+
+  // Сток
+  state.cart.forEach(item => {
+    const p = PRODUCTS.find(x => x.id === item.id);
+    if (p && p.stock > 0) p.stock -= 1;
+  });
+  saveProducts();
 
   state.cart = [];
   state.appliedPromo = null;
@@ -1094,13 +857,19 @@ function checkout() {
   renderCartBadge();
   renderTransactions();
   renderOrders();
+  renderInventory();
+  updateStepper();
+  document.getElementById('step3').classList.add('active');
   checkLoyalty();
   checkAchievements();
   toast('Заказ оформлен!', 'success');
   haptic('heavy');
   playSound();
+
+  setTimeout(() => go('inventory'), 800);
 }
 
+// ==================== TRANSACTIONS / ORDERS / INVENTORY ====================
 function renderTransactions() {
   const list = document.getElementById('txList');
   const empty = document.getElementById('txEmpty');
@@ -1131,21 +900,81 @@ function renderOrders() {
     <div class="cart-item">
       <div class="cart-item-info">
         <span style="font-size:20px;">📦</span>
-        <div>
-          <div class="cart-item-name">${o.id}</div>
-          <div class="cart-item-price">${o.total}₽ · ${o.status}</div>
-        </div>
+        <div><div class="cart-item-name">${o.id}</div><div class="cart-item-price">${o.total}₽ · ${o.status}</div></div>
       </div>
       <div class="muted" style="font-size:11px;">${new Date(o.date).toLocaleDateString()}</div>
     </div>
   `).join('');
 }
 
+document.querySelectorAll('.inv-filter').forEach(f => {
+  f.addEventListener('click', () => {
+    document.querySelectorAll('.inv-filter').forEach(x => x.classList.remove('active'));
+    f.classList.add('active');
+    state.inventoryFilter = f.dataset.inv;
+    renderInventory();
+  });
+});
+
+function renderInventory() {
+  const list = document.getElementById('inventoryList');
+  const empty = document.getElementById('inventoryEmpty');
+  if (!list) return;
+
+  let items = [...state.inventory];
+  if (state.inventoryFilter === 'active') items = items.filter(i => i.status === 'active');
+  if (state.inventoryFilter === 'history') items = items.filter(i => i.status !== 'active');
+
+  if (!items.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  list.innerHTML = items.map(item => `
+    <div class="inv-card">
+      <div class="inv-card-head">
+        <div class="inv-card-title">${item.flag} ${item.name}</div>
+        <div class="inv-card-status ${item.status === 'active' ? 'active' : 'history'}">${item.status === 'active' ? '✓ Активен' : 'История'}</div>
+      </div>
+      <div class="inv-card-body">
+        Заказ: ${item.orderId}<br>
+        Куплено: ${new Date(item.date).toLocaleString()}<br>
+        Гарантия: ${item.guarantee} с момента покупки
+      </div>
+      <div class="inv-card-actions">
+        <button class="inv-action-btn" onclick="copyInvData('${item.id}')">📋 Копировать данные</button>
+        <button class="inv-action-btn" onclick="reviewProduct('${item.name}')">⭐ Оценить</button>
+        <button class="inv-action-btn" onclick="buyAgain('${item.name}')">🔄 Купить снова</button>
+        <button class="inv-action-btn" onclick="openDispute('${item.id}')">⚠️ Открыть спор</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function copyInvData(id) {
+  const item = state.inventory.find(x => x.id === id);
+  if (!item) return;
+  navigator.clipboard?.writeText(item.data);
+  toast('Данные скопированы', 'success');
+  haptic('light');
+}
+
+function reviewProduct(name) {
+  go('reviews');
+  toast(`Оцени товар: ${name}`, 'info');
+}
+
+function buyAgain(name) {
+  const p = PRODUCTS.find(x => x.name === name);
+  if (p) { addToCart(p.id); go('cart'); }
+}
+
+function openDispute(id) {
+  toast('Спор открыт. Поддержка свяжется.', 'success');
+}
+
 // ==================== REF ====================
 function renderRefLink() {
-  const link = `${BOT_LINK}?start=ref_${state.currentUser?.username || 'user'}`;
   const el = document.getElementById('refLink');
-  if (el) el.value = link;
+  if (el) el.value = `${BOT_LINK}?start=ref_${state.currentUser?.username || 'user'}`;
 }
 function copyRef() {
   const el = document.getElementById('refLink');
@@ -1156,7 +985,7 @@ function copyRef() {
   haptic('light');
 }
 
-// ==================== REVIEWS ====================
+// ==================== REVIEWS / FAQ / INFO ====================
 function renderReviews() {
   const list = document.getElementById('reviewsList');
   const avg = document.getElementById('reviewAvg');
@@ -1167,11 +996,8 @@ function renderReviews() {
   if (state.reviewFilter === '4') items = items.filter(r => r.rating === 4);
   if (avg) avg.textContent = items.length ? (items.reduce((s, r) => s + (r.rating || 5), 0) / items.length).toFixed(1) : '5.0';
   if (count) count.textContent = items.length;
-  if (!items.length) {
-    list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px;">Пока нет отзывов. Будь первым!</div>';
-    return;
-  }
-  list.innerHTML = items.map((r, i) => `
+  if (!items.length) { list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px;">Пока нет отзывов</div>'; return; }
+  list.innerHTML = items.map(r => `
     <div class="review-item">
       <div class="review-head">
         <div class="review-author">@${r.author}</div>
@@ -1183,16 +1009,28 @@ function renderReviews() {
   `).join('');
 }
 
-function reviewHelpful() { toast('Спасибо!', 'success'); }
+document.querySelectorAll('.quick-chip[data-rfilter]').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('.quick-chip[data-rfilter]').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    state.reviewFilter = c.dataset.rfilter;
+    renderReviews();
+  });
+});
+
+document.querySelectorAll('#starsInput span').forEach(s => {
+  s.addEventListener('click', () => {
+    state.reviewRating = +s.dataset.star;
+    document.querySelectorAll('#starsInput span').forEach(x => x.classList.toggle('active', +x.dataset.star <= state.reviewRating));
+    haptic('light');
+  });
+});
 
 function renderReviewsMini() {
   const el = document.getElementById('reviewsMini');
   if (!el) return;
   const items = state.reviews.slice(0, 3);
-  if (!items.length) {
-    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:16px;font-size:13px;">Пока нет отзывов</div>';
-    return;
-  }
+  if (!items.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:16px;font-size:13px;">Пока нет отзывов</div>'; return; }
   el.innerHTML = items.map(r => `
     <div class="review-mini">
       <div class="review-mini-head">
@@ -1207,10 +1045,7 @@ function renderReviewsMini() {
 function addReview() {
   const text = document.getElementById('reviewText').value.trim();
   if (!text) return toast('Напиши отзыв', 'error');
-  state.reviews.unshift({
-    author: state.currentUser?.username || 'user',
-    text, rating: state.reviewRating, date: Date.now()
-  });
+  state.reviews.unshift({ author: state.currentUser?.username || 'user', text, rating: state.reviewRating, date: Date.now() });
   Storage.set('reviews', state.reviews);
   document.getElementById('reviewText').value = '';
   state.reviewRating = 5;
@@ -1224,51 +1059,28 @@ function addReview() {
   checkAchievements();
 }
 
-// ==================== FAQ ====================
 function renderFAQ() {
   const el = document.getElementById('faqList');
   if (!el) return;
   const q = document.getElementById('faqSearch')?.value?.toLowerCase().trim() || '';
   const filtered = q ? FAQ.filter(f => f.q.toLowerCase().includes(q) || f.a.toLowerCase().includes(q)) : FAQ;
   el.innerHTML = filtered.map(f => `
-    <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-item" onclick="this.classList.toggle('open')">
       <div class="faq-q">${f.q}<span>▾</span></div>
       <div class="faq-a">${f.a}</div>
     </div>
   `).join('') || '<div style="text-align:center;color:var(--muted);padding:20px;">Ничего не найдено</div>';
 }
-function toggleFaq(el) { el.classList.toggle('open'); }
 
-// ==================== CHAT ====================
-function renderChat() {
-  const box = document.getElementById('chatMessages');
-  if (!box) return;
-  const ch = state.chatChannel || 'general';
-  const msgs = state.chat[ch] || [];
-  if (!msgs.length) {
-    box.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px;">Пока тихо. Начни первым!</div>';
-    return;
-  }
-  box.innerHTML = msgs.slice(-50).map(m => `
-    <div class="chat-msg ${m.author === state.currentUser?.username ? 'me' : ''}">
-      <div class="chat-author">@${m.author}</div>
-      <div class="chat-text">${escapeHtml(m.text)}</div>
+function renderInfo() {
+  const el = document.getElementById('infoList');
+  if (!el) return;
+  el.innerHTML = INFO_ITEMS.map(f => `
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">${f.q}<span>▾</span></div>
+      <div class="faq-a">${f.a}</div>
     </div>
   `).join('');
-  box.scrollTop = box.scrollHeight;
-}
-
-function sendChat() {
-  const input = document.getElementById('chatInput');
-  const text = input.value.trim();
-  if (!text) return;
-  const ch = state.chatChannel || 'general';
-  if (!state.chat[ch]) state.chat[ch] = [];
-  state.chat[ch].push({ author: state.currentUser?.username || 'user', text, date: Date.now() });
-  Storage.set('chat', state.chat);
-  input.value = '';
-  renderChat();
-  haptic('light');
 }
 
 // ==================== CASE / WHEEL / DAILY ====================
@@ -1307,11 +1119,10 @@ function spinCase() {
 
 function initWheel() {
   const diff = Date.now() - (state.lastWheel || 0);
-  const day = 86400000;
   const el = document.getElementById('wheelStatus');
   if (!el) return;
-  if (diff >= day) el.textContent = 'Доступно!';
-  else el.textContent = `Через ${Math.floor((day - diff) / 3600000)}ч`;
+  if (diff >= 86400000) el.textContent = 'Доступно!';
+  else el.textContent = `Через ${Math.floor((86400000 - diff) / 3600000)}ч`;
 }
 
 function spinWheel() {
@@ -1321,15 +1132,12 @@ function spinWheel() {
     { emoji: '🎁', title: 'Скидка 10%', text: 'Промокод: WHEEL10' },
     { emoji: '🔥', title: 'Скидка 15%', text: 'Промокод: WHEEL15' },
     { emoji: '💎', title: 'Скидка 20%', text: 'Промокод: WHEEL20' },
-    { emoji: '👑', title: 'JACKPOT - 50%!', text: 'Промокод: WHEEL50' }
+    { emoji: '👑', title: 'JACKPOT — 50%!', text: 'Промокод: WHEEL50' }
   ];
-  const weights = [30, 25, 20, 15, 10];
-  let r = Math.random() * weights.reduce((a,b) => a+b, 0);
+  const w = [30, 25, 20, 15, 10];
+  let r = Math.random() * w.reduce((a,b) => a+b, 0);
   let idx = 0;
-  for (let i = 0; i < weights.length; i++) {
-    if (r < weights[i]) { idx = i; break; }
-    r -= weights[i];
-  }
+  for (let i = 0; i < w.length; i++) { if (r < w[i]) { idx = i; break; } r -= w[i]; }
   const p = prizes[idx];
   document.getElementById('wheelResultEmoji').textContent = p.emoji;
   document.getElementById('wheelResultTitle').textContent = p.title;
@@ -1343,11 +1151,10 @@ function spinWheel() {
 
 function initDaily() {
   const diff = Date.now() - (state.lastDaily || 0);
-  const day = 86400000;
   const el = document.getElementById('dailyStatus');
   if (!el) return;
-  if (diff >= day) el.textContent = 'Забери 5 баллов';
-  else el.textContent = `Через ${Math.floor((day - diff) / 3600000)}ч`;
+  if (diff >= 86400000) el.textContent = 'Забери 5 баллов';
+  else el.textContent = `Через ${Math.floor((86400000 - diff) / 3600000)}ч`;
 }
 
 function claimDaily() {
@@ -1391,9 +1198,9 @@ function checkLoyalty() {
   const spent = document.getElementById('loyaltySpent');
   if (!badge) return;
   badge.textContent = `${level.emoji} ${level.name}`;
-  const thresholds = [0, 5000, 20000, 50000];
-  const next = thresholds.find(t => t > state.stats.spent) || 50000;
-  const prev = thresholds.filter(t => t <= state.stats.spent).pop() || 0;
+  const th = [0, 5000, 20000, 50000];
+  const next = th.find(t => t > state.stats.spent) || 50000;
+  const prev = th.filter(t => t <= state.stats.spent).pop() || 0;
   const progress = Math.min(100, ((state.stats.spent - prev) / (next - prev)) * 100);
   if (fill) fill.style.width = progress + '%';
   if (text) text.textContent = `${state.stats.spent} / ${next}₽`;
@@ -1458,17 +1265,6 @@ function renderLeaderboard(type) {
   `).join('');
 }
 
-function renderDiary() {
-  const el = document.getElementById('diaryList');
-  if (!el) return;
-  el.innerHTML = DIARY.map(d => `
-    <div class="diary-item">
-      <div class="diary-date">${d.date}</div>
-      <div class="diary-text">${d.text}</div>
-    </div>
-  `).join('');
-}
-
 function renderChangelog() {
   const el = document.getElementById('changelogList');
   if (!el) return;
@@ -1478,9 +1274,7 @@ function renderChangelog() {
         <div class="changelog-ver">${c.ver}</div>
         <div class="changelog-date">${c.date}</div>
       </div>
-      <ul class="changelog-list-ul">
-        ${c.changes.map(ch => `<li>${ch}</li>`).join('')}
-      </ul>
+      <ul class="changelog-list-ul">${c.changes.map(ch => `<li>${ch}</li>`).join('')}</ul>
     </div>
   `).join('');
 }
@@ -1504,25 +1298,355 @@ function startOnlineTicker() {
   setInterval(() => {
     state.onlineCount += Math.floor(Math.random() * 5) - 2;
     if (state.onlineCount < 1000) state.onlineCount = 1000;
-    const a = document.getElementById('liveOnline');
-    if (a) a.textContent = state.onlineCount.toLocaleString();
-    const b = document.getElementById('infoOnline');
-    if (b) b.textContent = state.onlineCount.toLocaleString();
   }, 5000);
 }
 
-// ==================== MODALS ====================
-function openModal(id) { document.getElementById(id)?.classList.add('show'); }
-function closeModal(id) { document.getElementById(id)?.classList.remove('show'); }
-function contactSupport() { window.open(SUPPORT_LINK, '_blank'); }
+// ==================== ADMIN ====================
+function checkAdminPass() {
+  const val = document.getElementById('adminPassInput').value;
+  if (val === ADMIN_PASSWORD) {
+    document.getElementById('adminPassInput').value = '';
+    closeModal('modalAdminPass');
+    logAction('admin_login');
+    go('admin');
+    renderAdminTab('dashboard');
+    toast('Добро пожаловать, админ', 'success');
+  } else {
+    document.getElementById('adminPassInput').value = '';
+    toast('Неверный пароль', 'error');
+    haptic('heavy');
+  }
+}
 
-function createTicket() {
-  const theme = document.getElementById('ticketTheme').value.trim();
-  const text = document.getElementById('ticketText').value.trim();
-  if (!theme || !text) return toast('Заполни поля', 'error');
-  document.getElementById('ticketTheme').value = '';
-  document.getElementById('ticketText').value = '';
-  toast('Тикет создан', 'success');
+function logAction(action) {
+  const logs = Storage.get('logs', []);
+  logs.push({ action, user: state.currentUser?.username || 'anon', date: Date.now() });
+  if (logs.length > 200) logs.shift();
+  Storage.set('logs', logs);
+}
+
+document.querySelectorAll('.admin-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderAdminTab(tab.dataset.tab);
+  });
+});
+
+function renderAdminTab(tab) {
+  const c = document.getElementById('adminContent');
+  if (!c) return;
+
+  if (tab === 'dashboard') {
+    const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    const revenue = [1200, 2400, 1800, 3200, 2800, 4100, 3600];
+    const maxRev = Math.max(...revenue);
+    c.innerHTML = `
+      <h4>📊 Дашборд</h4>
+      <div class="admin-stat-grid">
+        <div class="admin-stat"><div class="admin-stat-label">Юзеров</div><div class="admin-stat-value">${Object.keys(state.users).length}</div></div>
+        <div class="admin-stat"><div class="admin-stat-label">Заказов</div><div class="admin-stat-value">${state.orders.length}</div></div>
+        <div class="admin-stat"><div class="admin-stat-label">Выручка</div><div class="admin-stat-value">${state.stats.spent}₽</div></div>
+        <div class="admin-stat"><div class="admin-stat-label">Товаров</div><div class="admin-stat-value">${PRODUCTS.length}</div></div>
+      </div>
+      <h4 style="margin-top:16px;">📈 Выручка за 7 дней</h4>
+      <div class="admin-chart">
+        ${revenue.map((v, i) => `<div class="admin-chart-bar" style="height:${(v/maxRev)*100}%;" data-label="${days[i]}"></div>`).join('')}
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--muted);">Максимум: ${maxRev}₽</div>
+      <h4 style="margin-top:16px;">⚡ Быстрые действия</h4>
+      <button onclick="addProductFromAdmin()">➕ Добавить товар</button>
+      <button class="ghost" onclick="renderAdminTab('promo')">🎟 Создать промокод</button>
+      <button class="ghost" onclick="exportBackup()">💾 Скачать бэкап</button>
+    `;
+  } else if (tab === 'products') {
+    c.innerHTML = `
+      <h4>🏷 Товары (${PRODUCTS.length})</h4>
+      <button onclick="addProductFromAdmin()">➕ Добавить товар</button>
+      <div style="margin-top:12px;">
+        ${PRODUCTS.map(p => `
+          <div class="admin-row">
+            <span>${p.flag} ${p.name} <span style="color:var(--muted);font-size:11px;">· ${p.category} · ${p.stock} шт</span></span>
+            <span style="display:flex;gap:6px;align-items:center;">
+              <span style="font-weight:800;">${p.price}₽</span>
+              <button class="ghost" onclick="editProductFromAdmin(${p.id})">✏️</button>
+              <button class="ghost" onclick="deleteProductFromAdmin(${p.id})">🗑</button>
+            </span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else if (tab === 'users') {
+    const list = Object.entries(state.users).map(([n, u]) =>
+      `<div class="admin-row">
+        <span>@${n} ${u.banned ? '<span style="color:var(--accent);font-size:11px;">BANNED</span>' : ''}</span>
+        <span style="display:flex;gap:6px;align-items:center;">
+          <span>${u.balance || 0}₽</span>
+          <button class="ghost" onclick="adminAddBalance('${n}')">💰</button>
+          <button class="ghost" onclick="adminToggleBan('${n}')">${u.banned ? '✅' : '⛔'}</button>
+        </span>
+      </div>`
+    ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет юзеров</div>';
+    c.innerHTML = `<h4>👤 Юзеры (${Object.keys(state.users).length})</h4>${list}`;
+  } else if (tab === 'orders') {
+    c.innerHTML = `<h4>📦 Заказы (${state.orders.length})</h4>` + (state.orders.length
+      ? state.orders.map((o, i) => `
+        <div class="admin-row">
+          <span>${o.id}</span>
+          <span style="display:flex;gap:6px;align-items:center;">
+            <span>${o.total}₽</span>
+            <button class="ghost" onclick="refundOrder(${i})">↩️</button>
+          </span>
+        </div>`).join('')
+      : '<div style="color:var(--muted);font-size:12px;">Нет заказов</div>');
+  } else if (tab === 'promo') {
+    c.innerHTML = `
+      <h4>🎟 Промокоды</h4>
+      <input type="text" id="promoCodeInput" placeholder="Код (напр. SALE10)">
+      <input type="number" id="promoDiscInput" placeholder="Скидка %">
+      <input type="number" id="promoLimitInput" placeholder="Лимит (0 = без)">
+      <button onclick="addPromo()">Добавить</button>
+      <div id="promoList" style="margin-top:12px;"></div>
+    `;
+    renderPromoListAdmin();
+  } else if (tab === 'reviews') {
+    const list = state.reviews.map((r, i) =>
+      `<div class="admin-row"><span>@${r.author} · ${r.rating}★ · ${escapeHtml(r.text).slice(0, 40)}</span><button class="ghost" onclick="delReview(${i})">🗑</button></div>`
+    ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет отзывов</div>';
+    c.innerHTML = `<h4>⭐ Отзывы</h4>${list}`;
+  } else if (tab === 'backup') {
+    c.innerHTML = `
+      <h4>💾 Резервное копирование</h4>
+      <p style="color:var(--muted);font-size:12px;margin-bottom:12px;">Сохрани всю БД в файл или загрузи из бэкапа.</p>
+      <button onclick="exportBackup()">📥 Скачать бэкап</button>
+      <input type="file" id="backupFile" accept=".json" style="margin-top:12px;display:block;width:100%;padding:10px;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;">
+      <button class="ghost" onclick="importBackup()" style="margin-top:8px;">📤 Загрузить из файла</button>
+      <div style="margin-top:16px;padding:12px;background:var(--card-2);border-radius:12px;">
+        <div style="font-size:12px;color:var(--muted);">
+          Юзеров: <b>${Object.keys(state.users).length}</b><br>
+          Товаров: <b>${PRODUCTS.length}</b><br>
+          Заказов: <b>${state.orders.length}</b><br>
+          Промокодов: <b>${state.promos.length}</b><br>
+          Отзывов: <b>${state.reviews.length}</b>
+        </div>
+      </div>
+    `;
+  } else if (tab === 'logs') {
+    const logs = Storage.get('logs', []);
+    c.innerHTML = `<h4>📜 Логи (${logs.length})</h4>` + (logs.slice(-30).reverse().map(l =>
+      `<div class="admin-row"><span>${l.action} · @${l.user}</span><span>${new Date(l.date).toLocaleTimeString()}</span></div>`
+    ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет логов</div>');
+  } else if (tab === 'settings') {
+    c.innerHTML = `
+      <h4>⚙️ Настройки админа</h4>
+      <p style="color:var(--muted);font-size:12px;margin-bottom:12px;">Пароль админки: ${ADMIN_PASSWORD}</p>
+      <input type="password" id="newAdminPass" placeholder="Новый пароль">
+      <button onclick="changeAdminPassword()">Сменить пароль</button>
+      <div style="margin-top:16px;">
+        <p style="color:var(--muted);font-size:12px;margin-bottom:8px;">ID админов:</p>
+        ${ADMIN_IDS.map(id => `<div class="admin-row"><span>ID ${id}</span></div>`).join('')}
+      </div>
+      <button class="ghost" onclick="clearAllData()" style="background:rgba(255,45,85,0.15);color:var(--accent);margin-top:16px;">⚠️ Очистить всё</button>
+    `;
+  }
+}
+
+function addProductFromAdmin() {
+  document.getElementById('adminProductTitle').textContent = 'Добавить товар';
+  document.getElementById('apId').value = '';
+  document.getElementById('apFlag').value = '';
+  document.getElementById('apName').value = '';
+  document.getElementById('apSub').value = '';
+  document.getElementById('apPrice').value = '';
+  document.getElementById('apOldPrice').value = '';
+  document.getElementById('apStock').value = '';
+  document.getElementById('apCategory').value = 'accounts';
+  document.getElementById('apTags').value = '';
+  document.getElementById('apBadge').value = '';
+  openModal('modalAdminProduct');
+}
+
+function editProductFromAdmin(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('adminProductTitle').textContent = 'Редактировать';
+  document.getElementById('apId').value = p.id;
+  document.getElementById('apFlag').value = p.flag;
+  document.getElementById('apName').value = p.name;
+  document.getElementById('apSub').value = p.sub;
+  document.getElementById('apPrice').value = p.price;
+  document.getElementById('apOldPrice').value = p.oldPrice || '';
+  document.getElementById('apStock').value = p.stock;
+  document.getElementById('apCategory').value = p.category || 'accounts';
+  document.getElementById('apTags').value = (p.tags || []).join(', ');
+  document.getElementById('apBadge').value = p.badge || '';
+  openModal('modalAdminProduct');
+}
+
+function saveAdminProduct() {
+  const id = document.getElementById('apId').value;
+  const data = {
+    flag: document.getElementById('apFlag').value || '🌍',
+    name: document.getElementById('apName').value.trim(),
+    sub: document.getElementById('apSub').value.trim() || 'Автовыдача',
+    price: +document.getElementById('apPrice').value,
+    oldPrice: +document.getElementById('apOldPrice').value || null,
+    stock: +document.getElementById('apStock').value || 0,
+    category: document.getElementById('apCategory').value,
+    tags: document.getElementById('apTags').value.split(',').map(s => s.trim()).filter(Boolean),
+    badge: document.getElementById('apBadge').value || null,
+    rating: 5
+  };
+  if (!data.name || !data.price) return toast('Заполни имя и цену', 'error');
+
+  if (id) {
+    const idx = PRODUCTS.findIndex(x => x.id === +id);
+    if (idx >= 0) PRODUCTS[idx] = { ...PRODUCTS[idx], ...data };
+  } else {
+    data.id = Date.now();
+    PRODUCTS.push(data);
+  }
+  saveProducts();
+  closeModal('modalAdminProduct');
+  renderAdminTab('products');
+  renderProducts();
+  updateCatalogCounts();
+  toast('Товар сохранён', 'success');
+  haptic('medium');
+}
+
+function deleteProductFromAdmin(id) {
+  if (!confirm('Удалить товар?')) return;
+  PRODUCTS = PRODUCTS.filter(p => p.id !== id);
+  saveProducts();
+  renderAdminTab('products');
+  renderProducts();
+  updateCatalogCounts();
+  toast('Товар удалён', 'success');
+}
+
+function adminAddBalance(username) {
+  const amount = prompt('Сколько добавить?', '100');
+  if (!amount) return;
+  const n = +amount;
+  if (isNaN(n)) return;
+  if (!state.users[username]) return;
+  state.users[username].balance = (state.users[username].balance || 0) + n;
+  Storage.set('users', state.users);
+  if (state.currentUser?.username === username) {
+    Storage.set('balance', (Storage.get('balance', 0) + n));
+    updateProfileUI();
+  }
+  toast(`+${n}₽ к @${username}`, 'success');
+}
+
+function adminToggleBan(username) {
+  if (!state.users[username]) return;
+  state.users[username].banned = !state.users[username].banned;
+  Storage.set('users', state.users);
+  renderAdminTab('users');
+  toast(state.users[username].banned ? 'Забанен' : 'Разбанен', 'success');
+}
+
+function refundOrder(i) {
+  const o = state.orders[i];
+  if (!o) return;
+  Storage.set('balance', Storage.get('balance', 0) + o.total);
+  state.stats.spent -= o.total;
+  Storage.set('stats', state.stats);
+  state.orders.splice(i, 1);
+  Storage.set('orders', state.orders);
+  renderAdminTab('orders');
+  updateProfileUI();
+  toast(`Возврат ${o.total}₽`, 'success');
+}
+
+function addPromo() {
+  const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+  const disc = +document.getElementById('promoDiscInput').value;
+  const limit = +document.getElementById('promoLimitInput').value || 0;
+  if (!code || !disc) return toast('Заполни поля', 'error');
+  state.promos.push({ code, disc, limit, used: 0 });
+  Storage.set('promos', state.promos);
+  document.getElementById('promoCodeInput').value = '';
+  document.getElementById('promoDiscInput').value = '';
+  document.getElementById('promoLimitInput').value = '';
+  renderPromoListAdmin();
+  toast('Промокод добавлен', 'success');
+}
+
+function renderPromoListAdmin() {
+  const el = document.getElementById('promoList');
+  if (!el) return;
+  el.innerHTML = state.promos.length
+    ? state.promos.map(p => `<div class="admin-row"><span>${p.code}</span><span>-${p.disc}%</span></div>`).join('')
+    : '<div style="color:var(--muted);font-size:12px;">Нет промокодов</div>';
+}
+
+function delReview(i) {
+  state.reviews.splice(i, 1);
+  Storage.set('reviews', state.reviews);
+  renderAdminTab('reviews');
+  renderReviews();
+  renderReviewsMini();
+  toast('Отзыв удалён', 'success');
+}
+
+function exportBackup() {
+  const data = {
+    users: state.users, products: PRODUCTS, orders: state.orders,
+    promos: state.promos, reviews: state.reviews, inventory: state.inventory,
+    transactions: state.transactions, points: state.points, stats: state.stats,
+    balance: Storage.get('balance', 0), version: 'v0.6.0', exported: Date.now()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `desired_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Бэкап скачан', 'success');
+}
+
+function importBackup() {
+  const file = document.getElementById('backupFile').files[0];
+  if (!file) return toast('Выбери файл', 'error');
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.users) Storage.set('users', data.users);
+      if (data.products) { PRODUCTS = data.products; saveProducts(); }
+      if (data.orders) Storage.set('orders', data.orders);
+      if (data.promos) Storage.set('promos', data.promos);
+      if (data.reviews) Storage.set('reviews', data.reviews);
+      if (data.inventory) Storage.set('inventory', data.inventory);
+      if (data.transactions) Storage.set('transactions', data.transactions);
+      if (data.points !== undefined) Storage.set('points', data.points);
+      if (data.stats) Storage.set('stats', data.stats);
+      if (data.balance !== undefined) Storage.set('balance', data.balance);
+      toast('Бэкап загружен! Перезагружаем...', 'success');
+      setTimeout(() => location.reload(), 1200);
+    } catch (err) {
+      toast('Ошибка файла', 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function changeAdminPassword() {
+  const newPass = document.getElementById('newAdminPass').value;
+  if (newPass.length < 6) return toast('Минимум 6 символов', 'error');
+  Storage.set('adminPassword', newPass);
+  toast('Пароль изменён (вступит после перезагрузки)', 'success');
+}
+
+function clearAllData() {
+  if (!confirm('Удалить ВСЕ данные?')) return;
+  ['users','cart','favorites','recent','reviews','promos','transactions','orders','inventory','points','stats','achievements','logs','products'].forEach(k => Storage.del(k));
+  toast('Всё очищено. Перезагрузка...', 'success');
+  setTimeout(() => location.reload(), 1200);
 }
 
 // ==================== TOASTS ====================
@@ -1571,8 +1695,6 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-function bindMiscListeners() {}
-
 // ==================== TIMER ====================
 let promoSeconds = 41*3600 + 27*60 + 35;
 function startPromoTimer() {
@@ -1588,6 +1710,121 @@ function startPromoTimer() {
   }, 1000);
 }
 
+// ==================== LISTENERS ====================
+function bindAllListeners() {
+  // Nav buttons
+  document.querySelectorAll('.nav-btn').forEach(b => b.addEventListener('click', () => go(b.dataset.page)));
+  document.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); go(el.dataset.page); }));
+
+  // Dots dropdown
+  const dotsBtn = document.getElementById('dotsBtn');
+  const dropdown = document.getElementById('dropdownMenu');
+  dotsBtn?.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); haptic('light'); });
+  document.addEventListener('click', () => dropdown?.classList.remove('show'));
+  dropdown?.addEventListener('click', (e) => e.stopPropagation());
+
+  // Scroll
+  window.addEventListener('scroll', () => document.getElementById('topbar')?.classList.toggle('scrolled', window.scrollY > 10));
+  window.addEventListener('hashchange', routeFromHash);
+
+  // Admin logo 5 taps
+  let taps = 0, tapTimer = null;
+  document.getElementById('brandLogo')?.addEventListener('click', () => {
+    taps++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => taps = 0, 900);
+    if (taps >= 5) {
+      taps = 0;
+      haptic('medium');
+      const tgId = state.tgUser?.id;
+      if (tgId && !ADMIN_IDS.includes(tgId)) { openModal('modalDenied'); return; }
+      openModal('modalAdminPass');
+    }
+  });
+
+  // Search input
+  document.getElementById('searchInput')?.addEventListener('input', (e) => {
+    searchQuery = e.target.value.toLowerCase().trim();
+    visibleProducts = 6;
+    renderProducts();
+    saveSearchHistory(searchQuery);
+  });
+  document.getElementById('searchInput')?.addEventListener('focus', renderSearchHistory);
+
+  // FAQ search
+  document.getElementById('faqSearch')?.addEventListener('input', renderFAQ);
+
+  // Reg checkbox
+  document.addEventListener('input', (e) => {
+    if (e.target.id === 'regConfirm') {
+      const btn = document.getElementById('regBtn');
+      if (btn) btn.disabled = !e.target.checked;
+    }
+  });
+
+  // Theme & accent clicks
+  document.addEventListener('click', (e) => {
+    const swatch = e.target.closest('.theme-swatch');
+    if (swatch) { Storage.set('theme', swatch.dataset.theme); applyAllSettings(); toast('Тема изменена', 'success'); haptic('light'); return; }
+    const dot = e.target.closest('.accent-dot');
+    if (dot) { Storage.set('accent', dot.dataset.accent); applyAllSettings(); haptic('light'); return; }
+
+    // Ripple
+    const btn = e.target.closest('.btn');
+    if (btn && Storage.get('animEnabled', true)) {
+      const rect = btn.getBoundingClientRect();
+      const x = (e.clientX || rect.left + rect.width / 2) - rect.left;
+      const y = (e.clientY || rect.top + rect.height / 2) - rect.top;
+      const size = Math.max(rect.width, rect.height);
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = (x - size / 2) + 'px';
+      ripple.style.top = (y - size / 2) + 'px';
+      btn.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    }
+  });
+
+  // Settings changes
+  document.addEventListener('change', (e) => {
+    const id = e.target.id;
+    if (id === 'radiusSelect') Storage.set('radius', e.target.value);
+    else if (id === 'fontScaleSelect') Storage.set('fontScale', e.target.value);
+    else if (id === 'seasonSelect') Storage.set('season', e.target.value);
+    else if (id === 'compactToggle') Storage.set('compact', e.target.checked);
+    else if (id === 'animToggle') Storage.set('animEnabled', e.target.checked);
+    else if (id === 'glowToggle') Storage.set('glow', e.target.checked);
+    else if (id === 'soundToggle') Storage.set('soundEnabled', e.target.checked);
+    else if (id === 'notifyToggle') Storage.set('notifyEnabled', e.target.checked);
+    else if (id === 'hapticToggle') Storage.set('hapticEnabled', e.target.checked);
+    else return;
+    applyAllSettings();
+  });
+
+  // Leaderboard tabs
+  document.querySelectorAll('.lb-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.lb-tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      renderLeaderboard(t.dataset.lb);
+    });
+  });
+}
+
+// ==================== MODAL HELPERS ====================
+function openModal(id) { document.getElementById(id)?.classList.add('show'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('show'); }
+function contactSupport() { window.open(SUPPORT_LINK, '_blank'); }
+function createTicket() {
+  const theme = document.getElementById('ticketTheme').value.trim();
+  const text = document.getElementById('ticketText').value.trim();
+  if (!theme || !text) return toast('Заполни поля', 'error');
+  document.getElementById('ticketTheme').value = '';
+  document.getElementById('ticketText').value = '';
+  toast('Тикет создан', 'success');
+}
+
 // ==================== WINDOW EXPORTS ====================
 window.go = go;
 window.showAuthForm = showAuthForm;
@@ -1598,12 +1835,10 @@ window.logout = logout;
 window.checkAdminPass = checkAdminPass;
 window.addPromo = addPromo;
 window.delReview = delReview;
-window.delChatMsg = delChatMsg;
 window.toggleFav = toggleFav;
 window.addToCart = addToCart;
 window.buyNow = buyNow;
 window.removeCart = removeCart;
-window.addPackageToCart = addPackageToCart;
 window.openProduct = openProduct;
 window.shareProduct = shareProduct;
 window.spinCase = spinCase;
@@ -1620,9 +1855,24 @@ window.contactSupport = contactSupport;
 window.createTicket = createTicket;
 window.copyRef = copyRef;
 window.addReview = addReview;
-window.reviewHelpful = reviewHelpful;
-window.sendChat = sendChat;
-window.toggleFaq = toggleFaq;
 window.setSearch = setSearch;
 window.toast = toast;
 window.resetSettings = resetSettings;
+window.openFilters = openFilters;
+window.applyFilters = applyFilters;
+window.resetFilters = resetFilters;
+window.copyInvData = copyInvData;
+window.reviewProduct = reviewProduct;
+window.buyAgain = buyAgain;
+window.openDispute = openDispute;
+window.addProductFromAdmin = addProductFromAdmin;
+window.editProductFromAdmin = editProductFromAdmin;
+window.saveAdminProduct = saveAdminProduct;
+window.deleteProductFromAdmin = deleteProductFromAdmin;
+window.adminAddBalance = adminAddBalance;
+window.adminToggleBan = adminToggleBan;
+window.refundOrder = refundOrder;
+window.exportBackup = exportBackup;
+window.importBackup = importBackup;
+window.changeAdminPassword = changeAdminPassword;
+window.clearAllData = clearAllData;
