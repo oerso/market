@@ -1,16 +1,15 @@
 // ==================== CONFIG ====================
-const ADMIN_PASSWORD = '837472';
+let ADMIN_PASSWORD = Storage.get('adminPassword', '837472');
 const ADMIN_IDS = [7803765347, 912559442];
 const SUPPORT_LINK = 'https://t.me/desired_support';
 const BOT_LINK = 'https://t.me/desired_bot';
 const LOW_STOCK = 5;
 
 // ==================== STORAGE ====================
-const Storage = {
-  get(k, d = null) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
-  del(k) { try { localStorage.removeItem(k); } catch {} }
-};
+function Storage_get(k, d = null) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }
+function Storage_set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+function Storage_del(k) { try { localStorage.removeItem(k); } catch {} }
+const Storage = { get: Storage_get, set: Storage_set, del: Storage_del };
 
 // ==================== STATE ====================
 const state = {
@@ -33,13 +32,16 @@ const state = {
   lastDaily: Storage.get('lastDaily', 0),
   streak: Storage.get('streak', 0),
   onlineCount: 1247,
+  soldToday: 32,
   tgUser: null,
   appliedPromo: null,
   reviewRating: 5,
   reviewFilter: 'all',
+  txFilter: 'all',
   inventoryFilter: 'all',
   catalogTab: 'accounts',
   loyaltyLevel: 'bronze',
+  sortMode: 'popular',
   filters: { priceMin: 0, priceMax: 0, sort: 'popular', hit: false, isNew: false, sale: false, rating45: false }
 };
 
@@ -50,20 +52,23 @@ let PRODUCTS = Storage.get('products', null) || [
   { id: 3, flag: '🇯🇵', name: 'Япония', sub: '52 покупки · автовыдача', price: 349, rating: 4.9, stock: 7, category: 'accounts', tags: ['⚡ автовыдача', '🛡 гарантия'] },
   { id: 4, flag: '🇨🇴', name: 'Колумбия', sub: '34 покупки · автовыдача', price: 129, rating: 4.7, stock: 12, category: 'accounts', tags: ['⚡ автовыдача'] },
   { id: 5, flag: '🇰🇿', name: 'Казахстан', sub: '88 покупок · автовыдача', price: 99, rating: 4.8, stock: 25, category: 'accounts', tags: ['⚡ автовыдача'] },
-  { id: 6, flag: '⭐', name: 'Telegram Stars 100', sub: 'Мгновенная выдача', price: 145, rating: 5, badge: 'NEW', stock: 89, category: 'stars', tags: ['⚡ автовыдача'] },
-  { id: 7, flag: '⭐', name: 'Telegram Stars 500', sub: 'Мгновенная выдача', price: 690, rating: 5, stock: 45, category: 'stars', tags: ['⚡ автовыдача'] },
-  { id: 8, flag: '💎', name: 'Telegram Premium 3 мес', sub: 'Активация на аккаунт', price: 590, rating: 4.9, badge: 'ХИТ', stock: 30, category: 'stars', tags: ['⚡ автовыдача', '🛡 гарантия'] },
-  { id: 9, flag: '💎', name: 'Telegram Premium 12 мес', sub: 'Активация на аккаунт', price: 1890, rating: 4.9, stock: 15, category: 'stars', tags: ['⚡ автовыдача', '🛡 гарантия'] },
-  { id: 10, flag: '🎁', name: 'NFT подарок Basic', sub: 'Аренда 30 дней', price: 249, rating: 4.6, stock: 22, category: 'stars', tags: ['🎁 аренда'] },
-  { id: 11, flag: '🎁', name: 'NFT подарок Rare', sub: 'Аренда 30 дней', price: 890, rating: 4.8, badge: 'NEW', stock: 8, category: 'stars', tags: ['🎁 аренда'] }
+  { id: 6, flag: '🇩🇪', name: 'Германия', sub: '64 покупки · автовыдача', price: 179, rating: 4.7, stock: 15, category: 'accounts', tags: ['⚡ автовыдача'] },
+  { id: 7, flag: '🇫🇷', name: 'Франция', sub: '41 покупка · автовыдача', price: 189, rating: 4.7, stock: 9, category: 'accounts', tags: ['⚡ автовыдача'] },
+  { id: 8, flag: '⭐', name: 'Telegram Stars 100', sub: 'Мгновенная выдача', price: 145, rating: 5, badge: 'NEW', stock: 89, category: 'stars', tags: ['⚡ автовыдача'] },
+  { id: 9, flag: '⭐', name: 'Telegram Stars 500', sub: 'Мгновенная выдача', price: 690, rating: 5, stock: 45, category: 'stars', tags: ['⚡ автовыдача'] },
+  { id: 10, flag: '⭐', name: 'Telegram Stars 1000', sub: 'Мгновенная выдача', price: 1290, rating: 5, stock: 22, category: 'stars', tags: ['⚡ автовыдача'] },
+  { id: 11, flag: '💎', name: 'Telegram Premium 3 мес', sub: 'Активация на аккаунт', price: 590, rating: 4.9, badge: 'ХИТ', stock: 30, category: 'stars', tags: ['⚡ автовыдача', '🛡 гарантия'] },
+  { id: 12, flag: '💎', name: 'Telegram Premium 6 мес', sub: 'Активация на аккаунт', price: 990, rating: 4.9, stock: 18, category: 'stars', tags: ['⚡ автовыдача', '🛡 гарантия'] },
+  { id: 13, flag: '💎', name: 'Telegram Premium 12 мес', sub: 'Активация на аккаунт', price: 1890, rating: 4.9, stock: 15, category: 'stars', tags: ['⚡ автовыдача', '🛡 гарантия'] },
+  { id: 14, flag: '🎁', name: 'NFT подарок Basic', sub: 'Аренда 30 дней', price: 249, rating: 4.6, stock: 22, category: 'stars', tags: ['🎁 аренда'] },
+  { id: 15, flag: '🎁', name: 'NFT подарок Rare', sub: 'Аренда 30 дней', price: 890, rating: 4.8, badge: 'NEW', stock: 8, category: 'stars', tags: ['🎁 аренда'] }
 ];
-
 function saveProducts() { Storage.set('products', PRODUCTS); }
 
-// ==================== FAQ ====================
+// ==================== FAQ / INFO / ACH ====================
 const FAQ = [
   { q: 'Как получить товар?', a: 'После оплаты товар выдаётся автоматически в разделе «Инвентарь».' },
-  { q: 'Способы оплаты?', a: 'СБП, карты РФ, Telegram Stars, CryptoBot.' },
+  { q: 'Способы оплаты?', a: 'СБП, карты РФ, Telegram Stars, CryptoBot. Появятся после переезда на сервер.' },
   { q: 'Товар не работает?', a: 'Напишите в поддержку с номером заказа. Решим в течение 24 часов.' },
   { q: 'Реферальная программа?', a: '10% с покупок рефералов 1 уровня и 3% со 2 уровня. Вывод от 500₽.' },
   { q: 'Восстановление пароля?', a: 'Только через поддержку. Сохраняйте данные в надёжном месте!' },
@@ -113,14 +118,17 @@ const ACHIEVEMENTS = [
   { id: 'reviewer', icon: '✍️', name: 'Критик', desc: 'Оставь 5 отзывов' },
   { id: 'daily_master', icon: '🔥', name: 'Стрик 7 дней', desc: 'Заходи 7 дней подряд' },
   { id: 'case_hunter', icon: '🎰', name: 'Кейс-хантер', desc: 'Крути кейс 5 раз' },
-  { id: 'loyal', icon: '👑', name: 'Loyal', desc: 'Достигни Gold' }
+  { id: 'loyal', icon: '👑', name: 'Loyal', desc: 'Достигни Gold' },
+  { id: 'favorite', icon: '❤️', name: 'Коллекционер', desc: 'Добавь 5 товаров в избранное' },
+  { id: 'explorer', icon: '🧭', name: 'Исследователь', desc: 'Открой 10 товаров' }
 ];
 
 const CHANGELOG = [
-  { ver: 'v0.6.0', date: 'Сегодня', changes: ['Табы каталога: Аккаунты / Звёзды и Премиум', 'Расширенные фильтры', 'Инвентарь с фильтрами', 'Корзина-степпер', 'Полная админка с CRUD', 'Бэкап и восстановление БД', 'Логи действий', 'Убран общий чат', 'Фикс размера текста'] },
-  { ver: 'v0.5.0', date: '3 дня назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек', 'Сезонные ивенты'] },
-  { ver: 'v0.4.0', date: '5 дней назад', changes: ['Кейс дня и колесо', 'Ежедневный бонус', 'Лояльность и баллы'] },
-  { ver: 'v0.3.0', date: 'Неделю назад', changes: ['Полный редизайн', 'Авторизация', 'Корзина и профиль'] }
+  { ver: 'v0.7.0', date: 'Сегодня', changes: ['Каталог: табы Аккаунты / Звёзды и Премиум', 'Расширенные фильтры', 'Сортировка по 4 параметрам', 'Инвентарь с фильтрами и действиями', 'Корзина-степпер с индикатором баланса', 'Полная админ-панель', 'Бэкап и восстановление', 'Логи действий', 'Новое мега-меню', 'Убран общий чат', 'Фикс размера текста', 'Рекомендации и «Недавно смотрел»'] },
+  { ver: 'v0.6.0', date: '2 дня назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек', 'Сезонные ивенты'] },
+  { ver: 'v0.5.0', date: '4 дня назад', changes: ['Кейс дня и колесо', 'Ежедневный бонус', 'Лояльность и баллы', 'Достижения'] },
+  { ver: 'v0.4.0', date: 'Неделю назад', changes: ['Полный редизайн', 'Авторизация', 'Корзина и профиль'] },
+  { ver: 'v0.3.0', date: '10 дней назад', changes: ['Первый каркас Mini App', 'Каталог товаров'] }
 ];
 
 const LIVE_BUYERS = [
@@ -131,13 +139,16 @@ const LIVE_BUYERS = [
   { name: '@marsik', flag: '🎁', product: 'NFT Basic' },
   { name: '@lucky', flag: '🇯🇵', product: 'Япония' },
   { name: '@topchek', flag: '⭐', product: 'Stars 100' },
-  { name: '@arbitrage', flag: '🇰🇿', product: 'Казахстан' }
+  { name: '@arbitrage', flag: '🇰🇿', product: 'Казахстан' },
+  { name: '@germany_pro', flag: '🇩🇪', product: 'Германия' },
+  { name: '@french_man', flag: '🇫🇷', product: 'Франция' }
 ];
 
 // ==================== INIT ====================
 window.addEventListener('DOMContentLoaded', () => {
   applyAllSettings();
   initTelegram();
+  bindAll();
 
   setTimeout(() => {
     document.getElementById('splash')?.classList.add('hide');
@@ -146,7 +157,7 @@ window.addEventListener('DOMContentLoaded', () => {
         if (!Storage.get('onboarded', false)) showOnboarding();
         else enterApp();
       } else {
-        document.getElementById('authScreen').classList.remove('hidden');
+        document.getElementById('authScreen')?.classList.remove('hidden');
       }
     }, 400);
   }, 1200);
@@ -156,17 +167,18 @@ window.addEventListener('DOMContentLoaded', () => {
   initCase();
   initWheel();
   initDaily();
-  bindAllListeners();
 });
 
 function initTelegram() {
   const tg = window.Telegram?.WebApp;
   if (!tg) return;
-  tg.ready();
-  tg.expand();
-  tg.setHeaderColor?.('#08080a');
-  tg.setBackgroundColor?.('#08080a');
-  state.tgUser = tg.initDataUnsafe?.user || null;
+  try {
+    tg.ready();
+    tg.expand();
+    tg.setHeaderColor?.('#08080a');
+    tg.setBackgroundColor?.('#08080a');
+    state.tgUser = tg.initDataUnsafe?.user || null;
+  } catch {}
 }
 
 // ==================== SETTINGS ====================
@@ -271,23 +283,26 @@ function doLogin() {
 }
 
 function logout() {
+  if (!confirm('Точно выйти?')) return;
   state.currentUser = null;
   Storage.del('currentUser');
   document.getElementById('app').classList.add('hidden');
   document.getElementById('authScreen').classList.remove('hidden');
   document.getElementById('onboarding').classList.add('hidden');
+  closeMegaMenu();
   showAuthForm('choice');
   toast('Вы вышли', 'success');
 }
 
 function enterApp() {
-  document.getElementById('authScreen').classList.add('hidden');
-  document.getElementById('onboarding').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('authScreen')?.classList.add('hidden');
+  document.getElementById('onboarding')?.classList.add('hidden');
+  document.getElementById('app')?.classList.remove('hidden');
   updateProfileUI();
   renderProducts();
   renderFavorites();
   renderRecent();
+  renderRecommend();
   renderReviewsMini();
   renderReviews();
   renderFAQ();
@@ -303,40 +318,51 @@ function enterApp() {
   renderChangelog();
   renderLiveFeed();
   updateCatalogCounts();
+  updateHello();
   checkLoyalty();
   checkAchievements();
   routeFromHash();
 }
 
+function updateHello() {
+  const el = document.getElementById('helloText');
+  const mega = document.getElementById('megaUser');
+  const name = state.currentUser?.username || 'user';
+  if (el) el.textContent = `Привет, ${name} 👋`;
+  if (mega) mega.textContent = '@' + name;
+}
+
 function updateProfileUI() {
   const name = state.currentUser?.username || 'user';
   const tgId = state.tgUser?.id || state.currentUser?.tgId || '—';
-  document.getElementById('userName').textContent = '@' + name;
-  document.getElementById('userId').textContent = '@id' + tgId;
-  document.getElementById('userAvatar').textContent = name[0].toUpperCase();
-  document.getElementById('topBalance').textContent = Storage.get('balance', 0) + '₽';
-  document.getElementById('profileBalance').textContent = Storage.get('balance', 0) + '₽';
-  document.getElementById('statTopUp').textContent = state.stats.topUp + '₽';
-  document.getElementById('statSpent').textContent = state.stats.spent + '₽';
-  document.getElementById('statPoints').textContent = state.points;
-  document.getElementById('statOrders').textContent = state.stats.orders;
+  const setT = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setT('userName', '@' + name);
+  setT('userId', '@id' + tgId);
+  setT('userAvatar', name[0].toUpperCase());
+  setT('topBalance', Storage.get('balance', 0) + '₽');
+  setT('profileBalance', Storage.get('balance', 0) + '₽');
+  setT('statTopUp', state.stats.topUp + '₽');
+  setT('statSpent', state.stats.spent + '₽');
+  setT('statPoints', state.points);
+  setT('statOrders', state.stats.orders);
   if (state.stats.orders >= 3 || state.stats.spent >= 5000) {
     document.getElementById('verifiedBadge')?.classList.remove('hidden');
   }
+  updateHello();
 }
 
 // ==================== ONBOARDING ====================
 let onbIndex = 0;
 function showOnboarding() {
-  document.getElementById('authScreen').classList.add('hidden');
-  document.getElementById('onboarding').classList.remove('hidden');
+  document.getElementById('authScreen')?.classList.add('hidden');
+  document.getElementById('onboarding')?.classList.remove('hidden');
   const track = document.getElementById('onbTrack');
   const dots = document.querySelectorAll('.onb-dot');
   const nextBtn = document.getElementById('onbNext');
   const update = () => {
-    track.style.transform = `translateX(-${onbIndex * 100}%)`;
+    if (track) track.style.transform = `translateX(-${onbIndex * 100}%)`;
     dots.forEach((d, i) => d.classList.toggle('active', i === onbIndex));
-    nextBtn.textContent = onbIndex === 2 ? 'Начать' : 'Далее';
+    if (nextBtn) nextBtn.textContent = onbIndex === 2 ? 'Начать' : 'Далее';
   };
   update();
   nextBtn.onclick = () => {
@@ -357,7 +383,7 @@ function go(page) {
   location.hash = page;
   window.scrollTo(0, 0);
   haptic('light');
-  closeDropdown();
+  closeMegaMenu();
 }
 
 function routeFromHash() {
@@ -365,37 +391,215 @@ function routeFromHash() {
   if (h && document.getElementById('page-' + h)) go(h);
 }
 
-function closeDropdown() { document.getElementById('dropdownMenu')?.classList.remove('show'); }
+function openMegaMenu() {
+  const m = document.getElementById('megaMenu');
+  if (!m) return;
+  m.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  haptic('light');
+}
+function closeMegaMenu() {
+  const m = document.getElementById('megaMenu');
+  if (!m) return;
+  m.classList.remove('show');
+  document.body.style.overflow = '';
+}
 
 // ==================== CATALOG TABS ====================
-document.querySelectorAll('.catalog-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
+document.addEventListener('click', (e) => {
+  const tab = e.target.closest('.catalog-tab');
+  if (tab) {
     document.querySelectorAll('.catalog-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     state.catalogTab = tab.dataset.cat;
     renderProducts();
     haptic('light');
-  });
+    return;
+  }
+
+  const quick = e.target.closest('.quick-chip[data-quick]');
+  if (quick) {
+    document.querySelectorAll('.quick-chip[data-quick]').forEach(x => x.classList.remove('active'));
+    quick.classList.add('active');
+    state.quickFilter = quick.dataset.quick;
+    renderProducts();
+    return;
+  }
+
+  const sort = e.target.closest('.sort-chip');
+  if (sort) {
+    document.querySelectorAll('.sort-chip').forEach(x => x.classList.remove('active'));
+    sort.classList.add('active');
+    state.sortMode = sort.dataset.sort;
+    renderProducts();
+    return;
+  }
+
+  const rfilter = e.target.closest('.quick-chip[data-rfilter]');
+  if (rfilter) {
+    document.querySelectorAll('.quick-chip[data-rfilter]').forEach(x => x.classList.remove('active'));
+    rfilter.classList.add('active');
+    state.reviewFilter = rfilter.dataset.rfilter;
+    renderReviews();
+    return;
+  }
+
+  const invFilter = e.target.closest('.inv-filter[data-inv]');
+  if (invFilter) {
+    document.querySelectorAll('.inv-filter[data-inv]').forEach(x => x.classList.remove('active'));
+    invFilter.classList.add('active');
+    state.inventoryFilter = invFilter.dataset.inv;
+    renderInventory();
+    return;
+  }
+
+  const txFilter = e.target.closest('.inv-filter[data-tx]');
+  if (txFilter) {
+    document.querySelectorAll('.inv-filter[data-tx]').forEach(x => x.classList.remove('active'));
+    txFilter.classList.add('active');
+    state.txFilter = txFilter.dataset.tx;
+    renderTransactions();
+    return;
+  }
+
+  const lbTab = e.target.closest('.lb-tab');
+  if (lbTab) {
+    document.querySelectorAll('.lb-tab').forEach(x => x.classList.remove('active'));
+    lbTab.classList.add('active');
+    renderLeaderboard(lbTab.dataset.lb);
+    return;
+  }
+
+  const adminTab = e.target.closest('.admin-tab');
+  if (adminTab) {
+    document.querySelectorAll('.admin-tab').forEach(x => x.classList.remove('active'));
+    adminTab.classList.add('active');
+    renderAdminTab(adminTab.dataset.tab);
+    return;
+  }
+
+  const star = e.target.closest('#starsInput span');
+  if (star) {
+    state.reviewRating = +star.dataset.star;
+    document.querySelectorAll('#starsInput span').forEach(x => x.classList.toggle('active', +x.dataset.star <= state.reviewRating));
+    haptic('light');
+    return;
+  }
+
+  const themeSwatch = e.target.closest('.theme-swatch');
+  if (themeSwatch) {
+    Storage.set('theme', themeSwatch.dataset.theme);
+    applyAllSettings();
+    toast('Тема изменена', 'success');
+    haptic('light');
+    return;
+  }
+  const accentDot = e.target.closest('.accent-dot');
+  if (accentDot) {
+    Storage.set('accent', accentDot.dataset.accent);
+    applyAllSettings();
+    haptic('light');
+    return;
+  }
+
+  const topupBtn = e.target.closest('[data-topup]');
+  if (topupBtn) {
+    const input = document.getElementById('topUpAmount');
+    if (input) input.value = topupBtn.dataset.topup;
+    return;
+  }
+
+  // Мега-меню
+  const megaItem = e.target.closest('.mega-item');
+  if (megaItem) {
+    const page = megaItem.dataset.page;
+    const action = megaItem.dataset.action;
+    closeMegaMenu();
+    setTimeout(() => {
+      if (page) go(page);
+      else if (action) handleAction(action);
+    }, 150);
+    return;
+  }
+
+  // Ripple на кнопках
+  const btn = e.target.closest('.btn');
+  if (btn && Storage.get('animEnabled', true)) {
+    const rect = btn.getBoundingClientRect();
+    const x = (e.clientX || rect.left + rect.width / 2) - rect.left;
+    const y = (e.clientY || rect.top + rect.height / 2) - rect.top;
+    const size = Math.max(rect.width, rect.height);
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (x - size / 2) + 'px';
+    ripple.style.top = (y - size / 2) + 'px';
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  }
 });
 
-function updateCatalogCounts() {
-  const acc = PRODUCTS.filter(p => p.category === 'accounts').length;
-  const stars = PRODUCTS.filter(p => p.category === 'stars').length;
-  const a = document.getElementById('countAccounts');
-  const s = document.getElementById('countStars');
-  if (a) a.textContent = acc;
-  if (s) s.textContent = stars;
+// ==================== HANDLE ACTIONS ====================
+function handleAction(action) {
+  const actions = {
+    'show-login': () => showAuthForm('login'),
+    'show-register': () => showAuthForm('register'),
+    'show-choice': () => showAuthForm('choice'),
+    'do-login': doLogin,
+    'do-register': doRegister,
+    'confirm-register': confirmRegister,
+    'logout': logout,
+    'open-topup': openTopUp,
+    'submit-topup': submitTopUp,
+    'open-promo': openPromoModal,
+    'apply-promo': applyPromo,
+    'spin-case': spinCase,
+    'spin-wheel': spinWheel,
+    'claim-daily': claimDaily,
+    'open-filters': openFilters,
+    'apply-filters': applyFilters,
+    'reset-filters': resetFilters,
+    'add-review': addReview,
+    'checkout': checkout,
+    'copy-ref': copyRef,
+    'share-ref': shareRef,
+    'create-ticket': createTicket,
+    'contact-support': contactSupport,
+    'save-admin-product': saveAdminProduct,
+    'check-admin-pass': checkAdminPass,
+    'reset-settings': resetSettings,
+    'close-modal': (btn) => closeModal(btn.dataset.modal),
+    'share-market': shareMarket,
+    'copy-share': copyShare,
+    'open-wheel-menu': () => { closeMegaMenu(); setTimeout(() => { go('main'); setTimeout(spinWheel, 300); }, 200); }
+  };
+  if (actions[action]) actions[action]();
 }
+
+document.addEventListener('click', (e) => {
+  const target = e.target.closest('[data-action]');
+  if (!target) return;
+  e.preventDefault();
+  handleAction(target.dataset.action);
+});
+
+document.addEventListener('click', (e) => {
+  const page = e.target.closest('[data-page]');
+  if (!page) return;
+  if (page.classList.contains('mega-item')) return;
+  e.preventDefault();
+  go(page.dataset.page);
+});
 
 // ==================== FILTERS ====================
 function openFilters() {
-  document.getElementById('filterPriceMin').value = state.filters.priceMin || '';
-  document.getElementById('filterPriceMax').value = state.filters.priceMax || '';
-  document.getElementById('filterSort').value = state.filters.sort || 'popular';
-  document.getElementById('filterHit').checked = state.filters.hit || false;
-  document.getElementById('filterNew').checked = state.filters.isNew || false;
-  document.getElementById('filterSale').checked = state.filters.sale || false;
-  document.getElementById('filterRating45').checked = state.filters.rating45 || false;
+  const el = document.getElementById('filterPriceMin'); if (el) el.value = state.filters.priceMin || '';
+  const el2 = document.getElementById('filterPriceMax'); if (el2) el2.value = state.filters.priceMax || '';
+  const el3 = document.getElementById('filterSort'); if (el3) el3.value = state.filters.sort || 'popular';
+  const el4 = document.getElementById('filterHit'); if (el4) el4.checked = state.filters.hit || false;
+  const el5 = document.getElementById('filterNew'); if (el5) el5.checked = state.filters.isNew || false;
+  const el6 = document.getElementById('filterSale'); if (el6) el6.checked = state.filters.sale || false;
+  const el7 = document.getElementById('filterRating45'); if (el7) el7.checked = state.filters.rating45 || false;
   openModal('modalFilters');
 }
 
@@ -415,13 +619,9 @@ function applyFilters() {
 
 function resetFilters() {
   state.filters = { priceMin: 0, priceMax: 0, sort: 'popular', hit: false, isNew: false, sale: false, rating45: false };
-  document.getElementById('filterPriceMin').value = '';
-  document.getElementById('filterPriceMax').value = '';
-  document.getElementById('filterSort').value = 'popular';
-  document.getElementById('filterHit').checked = false;
-  document.getElementById('filterNew').checked = false;
-  document.getElementById('filterSale').checked = false;
-  document.getElementById('filterRating45').checked = false;
+  ['filterPriceMin','filterPriceMax'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['filterHit','filterNew','filterSale','filterRating45'].forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
+  const fs = document.getElementById('filterSort'); if (fs) fs.value = 'popular';
   updateFilterBadge();
   toast('Фильтры сброшены', 'success');
 }
@@ -436,26 +636,14 @@ function updateFilterBadge() {
   if (state.filters.sale) count++;
   if (state.filters.rating45) count++;
   const badge = document.getElementById('filterBadge');
-  if (badge) {
-    if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); }
-    else badge.classList.add('hidden');
-  }
+  if (!badge) return;
+  if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); }
+  else badge.classList.add('hidden');
 }
 
 // ==================== PRODUCTS RENDER ====================
 let searchQuery = '';
 let visibleProducts = 6;
-let currentQuick = 'all';
-
-document.querySelectorAll('.quick-chip[data-quick]').forEach(c => {
-  c.addEventListener('click', () => {
-    document.querySelectorAll('.quick-chip[data-quick]').forEach(x => x.classList.remove('active'));
-    c.classList.add('active');
-    currentQuick = c.dataset.quick;
-    visibleProducts = 6;
-    renderProducts();
-  });
-});
 
 function saveSearchHistory(q) {
   if (!q) return;
@@ -467,17 +655,23 @@ function saveSearchHistory(q) {
 function renderSearchHistory() {
   const el = document.getElementById('searchHistory');
   const hist = Storage.get('searchHistory', []);
-  if (!hist.length) { el?.classList.add('hidden'); return; }
-  el.innerHTML = hist.map(h => `<span class="hist-chip" onclick="setSearch('${h}')">${h}</span>`).join('');
+  if (!el) return;
+  if (!hist.length) { el.classList.add('hidden'); return; }
+  el.innerHTML = hist.map(h => `<span class="hist-chip" data-search="${escapeHtml(h)}">${escapeHtml(h)}</span>`).join('');
   el.classList.remove('hidden');
 }
 
-function setSearch(q) {
-  document.getElementById('searchInput').value = q;
-  searchQuery = q;
-  renderProducts();
-  document.getElementById('searchHistory')?.classList.add('hidden');
-}
+document.addEventListener('click', (e) => {
+  const chip = e.target.closest('.hist-chip');
+  if (chip) {
+    const q = chip.dataset.search;
+    const input = document.getElementById('searchInput');
+    if (input) input.value = q;
+    searchQuery = q.toLowerCase();
+    renderProducts();
+    document.getElementById('searchHistory')?.classList.add('hidden');
+  }
+});
 
 function renderProducts() {
   const list = document.getElementById('productsList');
@@ -488,10 +682,11 @@ function renderProducts() {
     let items = PRODUCTS.filter(p => p.category === state.catalogTab);
 
     if (searchQuery) items = items.filter(p => p.name.toLowerCase().includes(searchQuery));
-    if (currentQuick === 'cheap') items = items.filter(p => p.price < 100);
-    if (currentQuick === 'hit') items = items.filter(p => p.badge === 'ХИТ');
-    if (currentQuick === 'new') items = items.filter(p => p.badge === 'NEW');
-    if (currentQuick === 'sale') items = items.filter(p => p.oldPrice);
+    if (state.quickFilter === 'cheap') items = items.filter(p => p.price < 100);
+    if (state.quickFilter === 'hit') items = items.filter(p => p.badge === 'ХИТ');
+    if (state.quickFilter === 'new') items = items.filter(p => p.badge === 'NEW');
+    if (state.quickFilter === 'sale') items = items.filter(p => p.oldPrice);
+    if (state.quickFilter === 'top') items = items.filter(p => p.rating >= 4.8);
 
     if (state.filters.priceMin) items = items.filter(p => p.price >= state.filters.priceMin);
     if (state.filters.priceMax) items = items.filter(p => p.price <= state.filters.priceMax);
@@ -500,11 +695,10 @@ function renderProducts() {
     if (state.filters.sale) items = items.filter(p => p.oldPrice);
     if (state.filters.rating45) items = items.filter(p => p.rating >= 4.5);
 
-    const s = state.filters.sort;
+    const s = state.sortMode || state.filters.sort || 'popular';
     if (s === 'cheap') items.sort((a,b) => a.price - b.price);
     else if (s === 'expensive') items.sort((a,b) => b.price - a.price);
     else if (s === 'rating') items.sort((a,b) => b.rating - a.rating);
-    else if (s === 'new') items.sort((a,b) => (b.badge === 'NEW' ? 1 : 0) - (a.badge === 'NEW' ? 1 : 0));
 
     if (!items.length) {
       list.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:30px;">Ничего не найдено</div>';
@@ -519,16 +713,16 @@ function renderProducts() {
       const badgeClass = p.badge === 'ХИТ' ? 'hit' : p.badge === 'NEW' ? 'new' : '';
       return `
       <div class="product" style="animation-delay:${idx*40}ms">
-        <button class="product-fav ${isFav ? 'active' : ''}" onclick="event.stopPropagation();toggleFav(${p.id})">${isFav ? '❤️' : '🤍'}</button>
-        <div class="product-top" onclick="openProduct(${p.id})">
+        <button class="product-fav ${isFav ? 'active' : ''}" data-fav="${p.id}">${isFav ? '❤️' : '🤍'}</button>
+        <div class="product-top" data-product-open="${p.id}">
           <div class="product-flag">${p.flag}</div>
           ${p.badge ? `<div class="product-badge ${badgeClass}">${p.badge}</div>` : ''}
         </div>
-        <div onclick="openProduct(${p.id})">
-          <div class="product-name">${p.name}</div>
-          <div class="product-sub">${p.sub}</div>
+        <div data-product-open="${p.id}">
+          <div class="product-name">${escapeHtml(p.name)}</div>
+          <div class="product-sub">${escapeHtml(p.sub)}</div>
           <div class="product-rating">${'<span class="star">★</span>'.repeat(Math.round(p.rating))} <span class="muted" style="margin-left:4px;">${p.rating}</span></div>
-          ${p.tags ? `<div class="product-tags">${p.tags.slice(0,2).map(t => `<span class="product-tag">${t}</span>`).join('')}</div>` : ''}
+          ${p.tags ? `<div class="product-tags">${p.tags.slice(0,2).map(t => `<span class="product-tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
           ${stockHint}
         </div>
         <div class="product-price-row">
@@ -537,33 +731,100 @@ function renderProducts() {
           ${discountPercent ? `<span style="color:var(--green);font-size:11px;font-weight:800;">-${discountPercent}%</span>` : ''}
         </div>
         <div class="product-actions">
-          <button class="btn-add" onclick="event.stopPropagation();addToCart(${p.id})">В корзину</button>
-          <button class="btn-buy" onclick="event.stopPropagation();buyNow(${p.id})">Купить</button>
+          <button class="btn-add" data-add="${p.id}">В корзину</button>
+          <button class="btn-buy" data-buy="${p.id}">Купить</button>
         </div>
       </div>
       `;
     }).join('');
 
     const end = document.getElementById('productsEnd');
-    if (items.length > visibleProducts) {
-      end.textContent = `— Показать ещё ${items.length - visibleProducts} —`;
-      end.classList.remove('hidden');
-      end.onclick = () => { visibleProducts += 6; renderProducts(); };
-    } else {
-      end.classList.add('hidden');
+    if (end) {
+      if (items.length > visibleProducts) {
+        end.textContent = `— Показать ещё ${items.length - visibleProducts} —`;
+        end.classList.remove('hidden');
+        end.onclick = () => { visibleProducts += 6; renderProducts(); };
+      } else {
+        end.classList.add('hidden');
+      }
     }
   }, 200);
 }
 
+// ==================== PRODUCT ACTIONS (делегирование) ====================
+document.addEventListener('click', (e) => {
+  const fav = e.target.closest('[data-fav]');
+  if (fav) { e.stopPropagation(); toggleFav(+fav.dataset.fav); return; }
+
+  const add = e.target.closest('[data-add]');
+  if (add) { e.stopPropagation(); addToCart(+add.dataset.add); return; }
+
+  const buy = e.target.closest('[data-buy]');
+  if (buy) { e.stopPropagation(); buyNow(+buy.dataset.buy); return; }
+
+  const open = e.target.closest('[data-product-open]');
+  if (open) { openProduct(+open.dataset.productOpen); return; }
+
+  const rmCart = e.target.closest('[data-rm-cart]');
+  if (rmCart) { removeCart(+rmCart.dataset.rmCart); return; }
+
+  const upAdd = e.target.closest('[data-upsell]');
+  if (upAdd) { addToCart(+upAdd.dataset.upsell); return; }
+
+  const favRm = e.target.closest('[data-fav-rm]');
+  if (favRm) { toggleFav(+favRm.dataset.favRm); return; }
+
+  const invCopy = e.target.closest('[data-inv-copy]');
+  if (invCopy) { copyInvData(invCopy.dataset.invCopy); return; }
+
+  const invReview = e.target.closest('[data-inv-review]');
+  if (invReview) { reviewProduct(decodeURIComponent(invReview.dataset.invReview)); return; }
+
+  const invAgain = e.target.closest('[data-inv-again]');
+  if (invAgain) { buyAgain(decodeURIComponent(invAgain.dataset.invAgain)); return; }
+
+  const invDispute = e.target.closest('[data-inv-dispute]');
+  if (invDispute) { openDispute(invDispute.dataset.invDispute); return; }
+
+  const adminEdit = e.target.closest('[data-ap-edit]');
+  if (adminEdit) { editProductFromAdmin(+adminEdit.dataset.apEdit); return; }
+
+  const adminDel = e.target.closest('[data-ap-del]');
+  if (adminDel) { deleteProductFromAdmin(+adminDel.dataset.apDel); return; }
+
+  const adminBal = e.target.closest('[data-admin-bal]');
+  if (adminBal) { adminAddBalance(adminBal.dataset.adminBal); return; }
+
+  const adminBan = e.target.closest('[data-admin-ban]');
+  if (adminBan) { adminToggleBan(adminBan.dataset.adminBan); return; }
+
+  const adminRefund = e.target.closest('[data-admin-refund]');
+  if (adminRefund) { refundOrder(+adminRefund.dataset.adminRefund); return; }
+
+  const adminDelRev = e.target.closest('[data-admin-delrev]');
+  if (adminDelRev) { delReview(+adminDelRev.dataset.adminDelrev); return; }
+
+  // Мега-меню оверлей
+  if (e.target.id === 'megaMenu') closeMegaMenu();
+
+  // Dropdown close
+  if (!e.target.closest('.dots-btn')) {
+    document.querySelectorAll('.dropdown.show').forEach(d => d.classList.remove('show'));
+  }
+});
+
+// ==================== PRODUCT MODAL ====================
 function openProduct(id) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!p) return;
   addToRecent(id);
   const isFav = state.favorites.includes(id);
-  document.getElementById('productModalContent').innerHTML = `
+  const modal = document.getElementById('productModalContent');
+  if (!modal) return;
+  modal.innerHTML = `
     <div style="font-size:52px;text-align:center;margin-bottom:10px;">${p.flag}</div>
-    <h3 style="font-size:20px;font-weight:800;text-align:center;margin-bottom:6px;">${p.name}</h3>
-    <div style="text-align:center;color:var(--muted);font-size:12px;margin-bottom:12px;">${p.sub}</div>
+    <h3 style="font-size:20px;font-weight:800;text-align:center;margin-bottom:6px;">${escapeHtml(p.name)}</h3>
+    <div style="text-align:center;color:var(--muted);font-size:12px;margin-bottom:12px;">${escapeHtml(p.sub)}</div>
     <div class="product-rating" style="justify-content:center;margin-bottom:12px;">
       ${'<span class="star" style="color:var(--yellow);font-size:16px;">★</span>'.repeat(Math.round(p.rating))}
       <span style="margin-left:6px;font-weight:700;">${p.rating}</span>
@@ -572,14 +833,25 @@ function openProduct(id) {
       ${p.price}₽ ${p.oldPrice ? `<span style="font-size:16px;color:var(--muted);text-decoration:line-through;margin-left:8px;">${p.oldPrice}₽</span>` : ''}
     </div>
     <div style="display:flex;gap:8px;margin-bottom:14px;">
-      <button class="btn btn-secondary" style="flex:1;" onclick="toggleFav(${id});closeModal('modalProduct');">${isFav ? '❤️ В избранном' : '🤍 В избранное'}</button>
-      <button class="btn btn-secondary" style="flex:1;" onclick="shareProduct(${id})">📤 Поделиться</button>
+      <button class="btn btn-secondary" style="flex:1;" data-fav-modal="${id}">${isFav ? '❤️ В избранном' : '🤍 В избранное'}</button>
+      <button class="btn btn-secondary" style="flex:1;" data-share="${id}">📤 Поделиться</button>
     </div>
-    <button class="btn btn-primary btn-full" onclick="addToCart(${id});closeModal('modalProduct');">В корзину</button>
-    <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="buyNow(${id});closeModal('modalProduct');">Купить сразу</button>
+    <button class="btn btn-primary btn-full" data-add-from-modal="${id}">В корзину</button>
+    <button class="btn btn-secondary btn-full" style="margin-top:8px;" data-buy-from-modal="${id}">Купить сразу</button>
   `;
   openModal('modalProduct');
 }
+
+document.addEventListener('click', (e) => {
+  const fm = e.target.closest('[data-fav-modal]');
+  if (fm) { toggleFav(+fm.dataset.favModal); closeModal('modalProduct'); return; }
+  const share = e.target.closest('[data-share]');
+  if (share) { shareProduct(+share.dataset.share); return; }
+  const am = e.target.closest('[data-add-from-modal]');
+  if (am) { addToCart(+am.dataset.addFromModal); closeModal('modalProduct'); return; }
+  const bm = e.target.closest('[data-buy-from-modal]');
+  if (bm) { buyNow(+bm.dataset.buyFromModal); closeModal('modalProduct'); return; }
+});
 
 function shareProduct(id) {
   const p = PRODUCTS.find(x => x.id === id);
@@ -589,7 +861,7 @@ function shareProduct(id) {
   else { navigator.clipboard?.writeText(link); toast('Ссылка скопирована', 'success'); }
 }
 
-// ==================== FAVORITES / RECENT ====================
+// ==================== FAVORITES / RECENT / RECOMMEND ====================
 function toggleFav(id) {
   const i = state.favorites.indexOf(id);
   if (i >= 0) state.favorites.splice(i, 1);
@@ -598,22 +870,23 @@ function toggleFav(id) {
   renderProducts();
   renderFavorites();
   haptic('light');
+  checkAchievements();
 }
 
 function renderFavorites() {
   const list = document.getElementById('favList');
   const empty = document.getElementById('favEmpty');
   if (!list) return;
-  if (!state.favorites.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
-  empty.classList.add('hidden');
+  if (!state.favorites.length) { list.innerHTML = ''; empty?.classList.remove('hidden'); return; }
+  empty?.classList.add('hidden');
   const items = state.favorites.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean);
   list.innerHTML = items.map(p => `
     <div class="cart-item">
       <div class="cart-item-info">
         <span style="font-size:24px;">${p.flag}</span>
-        <div><div class="cart-item-name">${p.name}</div><div class="cart-item-price">${p.price}₽</div></div>
+        <div><div class="cart-item-name">${escapeHtml(p.name)}</div><div class="cart-item-price">${p.price}₽</div></div>
       </div>
-      <button class="cart-remove" onclick="toggleFav(${p.id})">✕</button>
+      <button class="cart-remove" data-fav-rm="${p.id}">✕</button>
     </div>
   `).join('');
 }
@@ -633,12 +906,27 @@ function renderRecent() {
   el.innerHTML = state.recent.map(id => {
     const p = PRODUCTS.find(x => x.id === id);
     if (!p) return '';
-    return `<div class="hscroll-item" onclick="openProduct(${p.id})">
+    return `<div class="hscroll-item" data-product-open="${p.id}">
       <div class="hscroll-flag">${p.flag}</div>
-      <div class="hscroll-name">${p.name}</div>
+      <div class="hscroll-name">${escapeHtml(p.name)}</div>
       <div class="hscroll-price">${p.price}₽</div>
     </div>`;
   }).join('');
+}
+
+function renderRecommend() {
+  const el = document.getElementById('recommendList');
+  if (!el) return;
+  const favCats = new Set(state.favorites.map(id => (PRODUCTS.find(p => p.id === id) || {}).category).filter(Boolean));
+  let items = PRODUCTS.filter(p => favCats.has(p.category)).slice(0, 6);
+  if (!items.length) items = [...PRODUCTS].sort((a,b) => b.rating - a.rating).slice(0, 6);
+  el.innerHTML = items.map(p => `
+    <div class="hscroll-item" data-product-open="${p.id}">
+      <div class="hscroll-flag">${p.flag}</div>
+      <div class="hscroll-name">${escapeHtml(p.name)}</div>
+      <div class="hscroll-price">${p.price}₽</div>
+    </div>
+  `).join('');
 }
 
 // ==================== CART ====================
@@ -660,6 +948,7 @@ function buyNow(id) { addToCart(id); go('cart'); }
 function renderCartBadge() {
   const badge = document.getElementById('cartBadge');
   const count = state.cart.length;
+  if (!badge) return;
   if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); }
   else badge.classList.add('hidden');
 }
@@ -684,41 +973,41 @@ function renderCart() {
 
   if (!state.cart.length) {
     list.innerHTML = '';
-    empty.classList.remove('hidden');
-    summary.classList.add('hidden');
-    upsell.classList.add('hidden');
+    empty?.classList.remove('hidden');
+    summary?.classList.add('hidden');
+    upsell?.classList.add('hidden');
     return;
   }
-  empty.classList.add('hidden');
-  summary.classList.remove('hidden');
+  empty?.classList.add('hidden');
+  summary?.classList.remove('hidden');
 
   list.innerHTML = state.cart.map((item, i) => `
     <div class="cart-item">
       <div class="cart-item-info">
         <span style="font-size:24px;">${item.flag}</span>
         <div>
-          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-name">${escapeHtml(item.name)}</div>
           <div class="cart-item-price">${item.price}₽</div>
         </div>
       </div>
-      <button class="cart-remove" onclick="removeCart(${i})">✕</button>
+      <button class="cart-remove" data-rm-cart="${i}">✕</button>
     </div>
   `).join('');
 
   const cartIds = state.cart.map(i => i.id);
   const suggestions = PRODUCTS.filter(p => !cartIds.includes(p.id) && p.price < 400).slice(0, 2);
-  if (suggestions.length) {
+  if (suggestions.length && upsell) {
     upsell.classList.remove('hidden');
     document.getElementById('upsellList').innerHTML = suggestions.map(p => `
       <div class="upsell-item">
-        <span><span style="font-size:18px;">${p.flag}</span> <span class="upsell-name">${p.name}</span></span>
+        <span><span style="font-size:18px;">${p.flag}</span> <span class="upsell-name">${escapeHtml(p.name)}</span></span>
         <div style="display:flex;gap:8px;align-items:center;">
           <span class="upsell-price">${p.price}₽</span>
-          <button class="upsell-add" onclick="addToCart(${p.id})">+</button>
+          <button class="upsell-add" data-upsell="${p.id}">+</button>
         </div>
       </div>
     `).join('');
-  } else upsell.classList.add('hidden');
+  } else upsell?.classList.add('hidden');
 
   const subtotal = state.cart.reduce((s, i) => s + i.price, 0);
   const loyaltyDiscount = Math.round(subtotal * getCashbackPercent() / 100);
@@ -734,15 +1023,16 @@ function renderCart() {
   const check = document.getElementById('balanceCheck');
   const text = document.getElementById('balanceCheckText');
   const topUpBtn = document.getElementById('topUpQuick');
+  if (!check) return;
   if (balance >= total) {
     check.classList.remove('insufficient');
     text.textContent = `✅ Баланс: ${balance}₽ — хватает`;
-    topUpBtn.classList.add('hidden');
+    topUpBtn?.classList.add('hidden');
   } else {
     check.classList.add('insufficient');
     text.textContent = `❌ Баланс: ${balance}₽ — не хватает ${total - balance}₽`;
-    topUpBtn.classList.remove('hidden');
-    topUpBtn.textContent = `+${total - balance}₽`;
+    topUpBtn?.classList.remove('hidden');
+    if (topUpBtn) topUpBtn.textContent = `+${total - balance}₽`;
   }
 }
 
@@ -755,12 +1045,12 @@ function removeCart(i) {
   haptic('light');
 }
 
-function applyPromoInCart() { openModal('modalPromo'); }
+function openPromoModal() { openModal('modalPromo'); }
 
 function applyPromo() {
   const code = document.getElementById('promoInput').value.trim().toUpperCase();
   const resultEl = document.getElementById('promoResult');
-  if (!code) return;
+  if (!code || !resultEl) return;
   const promo = state.promos.find(p => p.code === code);
   const builtIn = { 'CASE5': 5, 'CASE10': 10, 'CASE15': 15, 'CASE3': 3, 'CASE20': 20, 'WHEEL5': 5, 'WHEEL10': 10, 'WHEEL15': 15, 'WHEEL20': 20, 'WHEEL50': 50, 'WELCOME10': 10, 'DESIRED5': 5 };
   let discount = promo ? promo.disc : (builtIn[code] || null);
@@ -780,13 +1070,12 @@ function applyPromo() {
   }, 1200);
 }
 
-function openPromoModal() { openModal('modalPromo'); }
-
 // ==================== TOPUP / CHECKOUT ====================
 function openTopUp() { openModal('modalTopUp'); }
 
 function submitTopUp() {
-  const amount = +document.getElementById('topUpAmount').value;
+  const input = document.getElementById('topUpAmount');
+  const amount = +input.value;
   if (!amount || amount < 25) return toast('Минимум 25₽', 'error');
   Storage.set('balance', Storage.get('balance', 0) + amount);
   state.stats.topUp += amount;
@@ -797,7 +1086,7 @@ function submitTopUp() {
   renderTransactions();
   renderCart();
   closeModal('modalTopUp');
-  document.getElementById('topUpAmount').value = '';
+  input.value = '';
   toast(`+${amount}₽`, 'success');
   haptic('medium');
 }
@@ -816,17 +1105,11 @@ function checkout() {
   state.orders.push({ id: orderId, items: [...state.cart], total, status: 'Выдан', date: Date.now() });
   Storage.set('orders', state.orders);
 
-  // инвентарь
   state.cart.forEach(item => {
     state.inventory.push({
       id: 'INV' + Date.now() + Math.random().toString(36).slice(2,6),
-      orderId,
-      name: item.name,
-      flag: item.flag,
-      price: item.price,
-      status: 'active',
-      guarantee: '24ч',
-      date: Date.now(),
+      orderId, name: item.name, flag: item.flag, price: item.price,
+      status: 'active', guarantee: '24ч', date: Date.now(),
       data: 'Логин: example@user\nПароль: ' + Math.random().toString(36).slice(2, 12)
     });
   });
@@ -841,7 +1124,6 @@ function checkout() {
   Storage.set('stats', state.stats);
   Storage.set('points', state.points);
 
-  // Сток
   state.cart.forEach(item => {
     const p = PRODUCTS.find(x => x.id === item.id);
     if (p && p.stock > 0) p.stock -= 1;
@@ -859,7 +1141,7 @@ function checkout() {
   renderOrders();
   renderInventory();
   updateStepper();
-  document.getElementById('step3').classList.add('active');
+  document.getElementById('step3')?.classList.add('active');
   checkLoyalty();
   checkAchievements();
   toast('Заказ оформлен!', 'success');
@@ -874,14 +1156,17 @@ function renderTransactions() {
   const list = document.getElementById('txList');
   const empty = document.getElementById('txEmpty');
   if (!list) return;
-  if (!state.transactions.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
-  empty.classList.add('hidden');
-  list.innerHTML = state.transactions.map(t => `
+  let items = [...state.transactions];
+  if (state.txFilter === 'in') items = items.filter(t => t.type === 'in');
+  if (state.txFilter === 'out') items = items.filter(t => t.type === 'out');
+  if (!items.length) { list.innerHTML = ''; empty?.classList.remove('hidden'); return; }
+  empty?.classList.add('hidden');
+  list.innerHTML = items.map(t => `
     <div class="cart-item">
       <div class="cart-item-info">
         <span style="font-size:20px;">${t.type === 'in' ? '↗' : '↘'}</span>
         <div>
-          <div class="cart-item-name">${t.title}</div>
+          <div class="cart-item-name">${escapeHtml(t.title)}</div>
           <div class="cart-item-price" style="color:${t.type === 'in' ? 'var(--green)' : 'var(--accent)'};">${t.type === 'in' ? '+' : '-'}${t.amount}₽</div>
         </div>
       </div>
@@ -894,8 +1179,8 @@ function renderOrders() {
   const list = document.getElementById('ordersList');
   const empty = document.getElementById('ordersEmpty');
   if (!list) return;
-  if (!state.orders.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
-  empty.classList.add('hidden');
+  if (!state.orders.length) { list.innerHTML = ''; empty?.classList.remove('hidden'); return; }
+  empty?.classList.add('hidden');
   list.innerHTML = state.orders.map(o => `
     <div class="cart-item">
       <div class="cart-item-info">
@@ -907,31 +1192,19 @@ function renderOrders() {
   `).join('');
 }
 
-document.querySelectorAll('.inv-filter').forEach(f => {
-  f.addEventListener('click', () => {
-    document.querySelectorAll('.inv-filter').forEach(x => x.classList.remove('active'));
-    f.classList.add('active');
-    state.inventoryFilter = f.dataset.inv;
-    renderInventory();
-  });
-});
-
 function renderInventory() {
   const list = document.getElementById('inventoryList');
   const empty = document.getElementById('inventoryEmpty');
   if (!list) return;
-
   let items = [...state.inventory];
   if (state.inventoryFilter === 'active') items = items.filter(i => i.status === 'active');
   if (state.inventoryFilter === 'history') items = items.filter(i => i.status !== 'active');
-
-  if (!items.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
-  empty.classList.add('hidden');
-
+  if (!items.length) { list.innerHTML = ''; empty?.classList.remove('hidden'); return; }
+  empty?.classList.add('hidden');
   list.innerHTML = items.map(item => `
     <div class="inv-card">
       <div class="inv-card-head">
-        <div class="inv-card-title">${item.flag} ${item.name}</div>
+        <div class="inv-card-title">${item.flag} ${escapeHtml(item.name)}</div>
         <div class="inv-card-status ${item.status === 'active' ? 'active' : 'history'}">${item.status === 'active' ? '✓ Активен' : 'История'}</div>
       </div>
       <div class="inv-card-body">
@@ -940,10 +1213,10 @@ function renderInventory() {
         Гарантия: ${item.guarantee} с момента покупки
       </div>
       <div class="inv-card-actions">
-        <button class="inv-action-btn" onclick="copyInvData('${item.id}')">📋 Копировать данные</button>
-        <button class="inv-action-btn" onclick="reviewProduct('${item.name}')">⭐ Оценить</button>
-        <button class="inv-action-btn" onclick="buyAgain('${item.name}')">🔄 Купить снова</button>
-        <button class="inv-action-btn" onclick="openDispute('${item.id}')">⚠️ Открыть спор</button>
+        <button class="inv-action-btn" data-inv-copy="${item.id}">📋 Данные</button>
+        <button class="inv-action-btn" data-inv-review="${encodeURIComponent(item.name)}">⭐ Оценить</button>
+        <button class="inv-action-btn" data-inv-again="${encodeURIComponent(item.name)}">🔄 Снова</button>
+        <button class="inv-action-btn" data-inv-dispute="${item.id}">⚠️ Спор</button>
       </div>
     </div>
   `).join('');
@@ -957,19 +1230,9 @@ function copyInvData(id) {
   haptic('light');
 }
 
-function reviewProduct(name) {
-  go('reviews');
-  toast(`Оцени товар: ${name}`, 'info');
-}
-
-function buyAgain(name) {
-  const p = PRODUCTS.find(x => x.name === name);
-  if (p) { addToCart(p.id); go('cart'); }
-}
-
-function openDispute(id) {
-  toast('Спор открыт. Поддержка свяжется.', 'success');
-}
+function reviewProduct(name) { go('reviews'); toast(`Оцени товар: ${name}`, 'info'); }
+function buyAgain(name) { const p = PRODUCTS.find(x => x.name === name); if (p) { addToCart(p.id); go('cart'); } }
+function openDispute(id) { toast('Спор открыт. Поддержка свяжется.', 'success'); }
 
 // ==================== REF ====================
 function renderRefLink() {
@@ -983,6 +1246,26 @@ function copyRef() {
   document.execCommand('copy');
   toast('Ссылка скопирована', 'success');
   haptic('light');
+}
+function shareRef() {
+  const link = `${BOT_LINK}?start=ref_${state.currentUser?.username || 'user'}`;
+  if (navigator.share) navigator.share({ title: 'desired', text: 'Маркет звёзд и аккаунтов', url: link }).catch(()=>{});
+  else copyRef();
+}
+
+function shareMarket() {
+  const link = `${BOT_LINK}?start=ref_${state.currentUser?.username || 'user'}`;
+  const input = document.getElementById('shareLink');
+  if (input) input.value = link;
+  openModal('modalShare');
+}
+function copyShare() {
+  const el = document.getElementById('shareLink');
+  if (!el) return;
+  el.select();
+  document.execCommand('copy');
+  toast('Скопировано', 'success');
+  closeModal('modalShare');
 }
 
 // ==================== REVIEWS / FAQ / INFO ====================
@@ -1000,7 +1283,7 @@ function renderReviews() {
   list.innerHTML = items.map(r => `
     <div class="review-item">
       <div class="review-head">
-        <div class="review-author">@${r.author}</div>
+        <div class="review-author">@${escapeHtml(r.author)}</div>
         <div class="review-date">${new Date(r.date).toLocaleDateString()}</div>
       </div>
       <div class="review-stars">${'★'.repeat(r.rating || 5)}</div>
@@ -1008,23 +1291,6 @@ function renderReviews() {
     </div>
   `).join('');
 }
-
-document.querySelectorAll('.quick-chip[data-rfilter]').forEach(c => {
-  c.addEventListener('click', () => {
-    document.querySelectorAll('.quick-chip[data-rfilter]').forEach(x => x.classList.remove('active'));
-    c.classList.add('active');
-    state.reviewFilter = c.dataset.rfilter;
-    renderReviews();
-  });
-});
-
-document.querySelectorAll('#starsInput span').forEach(s => {
-  s.addEventListener('click', () => {
-    state.reviewRating = +s.dataset.star;
-    document.querySelectorAll('#starsInput span').forEach(x => x.classList.toggle('active', +x.dataset.star <= state.reviewRating));
-    haptic('light');
-  });
-});
 
 function renderReviewsMini() {
   const el = document.getElementById('reviewsMini');
@@ -1034,7 +1300,7 @@ function renderReviewsMini() {
   el.innerHTML = items.map(r => `
     <div class="review-mini">
       <div class="review-mini-head">
-        <span class="review-mini-author">@${r.author}</span>
+        <span class="review-mini-author">@${escapeHtml(r.author)}</span>
         <span class="review-mini-stars">${'★'.repeat(r.rating || 5)}</span>
       </div>
       <div class="review-mini-text">${escapeHtml(r.text).slice(0, 120)}</div>
@@ -1065,20 +1331,25 @@ function renderFAQ() {
   const q = document.getElementById('faqSearch')?.value?.toLowerCase().trim() || '';
   const filtered = q ? FAQ.filter(f => f.q.toLowerCase().includes(q) || f.a.toLowerCase().includes(q)) : FAQ;
   el.innerHTML = filtered.map(f => `
-    <div class="faq-item" onclick="this.classList.toggle('open')">
-      <div class="faq-q">${f.q}<span>▾</span></div>
-      <div class="faq-a">${f.a}</div>
+    <div class="faq-item" data-faq>
+      <div class="faq-q">${escapeHtml(f.q)}<span>▾</span></div>
+      <div class="faq-a">${escapeHtml(f.a)}</div>
     </div>
   `).join('') || '<div style="text-align:center;color:var(--muted);padding:20px;">Ничего не найдено</div>';
 }
+
+document.addEventListener('click', (e) => {
+  const faq = e.target.closest('[data-faq]');
+  if (faq) faq.classList.toggle('open');
+});
 
 function renderInfo() {
   const el = document.getElementById('infoList');
   if (!el) return;
   el.innerHTML = INFO_ITEMS.map(f => `
-    <div class="faq-item" onclick="this.classList.toggle('open')">
-      <div class="faq-q">${f.q}<span>▾</span></div>
-      <div class="faq-a">${f.a}</div>
+    <div class="faq-item" data-faq>
+      <div class="faq-q">${escapeHtml(f.q)}<span>▾</span></div>
+      <div class="faq-a">${escapeHtml(f.a)}</div>
     </div>
   `).join('');
 }
@@ -1086,15 +1357,10 @@ function renderInfo() {
 // ==================== CASE / WHEEL / DAILY ====================
 function initCase() {
   const diff = Date.now() - (state.lastCase || 0);
-  const day = 86400000;
   const el = document.getElementById('caseStatus');
   if (!el) return;
-  if (diff >= day) el.textContent = 'Доступен!';
-  else {
-    const h = Math.floor((day - diff) / 3600000);
-    const m = Math.floor(((day - diff) % 3600000) / 60000);
-    el.textContent = `Через ${h}ч ${m}м`;
-  }
+  if (diff >= 86400000) el.textContent = 'Доступен!';
+  else { const h = Math.floor((86400000 - diff) / 3600000); el.textContent = `Через ${h}ч`; }
 }
 
 function spinCase() {
@@ -1153,7 +1419,7 @@ function initDaily() {
   const diff = Date.now() - (state.lastDaily || 0);
   const el = document.getElementById('dailyStatus');
   if (!el) return;
-  if (diff >= 86400000) el.textContent = 'Забери 5 баллов';
+  if (diff >= 86400000) el.textContent = 'Забрать!';
   else el.textContent = `Через ${Math.floor((86400000 - diff) / 3600000)}ч`;
 }
 
@@ -1225,6 +1491,8 @@ function checkAchievements() {
   check('reviewer', state.reviews.filter(r => r.author === state.currentUser?.username).length >= 5);
   check('daily_master', state.streak >= 7);
   check('loyal', ['gold', 'platinum'].includes(state.loyaltyLevel));
+  check('favorite', state.favorites.length >= 5);
+  check('explorer', state.recent.length >= 10);
   Storage.set('achievements', u);
   renderAchievements();
 }
@@ -1247,13 +1515,13 @@ function renderLeaderboard(type) {
   const buyers = [
     { name: '@whale_king', val: 287 }, { name: '@bulk_buyer', val: 194 },
     { name: '@trader_pro', val: 156 }, { name: '@reseller', val: 98 },
-    { name: '@active_user', val: 67 }, { name: '@desired', val: state.stats.orders || 0 },
+    { name: '@active_user', val: 67 }, { name: '@' + (state.currentUser?.username || 'you'), val: state.stats.orders || 0 },
     { name: '@newbie', val: 3 }
   ].sort((a,b) => b.val - a.val).slice(0, 10);
   const refs = [
     { name: '@referrer_pro', val: 145 }, { name: '@invite_king', val: 98 },
     { name: '@network', val: 76 }, { name: '@ambassador', val: 42 },
-    { name: '@desired', val: state.achievements.length }
+    { name: '@' + (state.currentUser?.username || 'you'), val: state.achievements.length }
   ].sort((a,b) => b.val - a.val).slice(0, 10);
   const data = type === 'buyers' ? buyers : refs;
   el.innerHTML = data.map((d, i) => `
@@ -1279,7 +1547,7 @@ function renderChangelog() {
   `).join('');
 }
 
-// ==================== LIVE FEED ====================
+// ==================== LIVE ====================
 function renderLiveFeed() {
   const el = document.getElementById('liveFeed');
   if (!el) return;
@@ -1296,9 +1564,23 @@ function renderLiveFeed() {
 
 function startOnlineTicker() {
   setInterval(() => {
-    state.onlineCount += Math.floor(Math.random() * 5) - 2;
+    state.onlineCount += Math.floor(Math.random() * 7) - 3;
     if (state.onlineCount < 1000) state.onlineCount = 1000;
-  }, 5000);
+    state.soldToday += Math.random() > 0.7 ? 1 : 0;
+    const a = document.getElementById('statOnline');
+    if (a) a.textContent = state.onlineCount.toLocaleString();
+    const b = document.getElementById('statSoldToday');
+    if (b) b.textContent = state.soldToday;
+  }, 4000);
+}
+
+function updateCatalogCounts() {
+  const acc = PRODUCTS.filter(p => p.category === 'accounts').length;
+  const stars = PRODUCTS.filter(p => p.category === 'stars').length;
+  const a = document.getElementById('countAccounts');
+  const s = document.getElementById('countStars');
+  if (a) a.textContent = acc;
+  if (s) s.textContent = stars;
 }
 
 // ==================== ADMIN ====================
@@ -1325,21 +1607,13 @@ function logAction(action) {
   Storage.set('logs', logs);
 }
 
-document.querySelectorAll('.admin-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    renderAdminTab(tab.dataset.tab);
-  });
-});
-
 function renderAdminTab(tab) {
   const c = document.getElementById('adminContent');
   if (!c) return;
 
   if (tab === 'dashboard') {
-    const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-    const revenue = [1200, 2400, 1800, 3200, 2800, 4100, 3600];
+    const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+    const revenue = [1200,2400,1800,3200,2800,4100,3600];
     const maxRev = Math.max(...revenue);
     c.innerHTML = `
       <h4>📊 Дашборд</h4>
@@ -1349,28 +1623,27 @@ function renderAdminTab(tab) {
         <div class="admin-stat"><div class="admin-stat-label">Выручка</div><div class="admin-stat-value">${state.stats.spent}₽</div></div>
         <div class="admin-stat"><div class="admin-stat-label">Товаров</div><div class="admin-stat-value">${PRODUCTS.length}</div></div>
       </div>
-      <h4 style="margin-top:16px;">📈 Выручка за 7 дней</h4>
+      <h4 style="margin-top:16px;">📈 Выручка 7 дней</h4>
       <div class="admin-chart">
-        ${revenue.map((v, i) => `<div class="admin-chart-bar" style="height:${(v/maxRev)*100}%;" data-label="${days[i]}"></div>`).join('')}
+        ${revenue.map((v,i) => `<div class="admin-chart-bar" style="height:${(v/maxRev)*100}%;" data-label="${days[i]}"></div>`).join('')}
       </div>
-      <div style="text-align:center;font-size:12px;color:var(--muted);">Максимум: ${maxRev}₽</div>
-      <h4 style="margin-top:16px;">⚡ Быстрые действия</h4>
-      <button onclick="addProductFromAdmin()">➕ Добавить товар</button>
-      <button class="ghost" onclick="renderAdminTab('promo')">🎟 Создать промокод</button>
-      <button class="ghost" onclick="exportBackup()">💾 Скачать бэкап</button>
+      <h4 style="margin-top:20px;">⚡ Быстрые действия</h4>
+      <button data-ap-add="1">➕ Добавить товар</button>
+      <button class="ghost" data-admin-tab="promo">🎟 Промокод</button>
+      <button class="ghost" data-admin-export="1">💾 Бэкап</button>
     `;
   } else if (tab === 'products') {
     c.innerHTML = `
       <h4>🏷 Товары (${PRODUCTS.length})</h4>
-      <button onclick="addProductFromAdmin()">➕ Добавить товар</button>
+      <button data-ap-add="1">➕ Добавить</button>
       <div style="margin-top:12px;">
         ${PRODUCTS.map(p => `
           <div class="admin-row">
-            <span>${p.flag} ${p.name} <span style="color:var(--muted);font-size:11px;">· ${p.category} · ${p.stock} шт</span></span>
+            <span>${p.flag} ${escapeHtml(p.name)} <span style="color:var(--muted);font-size:11px;">· ${p.category} · ${p.stock} шт</span></span>
             <span style="display:flex;gap:6px;align-items:center;">
               <span style="font-weight:800;">${p.price}₽</span>
-              <button class="ghost" onclick="editProductFromAdmin(${p.id})">✏️</button>
-              <button class="ghost" onclick="deleteProductFromAdmin(${p.id})">🗑</button>
+              <button class="ghost" data-ap-edit="${p.id}">✏️</button>
+              <button class="ghost" data-ap-del="${p.id}">🗑</button>
             </span>
           </div>
         `).join('')}
@@ -1382,8 +1655,8 @@ function renderAdminTab(tab) {
         <span>@${n} ${u.banned ? '<span style="color:var(--accent);font-size:11px;">BANNED</span>' : ''}</span>
         <span style="display:flex;gap:6px;align-items:center;">
           <span>${u.balance || 0}₽</span>
-          <button class="ghost" onclick="adminAddBalance('${n}')">💰</button>
-          <button class="ghost" onclick="adminToggleBan('${n}')">${u.banned ? '✅' : '⛔'}</button>
+          <button class="ghost" data-admin-bal="${n}">💰</button>
+          <button class="ghost" data-admin-ban="${n}">${u.banned ? '✅' : '⛔'}</button>
         </span>
       </div>`
     ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет юзеров</div>';
@@ -1395,61 +1668,64 @@ function renderAdminTab(tab) {
           <span>${o.id}</span>
           <span style="display:flex;gap:6px;align-items:center;">
             <span>${o.total}₽</span>
-            <button class="ghost" onclick="refundOrder(${i})">↩️</button>
+            <button class="ghost" data-admin-refund="${i}">↩️</button>
           </span>
         </div>`).join('')
       : '<div style="color:var(--muted);font-size:12px;">Нет заказов</div>');
   } else if (tab === 'promo') {
     c.innerHTML = `
       <h4>🎟 Промокоды</h4>
-      <input type="text" id="promoCodeInput" placeholder="Код (напр. SALE10)">
+      <input type="text" id="promoCodeInput" placeholder="Код">
       <input type="number" id="promoDiscInput" placeholder="Скидка %">
       <input type="number" id="promoLimitInput" placeholder="Лимит (0 = без)">
-      <button onclick="addPromo()">Добавить</button>
+      <button data-add-promo="1">Добавить</button>
       <div id="promoList" style="margin-top:12px;"></div>
     `;
     renderPromoListAdmin();
   } else if (tab === 'reviews') {
     const list = state.reviews.map((r, i) =>
-      `<div class="admin-row"><span>@${r.author} · ${r.rating}★ · ${escapeHtml(r.text).slice(0, 40)}</span><button class="ghost" onclick="delReview(${i})">🗑</button></div>`
+      `<div class="admin-row"><span>@${escapeHtml(r.author)} · ${r.rating}★ · ${escapeHtml(r.text).slice(0, 40)}</span><button class="ghost" data-admin-delrev="${i}">🗑</button></div>`
     ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет отзывов</div>';
     c.innerHTML = `<h4>⭐ Отзывы</h4>${list}`;
   } else if (tab === 'backup') {
     c.innerHTML = `
-      <h4>💾 Резервное копирование</h4>
-      <p style="color:var(--muted);font-size:12px;margin-bottom:12px;">Сохрани всю БД в файл или загрузи из бэкапа.</p>
-      <button onclick="exportBackup()">📥 Скачать бэкап</button>
+      <h4>💾 Бэкап</h4>
+      <p style="color:var(--muted);font-size:12px;margin-bottom:12px;">Сохрани БД или загрузи из файла.</p>
+      <button data-admin-export="1">📥 Скачать бэкап</button>
       <input type="file" id="backupFile" accept=".json" style="margin-top:12px;display:block;width:100%;padding:10px;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;">
-      <button class="ghost" onclick="importBackup()" style="margin-top:8px;">📤 Загрузить из файла</button>
-      <div style="margin-top:16px;padding:12px;background:var(--card-2);border-radius:12px;">
-        <div style="font-size:12px;color:var(--muted);">
-          Юзеров: <b>${Object.keys(state.users).length}</b><br>
-          Товаров: <b>${PRODUCTS.length}</b><br>
-          Заказов: <b>${state.orders.length}</b><br>
-          Промокодов: <b>${state.promos.length}</b><br>
-          Отзывов: <b>${state.reviews.length}</b>
-        </div>
+      <button class="ghost" data-admin-import="1" style="margin-top:8px;">📤 Загрузить из файла</button>
+      <div style="margin-top:16px;padding:12px;background:var(--card-2);border-radius:12px;font-size:12px;color:var(--muted);">
+        Юзеров: <b>${Object.keys(state.users).length}</b><br>
+        Товаров: <b>${PRODUCTS.length}</b><br>
+        Заказов: <b>${state.orders.length}</b><br>
+        Промокодов: <b>${state.promos.length}</b>
       </div>
     `;
   } else if (tab === 'logs') {
     const logs = Storage.get('logs', []);
     c.innerHTML = `<h4>📜 Логи (${logs.length})</h4>` + (logs.slice(-30).reverse().map(l =>
-      `<div class="admin-row"><span>${l.action} · @${l.user}</span><span>${new Date(l.date).toLocaleTimeString()}</span></div>`
+      `<div class="admin-row"><span>${escapeHtml(l.action)} · @${escapeHtml(l.user)}</span><span>${new Date(l.date).toLocaleTimeString()}</span></div>`
     ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет логов</div>');
   } else if (tab === 'settings') {
     c.innerHTML = `
       <h4>⚙️ Настройки админа</h4>
-      <p style="color:var(--muted);font-size:12px;margin-bottom:12px;">Пароль админки: ${ADMIN_PASSWORD}</p>
+      <p style="color:var(--muted);font-size:12px;margin-bottom:12px;">Текущий пароль: ${ADMIN_PASSWORD}</p>
       <input type="password" id="newAdminPass" placeholder="Новый пароль">
-      <button onclick="changeAdminPassword()">Сменить пароль</button>
-      <div style="margin-top:16px;">
-        <p style="color:var(--muted);font-size:12px;margin-bottom:8px;">ID админов:</p>
-        ${ADMIN_IDS.map(id => `<div class="admin-row"><span>ID ${id}</span></div>`).join('')}
-      </div>
-      <button class="ghost" onclick="clearAllData()" style="background:rgba(255,45,85,0.15);color:var(--accent);margin-top:16px;">⚠️ Очистить всё</button>
+      <button data-change-pass="1">Сменить пароль</button>
+      <button class="ghost" data-admin-clear="1" style="background:rgba(255,45,85,0.15);color:var(--accent);margin-top:16px;">⚠️ Очистить все данные</button>
     `;
   }
 }
+
+document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-ap-add]')) { addProductFromAdmin(); return; }
+  if (e.target.closest('[data-admin-tab]')) { const t = e.target.closest('[data-admin-tab]').dataset.adminTab; document.querySelectorAll('.admin-tab').forEach(x => x.classList.toggle('active', x.dataset.tab === t)); renderAdminTab(t); return; }
+  if (e.target.closest('[data-admin-export]')) { exportBackup(); return; }
+  if (e.target.closest('[data-admin-import]')) { importBackup(); return; }
+  if (e.target.closest('[data-add-promo]')) { addPromo(); return; }
+  if (e.target.closest('[data-change-pass]')) { changeAdminPassword(); return; }
+  if (e.target.closest('[data-admin-clear]')) { clearAllData(); return; }
+});
 
 function addProductFromAdmin() {
   document.getElementById('adminProductTitle').textContent = 'Добавить товар';
@@ -1537,7 +1813,7 @@ function adminAddBalance(username) {
     Storage.set('balance', (Storage.get('balance', 0) + n));
     updateProfileUI();
   }
-  toast(`+${n}₽ к @${username}`, 'success');
+  toast(`+${n}₽ @${username}`, 'success');
 }
 
 function adminToggleBan(username) {
@@ -1597,7 +1873,7 @@ function exportBackup() {
     users: state.users, products: PRODUCTS, orders: state.orders,
     promos: state.promos, reviews: state.reviews, inventory: state.inventory,
     transactions: state.transactions, points: state.points, stats: state.stats,
-    balance: Storage.get('balance', 0), version: 'v0.6.0', exported: Date.now()
+    balance: Storage.get('balance', 0), version: 'v0.7.0', exported: Date.now()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1626,11 +1902,9 @@ function importBackup() {
       if (data.points !== undefined) Storage.set('points', data.points);
       if (data.stats) Storage.set('stats', data.stats);
       if (data.balance !== undefined) Storage.set('balance', data.balance);
-      toast('Бэкап загружен! Перезагружаем...', 'success');
+      toast('Бэкап загружен! Перезагрузка...', 'success');
       setTimeout(() => location.reload(), 1200);
-    } catch (err) {
-      toast('Ошибка файла', 'error');
-    }
+    } catch { toast('Ошибка файла', 'error'); }
   };
   reader.readAsText(file);
 }
@@ -1639,7 +1913,8 @@ function changeAdminPassword() {
   const newPass = document.getElementById('newAdminPass').value;
   if (newPass.length < 6) return toast('Минимум 6 символов', 'error');
   Storage.set('adminPassword', newPass);
-  toast('Пароль изменён (вступит после перезагрузки)', 'success');
+  ADMIN_PASSWORD = newPass;
+  toast('Пароль изменён', 'success');
 }
 
 function clearAllData() {
@@ -1649,7 +1924,19 @@ function clearAllData() {
   setTimeout(() => location.reload(), 1200);
 }
 
-// ==================== TOASTS ====================
+// ==================== UTILS ====================
+function openModal(id) { document.getElementById(id)?.classList.add('show'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('show'); }
+function contactSupport() { window.open(SUPPORT_LINK, '_blank'); }
+function createTicket() {
+  const theme = document.getElementById('ticketTheme').value.trim();
+  const text = document.getElementById('ticketText').value.trim();
+  if (!theme || !text) return toast('Заполни поля', 'error');
+  document.getElementById('ticketTheme').value = '';
+  document.getElementById('ticketText').value = '';
+  toast('Тикет создан', 'success');
+}
+
 function toast(text, type = 'info') {
   const wrap = document.getElementById('toastWrap');
   if (!wrap) return;
@@ -1664,7 +1951,6 @@ function toast(text, type = 'info') {
   }, 2200);
 }
 
-// ==================== HAPTIC / SOUND ====================
 function haptic(type = 'light') {
   if (!Storage.get('hapticEnabled', true)) return;
   const h = window.Telegram?.WebApp?.HapticFeedback;
@@ -1690,7 +1976,6 @@ function playSound() {
   } catch {}
 }
 
-// ==================== HELPERS ====================
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -1710,24 +1995,25 @@ function startPromoTimer() {
   }, 1000);
 }
 
-// ==================== LISTENERS ====================
-function bindAllListeners() {
+// ==================== BIND ALL ====================
+function bindAll() {
   // Nav buttons
   document.querySelectorAll('.nav-btn').forEach(b => b.addEventListener('click', () => go(b.dataset.page)));
-  document.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); go(el.dataset.page); }));
 
-  // Dots dropdown
+  // Dots → mega menu
   const dotsBtn = document.getElementById('dotsBtn');
-  const dropdown = document.getElementById('dropdownMenu');
-  dotsBtn?.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); haptic('light'); });
-  document.addEventListener('click', () => dropdown?.classList.remove('show'));
-  dropdown?.addEventListener('click', (e) => e.stopPropagation());
+  dotsBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openMegaMenu();
+  });
 
   // Scroll
-  window.addEventListener('scroll', () => document.getElementById('topbar')?.classList.toggle('scrolled', window.scrollY > 10));
+  window.addEventListener('scroll', () => {
+    document.getElementById('topbar')?.classList.toggle('scrolled', window.scrollY > 10);
+  });
   window.addEventListener('hashchange', routeFromHash);
 
-  // Admin logo 5 taps
+  // Admin 5 taps
   let taps = 0, tapTimer = null;
   document.getElementById('brandLogo')?.addEventListener('click', () => {
     taps++;
@@ -1742,14 +2028,15 @@ function bindAllListeners() {
     }
   });
 
-  // Search input
-  document.getElementById('searchInput')?.addEventListener('input', (e) => {
+  // Search
+  const si = document.getElementById('searchInput');
+  si?.addEventListener('input', (e) => {
     searchQuery = e.target.value.toLowerCase().trim();
     visibleProducts = 6;
     renderProducts();
     saveSearchHistory(searchQuery);
   });
-  document.getElementById('searchInput')?.addEventListener('focus', renderSearchHistory);
+  si?.addEventListener('focus', renderSearchHistory);
 
   // FAQ search
   document.getElementById('faqSearch')?.addEventListener('input', renderFAQ);
@@ -1759,30 +2046,6 @@ function bindAllListeners() {
     if (e.target.id === 'regConfirm') {
       const btn = document.getElementById('regBtn');
       if (btn) btn.disabled = !e.target.checked;
-    }
-  });
-
-  // Theme & accent clicks
-  document.addEventListener('click', (e) => {
-    const swatch = e.target.closest('.theme-swatch');
-    if (swatch) { Storage.set('theme', swatch.dataset.theme); applyAllSettings(); toast('Тема изменена', 'success'); haptic('light'); return; }
-    const dot = e.target.closest('.accent-dot');
-    if (dot) { Storage.set('accent', dot.dataset.accent); applyAllSettings(); haptic('light'); return; }
-
-    // Ripple
-    const btn = e.target.closest('.btn');
-    if (btn && Storage.get('animEnabled', true)) {
-      const rect = btn.getBoundingClientRect();
-      const x = (e.clientX || rect.left + rect.width / 2) - rect.left;
-      const y = (e.clientY || rect.top + rect.height / 2) - rect.top;
-      const size = Math.max(rect.width, rect.height);
-      const ripple = document.createElement('span');
-      ripple.className = 'ripple';
-      ripple.style.width = ripple.style.height = size + 'px';
-      ripple.style.left = (x - size / 2) + 'px';
-      ripple.style.top = (y - size / 2) + 'px';
-      btn.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 600);
     }
   });
 
@@ -1801,78 +2064,9 @@ function bindAllListeners() {
     else return;
     applyAllSettings();
   });
-
-  // Leaderboard tabs
-  document.querySelectorAll('.lb-tab').forEach(t => {
-    t.addEventListener('click', () => {
-      document.querySelectorAll('.lb-tab').forEach(x => x.classList.remove('active'));
-      t.classList.add('active');
-      renderLeaderboard(t.dataset.lb);
-    });
-  });
 }
 
-// ==================== MODAL HELPERS ====================
-function openModal(id) { document.getElementById(id)?.classList.add('show'); }
-function closeModal(id) { document.getElementById(id)?.classList.remove('show'); }
-function contactSupport() { window.open(SUPPORT_LINK, '_blank'); }
-function createTicket() {
-  const theme = document.getElementById('ticketTheme').value.trim();
-  const text = document.getElementById('ticketText').value.trim();
-  if (!theme || !text) return toast('Заполни поля', 'error');
-  document.getElementById('ticketTheme').value = '';
-  document.getElementById('ticketText').value = '';
-  toast('Тикет создан', 'success');
-}
-
-// ==================== WINDOW EXPORTS ====================
-window.go = go;
-window.showAuthForm = showAuthForm;
-window.doLogin = doLogin;
-window.doRegister = doRegister;
-window.confirmRegister = confirmRegister;
-window.logout = logout;
-window.checkAdminPass = checkAdminPass;
-window.addPromo = addPromo;
-window.delReview = delReview;
-window.toggleFav = toggleFav;
-window.addToCart = addToCart;
-window.buyNow = buyNow;
-window.removeCart = removeCart;
-window.openProduct = openProduct;
-window.shareProduct = shareProduct;
-window.spinCase = spinCase;
-window.spinWheel = spinWheel;
-window.claimDaily = claimDaily;
-window.openTopUp = openTopUp;
-window.submitTopUp = submitTopUp;
-window.openPromoModal = openPromoModal;
-window.applyPromo = applyPromo;
-window.applyPromoInCart = applyPromoInCart;
-window.openModal = openModal;
-window.closeModal = closeModal;
-window.contactSupport = contactSupport;
-window.createTicket = createTicket;
-window.copyRef = copyRef;
-window.addReview = addReview;
-window.setSearch = setSearch;
-window.toast = toast;
-window.resetSettings = resetSettings;
-window.openFilters = openFilters;
-window.applyFilters = applyFilters;
-window.resetFilters = resetFilters;
-window.copyInvData = copyInvData;
-window.reviewProduct = reviewProduct;
-window.buyAgain = buyAgain;
-window.openDispute = openDispute;
-window.addProductFromAdmin = addProductFromAdmin;
-window.editProductFromAdmin = editProductFromAdmin;
-window.saveAdminProduct = saveAdminProduct;
-window.deleteProductFromAdmin = deleteProductFromAdmin;
-window.adminAddBalance = adminAddBalance;
-window.adminToggleBan = adminToggleBan;
-window.refundOrder = refundOrder;
-window.exportBackup = exportBackup;
-window.importBackup = importBackup;
-window.changeAdminPassword = changeAdminPassword;
-window.clearAllData = clearAllData;
+function routeFromHash() {
+  const h = location.hash.replace('#', '');
+  if (h && document.getElementById('page-' + h)) go(h);
+    }
