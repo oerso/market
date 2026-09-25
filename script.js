@@ -2,8 +2,11 @@
 const ADMIN_PASSWORD = '837472';
 const ADMIN_IDS = [7803765347, 912559442];
 const SUPPORT_LINK = 'https://t.me/desired_support';
+const DIRECT_CONTACT = 'https://t.me/id912559442';
 const BOT_LINK = 'https://t.me/desired_bot';
 const LOW_STOCK = 5;
+const CASE_PRICE = 50;
+const BONUS_AMOUNTS = [5, 5, 15, 15, 15, 25, 50];
 
 // ==================== STORAGE ====================
 const Storage = {
@@ -28,6 +31,12 @@ const state = {
   points: Storage.get('points', 0),
   stats: Storage.get('stats', { topUp: 0, spent: 0, orders: 0 }),
   achievements: Storage.get('achievements', []),
+  tickets: Storage.get('tickets', []),
+  aiChat: Storage.get('aiChat', []),
+  dailyBonus: Storage.get('dailyBonus', { lastClaim: 0, streak: 0 }),
+  caseSpins: Storage.get('caseSpins', 0),
+  hideBalance: Storage.get('hideBalance', false),
+  onboarded: Storage.get('onboarded', false),
   onlineCount: 1247,
   soldToday: 32,
   tgUser: null,
@@ -38,8 +47,12 @@ const state = {
   txFilter: 'all',
   catalogTab: 'accounts',
   quickFilter: 'all',
+  faqCat: 'all',
   loyaltyLevel: 'bronze',
   pendingAdminBalance: null,
+  currentTicketId: null,
+  msbMode: 'stars',
+  msbPremiumMonths: 12,
   navStack: [],
   filters: { priceMin: 0, priceMax: 0, sort: 'popular', hit: false, isNew: false, sale: false }
 };
@@ -67,48 +80,50 @@ const PACKAGES = [
   { id: 'p3', title: 'Оптовый VIP', sub: '10 USA + 5 UK + 5 KZ', price: 2490, oldPrice: 3350 }
 ];
 
+const PREMIUM_PRICES = { 3: 1239, 6: 1649, 12: 2979 };
+const STARS_PRICE_PER_STAR = 1.45;
+
 const FAQ = [
-  { q: 'Как получить товар после оплаты?', a: 'После успешной оплаты товар моментально выдаётся в разделе «Инвентарь». Там будут логин, пароль и все данные.' },
-  { q: 'Какие способы оплаты?', a: 'СБП, карты РФ, Telegram Stars, CryptoBot. Подключим сразу после переезда на сервер.' },
-  { q: 'Что делать, если товар не работает?', a: 'Напиши в поддержку с номером заказа. Заменим или вернём деньги в течение 24 часов.' },
-  { q: 'Как работает реферальная программа?', a: '10% с покупок рефералов 1 уровня и 3% со 2 уровня. Вывод от 500₽ на карту или CryptoBot.' },
-  { q: 'Как восстановить пароль от аккаунта?', a: 'Только через поддержку. Сохраняй данные в надёжном месте сразу после покупки!' },
-  { q: 'Безопасно ли покупать у вас?', a: 'Да. Все товары проверяются перед выдачей, оплата через защищённые шлюзы, гарантия возврата.' },
-  { q: 'Сколько идёт выдача товара?', a: 'Автовыдача мгновенная 24/7. Если товар не пришёл за 5 минут — пиши в поддержку.' },
-  { q: 'Можно ли вернуть деньги?', a: 'Да, если товар не работает и заявка подана в течение 24 часов после покупки.' },
-  { q: 'Что за аккаунты вы продаёте?', a: 'Отлежавшиеся, с полным доступом: логин, пароль, почта, иногда привязанный номер.' },
-  { q: 'Есть ли оптовые скидки?', a: 'Да: от 10 штук — 15%, от 50 — 25%, от 100 — 30%. Пиши в поддержку для индивидуального расчёта.' },
-  { q: 'Как пополнить баланс?', a: 'Нажми на кнопку с балансом сверху → выбери сумму → оплати удобным способом.' },
-  { q: 'Что делать, если оплата не прошла?', a: 'Проверь баланс. Если списалось, но не зачислилось — пиши в поддержку с чеком.' },
-  { q: 'Какая гарантия на товары?', a: 'От 24 часов до 7 дней в зависимости от типа товара. Указано в карточке и в инвентаре.' },
-  { q: 'Можно ли перепродавать товары?', a: 'Да, без раскрытия источника и без демпинга. Мы не против реселла.' },
-  { q: 'Как долго живут аккаунты?', a: 'От 6 месяцев при правильном использовании: без резких смен IP, без спама.' },
-  { q: 'Что такое аренда NFT-подарка?', a: 'Подарок на твой профиль Telegram на 30 дней. По окончании — продление по той же цене.' },
-  { q: 'Что такое Telegram Stars?', a: 'Внутренняя валюта Telegram для подарков, реакций и покупок внутри приложений.' },
-  { q: 'Куда приходят звёзды?', a: 'На твой Telegram-аккаунт после оплаты. Нужен только юзернейм или ID.' },
-  { q: 'Можно купить Stars без Premium?', a: 'Да, Stars продаются отдельно. Premium не обязателен.' },
-  { q: 'Есть ли скидки постоянным клиентам?', a: 'Да, кэшбэк по уровню: Bronze 3%, Silver 5%, Gold 8%, Platinum 12%.' },
-  { q: 'Как вывести реферальные?', a: 'От 500₽ на карту РФ, СБП или CryptoBot. Обработка до 24 часов.' },
-  { q: 'Можно ли купить в рассрочку?', a: 'Для крупных заказов от 5000₽ — да. Пиши в поддержку, обсудим условия.' },
-  { q: 'Что такое баллы и зачем они?', a: 'Копятся с покупок, входов в приложение, отзывов. Можно тратить на скидки.' },
-  { q: 'Как получить статус Verified?', a: 'Нужно 5+ отзывов и сумма покупок от 5000₽. Значок появится автоматически.' },
-  { q: 'Что делать, если меня обманули?', a: 'У нас нет продавцов — только маркет. Пиши в поддержку, разберёмся.' },
-  { q: 'Можно оплатить с чужой карты?', a: 'Только с письменного разрешения владельца. Мы не поддерживаем мошенничество.' },
-  { q: 'Есть ли мобильное приложение?', a: 'Мы работаем прямо в Telegram как Mini App. Устанавливать ничего не нужно.' },
-  { q: 'Как узнать о новых товарах?', a: 'Подпишись на наш Telegram-канал. Анонсы и скидки публикуем там первыми.' },
-  { q: 'Как стать модератором?', a: 'Активных юзеров приглашаем вручную. Пиши в поддержку с рассказом о себе.' },
-  { q: 'Что если аккаунт забанят?', a: 'В течение гарантийного срока заменим на новый или вернём деньги. Всё честно.' },
-  { q: 'Нужен ли VPN для использования?', a: 'Нет. Аккаунты и товары работают без VPN, если у тебя стабильный интернет.' },
-  { q: 'Сколько заказов в день вы обрабатываете?', a: 'Тысячи. Автовыдача работает 24/7, сбоев почти не бывает.' },
-  { q: 'Что делать, если я ошибся с покупкой?', a: 'До выдачи товара можно отменить заказ через поддержку. После — только возврат по гарантии.' },
-  { q: 'Как связаться с вами?', a: 'Через раздел «Поддержка» в приложении или напрямую в Telegram.' },
-  { q: 'Ваши контакты?', a: 'Официальный канал и бот — в разделе «Инфо». Остерегайся фейков, у нас только один аккаунт.' },
-  { q: 'Как часто обновляется каталог?', a: 'Ежедневно. Новые аккаунты и товары появляются каждый день.' },
-  { q: 'Можно ли забронировать товар?', a: 'Да, для крупных оптовых заказов. Пиши в поддержку заранее.' },
-  { q: 'Что если закончился товар?', a: 'Кнопка покажет «Нет в наличии», а ты можешь подписаться на уведомление о появлении.' },
-  { q: 'У вас есть партнёрская программа?', a: 'Да, рефералка 10% + 3%. Отдельные условия для блогеров и крупных партнёров.' },
-  { q: 'Как стать партнёром?', a: 'Пиши в поддержку с описанием аудитории. Обсудим индивидуальный процент.' },
-  { q: 'Что такое уровень лояльности?', a: 'Система кэшбэка. Растёт по сумме покупок: Bronze → Silver → Gold → Platinum.' }
+  { q: 'Как получить товар после оплаты?', a: 'После успешной оплаты товар моментально выдаётся в разделе «Инвентарь». Там будут логин, пароль и все данные.', cat: 'products' },
+  { q: 'Какие способы оплаты?', a: 'СБП, карты РФ, Telegram Stars, CryptoBot. Подключим сразу после переезда на сервер.', cat: 'payment' },
+  { q: 'Что делать, если товар не работает?', a: 'Напиши в поддержку с номером заказа. Заменим или вернём деньги в течение 24 часов.', cat: 'warranty' },
+  { q: 'Как работает реферальная программа?', a: '10% с покупок рефералов 1 уровня и 3% со 2 уровня. Вывод от 500₽ на карту или CryptoBot.', cat: 'other' },
+  { q: 'Как восстановить пароль от аккаунта?', a: 'Только через поддержку. Сохраняй данные в надёжном месте сразу после покупки!', cat: 'account' },
+  { q: 'Безопасно ли покупать у вас?', a: 'Да. Все товары проверяются перед выдачей, оплата через защищённые шлюзы, гарантия возврата.', cat: 'other' },
+  { q: 'Сколько идёт выдача товара?', a: 'Автовыдача мгновенная 24/7. Если товар не пришёл за 5 минут — пиши в поддержку.', cat: 'products' },
+  { q: 'Можно ли вернуть деньги?', a: 'Да, если товар не работает и заявка подана в течение 24 часов после покупки.', cat: 'warranty' },
+  { q: 'Что за аккаунты вы продаёте?', a: 'Отлежавшиеся, с полным доступом: логин, пароль, почта, иногда привязанный номер.', cat: 'products' },
+  { q: 'Есть ли оптовые скидки?', a: 'Да: от 10 штук — 15%, от 50 — 25%, от 100 — 30%. Пиши в поддержку для индивидуального расчёта.', cat: 'payment' },
+  { q: 'Как пополнить баланс?', a: 'Нажми на кнопку с балансом сверху → выбери сумму → оплати удобным способом.', cat: 'payment' },
+  { q: 'Что делать, если оплата не прошла?', a: 'Проверь баланс. Если списалось, но не зачислилось — пиши в поддержку с чеком.', cat: 'payment' },
+  { q: 'Какая гарантия на товары?', a: 'От 24 часов до 7 дней в зависимости от типа товара. Указано в карточке и в инвентаре.', cat: 'warranty' },
+  { q: 'Можно ли перепродавать товары?', a: 'Да, без раскрытия источника и без демпинга. Мы не против реселла.', cat: 'other' },
+  { q: 'Как долго живут аккаунты?', a: 'От 6 месяцев при правильном использовании: без резких смен IP, без спама.', cat: 'products' },
+  { q: 'Что такое аренда NFT-подарка?', a: 'Подарок на твой профиль Telegram на 30 дней. По окончании — продление по той же цене.', cat: 'products' },
+  { q: 'Что такое Telegram Stars?', a: 'Внутренняя валюта Telegram для подарков, реакций и покупок внутри приложений.', cat: 'products' },
+  { q: 'Куда приходят звёзды?', a: 'На твой Telegram-аккаунт после оплаты. Нужен только юзернейм или ID.', cat: 'products' },
+  { q: 'Можно купить Stars без Premium?', a: 'Да, Stars продаются отдельно. Premium не обязателен.', cat: 'products' },
+  { q: 'Есть ли скидки постоянным клиентам?', a: 'Да, кэшбэк по уровню: Bronze 3%, Silver 5%, Gold 8%, Platinum 12%.', cat: 'account' },
+  { q: 'Как вывести реферальные?', a: 'От 500₽ на карту РФ, СБП или CryptoBot. Обработка до 24 часов.', cat: 'other' },
+  { q: 'Можно ли купить в рассрочку?', a: 'Для крупных заказов от 5000₽ — да. Пиши в поддержку, обсудим условия.', cat: 'payment' },
+  { q: 'Что такое баллы и зачем они?', a: 'Копятся с покупок, входов в приложение, отзывов. Можно тратить на скидки.', cat: 'account' },
+  { q: 'Как получить статус Verified?', a: 'Нужно 5+ отзывов и сумма покупок от 5000₽. Значок появится автоматически.', cat: 'account' },
+  { q: 'Что делать, если меня обманули?', a: 'У нас нет продавцов — только маркет. Пиши в поддержку, разберёмся.', cat: 'warranty' },
+  { q: 'Можно оплатить с чужой карты?', a: 'Только с письменного разрешения владельца. Мы не поддерживаем мошенничество.', cat: 'payment' },
+  { q: 'Есть ли мобильное приложение?', a: 'Мы работаем прямо в Telegram как Mini App. Устанавливать ничего не нужно.', cat: 'other' },
+  { q: 'Как узнать о новых товарах?', a: 'Подпишись на наш Telegram-канал. Анонсы и скидки публикуем там первыми.', cat: 'other' },
+  { q: 'Как стать модератором?', a: 'Активных юзеров приглашаем вручную. Пиши в поддержку с рассказом о себе.', cat: 'other' },
+  { q: 'Что если аккаунт забанят?', a: 'В течение гарантийного срока заменим на новый или вернём деньги. Всё честно.', cat: 'warranty' },
+  { q: 'Нужен ли VPN для использования?', a: 'Нет. Аккаунты и товары работают без VPN, если у тебя стабильный интернет.', cat: 'other' },
+  { q: 'Сколько заказов в день вы обрабатываете?', a: 'Тысячи. Автовыдача работает 24/7, сбоев почти не бывает.', cat: 'other' },
+  { q: 'Что делать, если я ошибся с покупкой?', a: 'До выдачи товара можно отменить заказ через поддержку. После — только возврат по гарантии.', cat: 'warranty' },
+  { q: 'Как связаться с вами?', a: 'Через раздел «Поддержка» в приложении или напрямую в Telegram.', cat: 'other' },
+  { q: 'Ваши контакты?', a: 'Официальный канал и бот — в разделе «Инфо». Остерегайся фейков, у нас только один аккаунт.', cat: 'other' },
+  { q: 'Как часто обновляется каталог?', a: 'Ежедневно. Новые аккаунты и товары появляются каждый день.', cat: 'products' },
+  { q: 'Можно ли забронировать товар?', a: 'Да, для крупных оптовых заказов. Пиши в поддержку заранее.', cat: 'payment' },
+  { q: 'Что если закончился товар?', a: 'Кнопка покажет «Нет в наличии», а ты можешь подписаться на уведомление о появлении.', cat: 'products' },
+  { q: 'У вас есть партнёрская программа?', a: 'Да, рефералка 10% + 3%. Отдельные условия для блогеров и крупных партнёров.', cat: 'other' },
+  { q: 'Как стать партнёром?', a: 'Пиши в поддержку с описанием аудитории. Обсудим индивидуальный процент.', cat: 'other' }
 ];
 
 const INFO_ITEMS = [
@@ -144,25 +159,23 @@ const ACHIEVEMENTS = [
 
 const CHANGELOG = [
   { ver: 'v1.0.0', date: 'Сегодня', changes: [
-    'Полная переработка раздела «Профиль»',
-    'Кнопка «Назад» на всех внутренних страницах',
-    'Приветствие с именем из Telegram',
-    'Новый анимированный логотип',
-    'Убраны счётчики и «История» в инвентаре',
-    'Расширены FAQ и Инфо (40+ вопросов)',
-    'Убрана кнопка «Сбросить все данные»'
+    'Полная переработка профиля (v2)',
+    'Уровни лояльности с 4 рангами и объяснением',
+    'Поддержка: тикеты с историей, ИИ-чат, кнопка админа',
+    'Раздел отзывов полностью переделан',
+    'Покупка Stars/Premium с выбором получателя',
+    'Ежедневный бонус + кейс-рулетка',
+    'Кнопка "Спасибо за покупку" после оплаты',
+    'Онбординг из 3 экранов для новых юзеров',
+    'Избранное переехало в корзину (2 таба)',
+    'Фикс контраста тем в настройках',
+    'Везде имена (не юзернеймы), все эмодзи — SVG',
+    'Уведомление "В разработке" вместо 404'
   ] },
-  { ver: 'v0.9.1', date: 'Ранее', changes: [
-    'Новый премиум-сплэш с частицами',
-    'Переработанные табы каталога',
-    'SVG-иконки в nav и dropdown'
-  ] },
-  { ver: 'v0.9.0', date: '2 дня назад', changes: [
-    'Полностью вырезана авторизация',
-    'Авто-создание профиля при входе'
-  ] },
-  { ver: 'v0.8.0', date: '4 дня назад', changes: ['Каталог 2.0', 'Расширенные фильтры', 'Полная админка'] },
-  { ver: 'v0.7.0', date: '6 дней назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек'] }
+  { ver: 'v0.9.1', date: 'Ранее', changes: ['Новый премиум-сплэш', 'SVG-иконки', 'Фикс faq-поиска'] },
+  { ver: 'v0.9.0', date: '2 дня назад', changes: ['Вырезана авторизация', 'Авто-создание профиля'] },
+  { ver: 'v0.8.0', date: '4 дня назад', changes: ['Каталог 2.0', 'Админка'] },
+  { ver: 'v0.7.0', date: '6 дней назад', changes: ['9 тем, 8 акцентов'] }
 ];
 
 const LIVE_BUYERS = [
@@ -178,7 +191,6 @@ const LIVE_BUYERS = [
   { name: '@colombia_x', flag: '🇨🇴', product: 'Колумбия' }
 ];
 
-// ==================== SPLASH v3 ====================
 const SPLASH_TAGLINES = [
   'Маркет звёзд, премиума и аккаунтов',
   'Автовыдача 24/7 без выходных',
@@ -194,6 +206,38 @@ const SPLASH_STAGES = [
   { at: 100, status: 'Добро пожаловать!' }
 ];
 
+// ==================== AI MOCK ANSWERS ====================
+const AI_ANSWERS = [
+  { keys: ['заказ', 'где', 'пришл', 'статус'], answer: 'Все купленные товары моментально появляются в разделе «Инвентарь» — там логин, пароль и данные. Если товар не пришёл за 5 минут, напиши номер заказа, позову админа.' },
+  { keys: ['оплат', 'пополн', 'платёж', 'платеж', 'сбп', 'карт', 'crypto', 'крипт'], answer: 'Оплата сейчас в разработке — скоро подключим СБП, карты РФ, Stars и CryptoBot. Следи за обновлениями, в канале сообщим первым.' },
+  { keys: ['возврат', 'верн', 'деньг', 'refund'], answer: 'Возврат возможен, если товар не работает и заявка подана в течение 24 часов. Дай номер заказа, позову админа — решит вопрос.' },
+  { keys: ['не работ', 'сломан', 'не подход', 'проблем', 'баг'], answer: 'Жаль, что так вышло! Опиши подробно, что не работает, и приложи номер заказа. Заменим или вернём деньги.' },
+  { keys: ['гаранти', 'warranty'], answer: 'Гарантия от 24 часов до 7 дней — точный срок в карточке товара. Все товары проверяются перед выдачей.' },
+  { keys: ['реферал', 'приглаш', 'друз'], answer: 'Зовёшь друга — получаешь 10% с его покупок + 3% со второго уровня. Ссылка в разделе «Реферальная программа» в профиле.' },
+  { keys: ['баланс', 'деньг', 'пополнить', 'кошел'], answer: 'Баланс пополняется кнопкой «+» сверху. Оплата в разработке — скоро подключим все способы.' },
+  { keys: ['аккаунт', 'логин', 'парол'], answer: 'Данные аккаунта приходят в инвентарь: логин, пароль, почта. Сохрани их в надёжном месте сразу после покупки!' },
+  { keys: ['stars', 'звезд', 'звёзд'], answer: 'Telegram Stars продаются отдельно или вместе с Premium. Покупка звёзд — в каталоге, раздел «Звёзды и Премиум».' },
+  { keys: ['premium', 'премиум'], answer: 'Premium активируется на твой аккаунт или на аккаунт получателя. Срок от 3 мес до 1 года. Купить можно в разделе «Звёзды и Премиум».' },
+  { keys: ['nft', 'подарок', 'аренд'], answer: 'NFT-подарки арендуются на 30 дней и появляются в твоём профиле Telegram. По окончании можно продлить.' },
+  { keys: ['поддержк', 'помощ', 'админ'], answer: 'Ты можешь создать тикет, написать в ИИ-чат или позвать админа напрямую. Раздел «Поддержка» в меню.' },
+  { keys: ['отзыв', 'оценк'], answer: 'Оставить отзыв можно в разделе «Отзывы». За каждый отзыв +10 баллов на баланс.' },
+  { keys: ['бонус', 'подарок', 'ежеднев'], answer: 'Заходи каждый день — получай бонус от 5 до 50₽. Стрик 7 дней = +50₽ и ачивка.' },
+  { keys: ['скидк', 'промокод'], answer: 'Промокод вводится в профиле или корзине. Актуальные промокоды публикуем в Telegram-канале.' },
+  { keys: ['привет', 'здравствуй', 'хай', 'hi', 'hello'], answer: 'Привет! Чем могу помочь? Могу ответить про заказы, оплату, возврат, товары, рефералку.' },
+  { keys: ['спасибо', 'благодар'], answer: 'Всегда рад! Если ещё что-то понадобится — пиши, я на связи 24/7.' }
+];
+
+function getAIResponse(text) {
+  const lower = text.toLowerCase().trim();
+  for (const item of AI_ANSWERS) {
+    for (const key of item.keys) {
+      if (lower.includes(key)) return item.answer;
+    }
+  }
+  return 'Хм, я не совсем понял вопрос. Могу помочь с заказами, оплатой, возвратом, товарами, рефералкой. Если нужен живой админ — нажми кнопку «Админ» сверху.';
+}
+
+// ==================== SPLASH v3 ====================
 function spawnSplashParticles() {
   const wrap = document.getElementById('splashParticles');
   if (!wrap) return;
@@ -215,7 +259,6 @@ function spawnSplashParticles() {
 
 function startSplashAnim(done) {
   spawnSplashParticles();
-
   const tagEl = document.getElementById('splashTagline');
   const fillEl = document.getElementById('splashProgressFill');
   const statusEl = document.getElementById('splashStatus');
@@ -251,12 +294,8 @@ function startSplashAnim(done) {
       }
     }
 
-    if (raw < 100) {
-      requestAnimationFrame(tick);
-    } else {
-      clearInterval(tagInterval);
-      setTimeout(done, 320);
-    }
+    if (raw < 100) requestAnimationFrame(tick);
+    else { clearInterval(tagInterval); setTimeout(done, 320); }
   };
   requestAnimationFrame(tick);
 }
@@ -266,7 +305,6 @@ window.addEventListener('DOMContentLoaded', () => {
   applyAllSettings();
   initTelegram();
   bindAllOnclicks();
-
   autoCreateUser();
 
   startSplashAnim(() => {
@@ -275,6 +313,10 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       splash?.remove();
       enterApp();
+      // Показ онбординга после сплэша
+      setTimeout(() => {
+        if (!Storage.get('onboarded', false)) showOnboarding();
+      }, 400);
     }, 600);
   });
 
@@ -286,6 +328,9 @@ window.addEventListener('DOMContentLoaded', () => {
   renderSaleCard();
   bindAllListeners();
   setupBackButton();
+  setupEyeButton();
+  checkDailyBonusBadge();
+  updateDaysOnMarket();
 });
 
 function autoCreateUser() {
@@ -297,7 +342,7 @@ function autoCreateUser() {
     username: username,
     firstName: firstName,
     tgId: tg?.id || null,
-    createdAt: Date.now()
+    createdAt: state.currentUser?.createdAt || Date.now()
   };
   Storage.set('currentUser', state.currentUser);
 }
@@ -314,7 +359,6 @@ function initTelegram() {
   } catch {}
 }
 
-// ==================== ФИКС ONCLICK ДЛЯ TELEGRAM WEBAPP ====================
 function bindAllOnclicks() {
   document.querySelectorAll('[onclick]').forEach(el => {
     const code = el.getAttribute('onclick');
@@ -322,24 +366,50 @@ function bindAllOnclicks() {
     el.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      try {
-        const fn = new Function(code);
-        fn.call(el, e);
-      } catch (err) {
-        console.error('onclick error:', err, 'code:', code);
-      }
+      try { new Function(code).call(el, e); } catch (err) { console.error('onclick error:', err, 'code:', code); }
     });
   });
+}
+
+// ==================== ONBOARDING ====================
+let onbSlide = 0;
+function showOnboarding() {
+  const el = document.getElementById('onboarding');
+  if (!el) return;
+  el.classList.remove('hidden');
+  onbSlide = 0;
+  updateOnbSlide();
+}
+function updateOnbSlide() {
+  document.querySelectorAll('.onb2-slide').forEach(s => s.classList.toggle('active', +s.dataset.slide === onbSlide));
+  document.querySelectorAll('.onb2-dot').forEach(d => d.classList.toggle('active', +d.dataset.dot === onbSlide));
+  const nextBtn = document.getElementById('onbNext');
+  if (nextBtn) nextBtn.textContent = onbSlide === 2 ? 'Поехали!' : 'Дальше';
+}
+function onbNext() {
+  if (onbSlide < 2) {
+    onbSlide++;
+    updateOnbSlide();
+    haptic('light');
+  } else {
+    closeOnboarding();
+  }
+}
+function onbSkip() { closeOnboarding(); }
+function closeOnboarding() {
+  const el = document.getElementById('onboarding');
+  if (el) el.classList.add('hidden');
+  Storage.set('onboarded', true);
+  state.onboarded = true;
+  haptic('medium');
 }
 
 // ==================== SETTINGS ====================
 function applyAllSettings() {
   const theme = Storage.get('theme', 'dark');
   document.body.setAttribute('data-theme', theme);
-
   const accent = Storage.get('accent', 'red');
   document.body.setAttribute('data-accent', accent);
-
   const season = Storage.get('season', 'default');
   if (season === 'default') document.body.removeAttribute('data-season');
   else document.body.setAttribute('data-season', season);
@@ -367,10 +437,8 @@ function syncSettingsUI() {
   document.querySelectorAll('.theme-swatch').forEach(el => el.classList.toggle('active', el.dataset.theme === t));
   const a = Storage.get('accent', 'red');
   document.querySelectorAll('.accent-dot').forEach(el => el.classList.toggle('active', el.dataset.accent === a));
-
   const setV = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
   const setC = (id, v) => { const el = document.getElementById(id); if (el) el.checked = v; };
-
   setV('radiusSelect', Storage.get('radius', 'pill'));
   setV('fontScaleSelect', Storage.get('fontScale', 'default'));
   setV('seasonSelect', Storage.get('season', 'default'));
@@ -389,20 +457,11 @@ function resetSettings() {
   haptic('medium');
 }
 
-function clearAllData() {
-  if (!confirm('Удалить ВСЕ данные без возможности восстановления?')) return;
-  if (!confirm('Точно? Аккаунт, заказы, инвентарь, баланс — всё удалится.')) return;
-  ['currentUser','users','cart','favorites','recent','reviews','promos','usedPromos','transactions','orders','inventory','points','stats','achievements','logs','products','onboarded'].forEach(k => Storage.del(k));
-  toast('Всё очищено. Перезагрузка...', 'success');
-  setTimeout(() => location.reload(), 1000);
-}
-
 // ==================== ENTER APP ====================
 function enterApp() {
   document.getElementById('app')?.classList.remove('hidden');
   updateProfileUI();
   renderProducts();
-  renderFavorites();
   renderRecent();
   renderPackages();
   renderReviewsMini();
@@ -412,6 +471,7 @@ function enterApp() {
   renderTransactions();
   renderOrders();
   renderInventory();
+  renderFavoritesFull();
   renderRefLink();
   renderCart();
   renderCartBadge();
@@ -420,12 +480,15 @@ function enterApp() {
   renderChangelog();
   renderLiveFeed();
   renderSaleCard();
+  renderTickets();
+  renderAIChat();
   updateHello();
   checkLoyalty();
   checkAchievements();
   moveCatalogSlider();
   routeFromHash();
   updateBackButton();
+  updateDaysOnMarket();
 }
 
 function updateHello() {
@@ -442,20 +505,63 @@ function updateProfileUI() {
   const firstName = state.tgUser?.first_name || state.currentUser?.firstName || username;
   const tgId = state.tgUser?.id || state.currentUser?.tgId || '—';
   const setT = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-  setT('userName', '@' + username);
+  setT('userName', firstName);
   setT('userId', '@id' + tgId);
   const avatarEl = document.getElementById('userAvatar');
   if (avatarEl) avatarEl.textContent = firstName[0]?.toUpperCase() || 'd';
-  setT('topBalance', Storage.get('balance', 0) + '₽');
-  setT('profileBalance', Storage.get('balance', 0) + '₽');
+  updateBalanceDisplay();
+  setT('profileBalance', formatBalance(Storage.get('balance', 0)));
   setT('statTopUp', state.stats.topUp + '₽');
   setT('statSpent', state.stats.spent + '₽');
   setT('statPoints', state.points);
   setT('statOrders', state.stats.orders);
-  if (state.stats.orders >= 3 || state.stats.spent >= 5000) {
-    document.getElementById('verifiedBadge')?.classList.remove('hidden');
-  }
   updateHello();
+}
+
+function updateBalanceDisplay() {
+  const el = document.getElementById('topBalance');
+  if (!el) return;
+  if (state.hideBalance) el.textContent = '••••₽';
+  else el.textContent = Storage.get('balance', 0) + '₽';
+}
+
+function formatBalance(n) {
+  if (state.hideBalance) return '••••₽';
+  return n + '₽';
+}
+
+function setupEyeButton() {
+  const btn = document.getElementById('eyeBtn');
+  if (!btn) return;
+  const open = btn.querySelector('.eye-open');
+  const closed = btn.querySelector('.eye-closed');
+  const update = () => {
+    if (state.hideBalance) {
+      open?.classList.add('hidden');
+      closed?.classList.remove('hidden');
+    } else {
+      open?.classList.remove('hidden');
+      closed?.classList.add('hidden');
+    }
+    updateBalanceDisplay();
+    const pb = document.getElementById('profileBalance');
+    if (pb) pb.textContent = formatBalance(Storage.get('balance', 0));
+  };
+  update();
+  btn.addEventListener('click', () => {
+    state.hideBalance = !state.hideBalance;
+    Storage.set('hideBalance', state.hideBalance);
+    update();
+    haptic('light');
+  });
+}
+
+function updateDaysOnMarket() {
+  const el = document.getElementById('daysOnMarket');
+  if (!el) return;
+  const created = state.currentUser?.createdAt || Date.now();
+  const days = Math.max(0, Math.floor((Date.now() - created) / 86400000));
+  el.textContent = days;
 }
 
 // ==================== NAV ====================
@@ -466,7 +572,9 @@ function go(page) {
     state.navStack.push(currentId);
     if (state.navStack.length > 30) state.navStack.shift();
   }
-
+  if (!document.getElementById('page-' + page)) {
+    page = '404';
+  }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + page)?.classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === page));
@@ -503,10 +611,7 @@ function updateBackButton() {
 
 function setupBackButton() {
   const btn = document.getElementById('backBtn');
-  btn?.addEventListener('click', () => {
-    haptic('light');
-    goBack();
-  });
+  btn?.addEventListener('click', () => { haptic('light'); goBack(); });
 }
 
 function routeFromHash() {
@@ -645,7 +750,6 @@ function renderProducts() {
 
   setTimeout(() => {
     let items = PRODUCTS.filter(p => p.category === state.catalogTab);
-
     if (searchQuery) items = items.filter(p => p.name.toLowerCase().includes(searchQuery));
     if (state.quickFilter === 'cheap') items = items.filter(p => p.price < 100);
     if (state.quickFilter === 'hit') items = items.filter(p => p.badge === 'ХИТ');
@@ -678,7 +782,9 @@ function renderProducts() {
       const badgeClass = p.badge === 'ХИТ' ? 'hit' : p.badge === 'NEW' ? 'new' : '';
       return `
       <div class="product" style="animation-delay:${idx*40}ms">
-        <button class="product-fav ${isFav ? 'active' : ''}" data-fav="${p.id}">${isFav ? '❤️' : '🤍'}</button>
+        <button class="product-fav ${isFav ? 'active' : ''}" data-fav="${p.id}" aria-label="В избранное">
+          <svg viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
         <div class="product-top" data-product-open="${p.id}">
           <div class="product-flag">${p.flag}</div>
           ${p.badge ? `<div class="product-badge ${badgeClass}">${p.badge}</div>` : ''}
@@ -756,32 +862,48 @@ function shareProduct(id) {
   else { navigator.clipboard?.writeText(link); toast('Ссылка скопирована', 'success'); }
 }
 
-// ==================== FAVORITES / RECENT ====================
+// ==================== FAVORITES ====================
 function toggleFav(id) {
   const i = state.favorites.indexOf(id);
   if (i >= 0) state.favorites.splice(i, 1);
   else state.favorites.push(id);
   Storage.set('favorites', state.favorites);
-  renderProducts();
-  renderFavorites();
+  // Плавная анимация — не рендерим весь список, а обновляем кнопки на месте
+  document.querySelectorAll(`[data-fav="${id}"]`).forEach(btn => {
+    const active = state.favorites.includes(id);
+    btn.classList.toggle('active', active);
+    const svg = btn.querySelector('svg');
+    if (svg) svg.setAttribute('fill', active ? 'currentColor' : 'none');
+  });
+  renderFavoritesFull();
   haptic('light');
   checkAchievements();
 }
 
-function renderFavorites() {
-  const list = document.getElementById('favList');
-  const empty = document.getElementById('favEmpty');
+function renderFavoritesFull() {
+  const list = document.getElementById('favListFull');
+  const empty = document.getElementById('favEmptyFull');
   if (!list) return;
   if (!state.favorites.length) { list.innerHTML = ''; empty?.classList.remove('hidden'); return; }
   empty?.classList.add('hidden');
   const items = state.favorites.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean);
   list.innerHTML = items.map(p => `
-    <div class="cart-item">
-      <div class="cart-item-info">
-        <span style="font-size:24px;">${p.flag}</span>
-        <div><div class="cart-item-name">${escapeHtml(p.name)}</div><div class="cart-item-price">${p.price}₽</div></div>
+    <div class="fav-full-item">
+      <div class="ffi-info">
+        <span class="ffi-flag">${p.flag}</span>
+        <div class="ffi-text">
+          <div class="ffi-name">${escapeHtml(p.name)}</div>
+          <div class="ffi-price">${p.price}₽</div>
+        </div>
       </div>
-      <button class="cart-remove" data-fav-rm="${p.id}">✕</button>
+      <div class="ffi-actions">
+        <button class="ffi-btn" data-fav-rm="${p.id}" aria-label="Удалить">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <button class="ffi-btn primary" data-fav-to-cart="${p.id}" aria-label="В корзину">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        </button>
+      </div>
     </div>
   `).join('');
 }
@@ -965,6 +1087,20 @@ function removeCart(i) {
   haptic('light');
 }
 
+function switchCartTab(tab) {
+  document.querySelectorAll('.cart-top-tab').forEach(t => t.classList.toggle('active', t.dataset.ctab === tab));
+  const cartContent = document.getElementById('cartTabContent');
+  const favContent = document.getElementById('favTabContent');
+  if (tab === 'fav') {
+    cartContent?.classList.add('hidden');
+    favContent?.classList.remove('hidden');
+    renderFavoritesFull();
+  } else {
+    favContent?.classList.add('hidden');
+    cartContent?.classList.remove('hidden');
+  }
+}
+
 function applyPromoInCart() { openModal('modalPromo'); }
 
 function applyPromo() {
@@ -996,7 +1132,7 @@ function applyPromo() {
 
 function openPromoModal() { openModal('modalPromo'); }
 
-// ==================== TOPUP / CHECKOUT ====================
+// ==================== TOPUP ====================
 function openTopUp() { openModal('modalTopUp'); }
 
 function submitTopUp() {
@@ -1013,10 +1149,20 @@ function submitTopUp() {
   renderCart();
   closeModal('modalTopUp');
   input.value = '';
+  animateBalanceChange();
   toast(`+${amount}₽`, 'success');
   haptic('medium');
 }
 
+function animateBalanceChange() {
+  const balance = Storage.get('balance', 0);
+  const topEl = document.getElementById('topBalance');
+  const profEl = document.getElementById('profileBalance');
+  if (topEl && !state.hideBalance) animateCounter(topEl, Math.max(0, balance - 100), balance, 500, '₽');
+  if (profEl && !state.hideBalance) animateCounter(profEl, Math.max(0, balance - 100), balance, 500, '₽');
+}
+
+// ==================== CHECKOUT ====================
 function checkout() {
   if (!state.cart.length) return;
   const subtotal = state.cart.reduce((s, i) => s + i.price, 0);
@@ -1028,10 +1174,11 @@ function checkout() {
   Storage.set('balance', balance - total);
 
   const orderId = 'ORD' + Date.now();
-  state.orders.push({ id: orderId, items: [...state.cart], total, status: 'Выдан', date: Date.now() });
+  const items = [...state.cart];
+  state.orders.push({ id: orderId, items, total, status: 'Выдан', date: Date.now() });
   Storage.set('orders', state.orders);
 
-  state.cart.forEach(item => {
+  items.forEach(item => {
     state.inventory.push({
       id: 'INV' + Date.now() + Math.random().toString(36).slice(2,6),
       orderId, name: item.name, flag: item.flag, price: item.price,
@@ -1050,7 +1197,7 @@ function checkout() {
   Storage.set('stats', state.stats);
   Storage.set('points', state.points);
 
-  state.cart.forEach(item => {
+  items.forEach(item => {
     const p = PRODUCTS.find(x => x.id === item.id);
     if (p && p.stock > 0) p.stock -= 1;
   });
@@ -1070,13 +1217,193 @@ function checkout() {
   document.getElementById('step3')?.classList.add('active');
   checkLoyalty();
   checkAchievements();
-  toast('Заказ оформлен!', 'success');
   haptic('heavy');
   playSound();
-  setTimeout(() => go('inventory'), 800);
+
+  // Показ экрана "Спасибо за покупку"
+  showThanksScreen(orderId, items, total);
 }
 
-// ==================== TRANSACTIONS / ORDERS / INVENTORY ====================
+// ==================== THANKS SCREEN (п.14) ====================
+function showThanksScreen(orderId, items, total) {
+  const modal = document.getElementById('modalThanks');
+  if (!modal) return;
+
+  const idEl = document.getElementById('thanksOrderId');
+  const itemsEl = document.getElementById('thanksItems');
+  const totalEl = document.getElementById('thanksTotal');
+  if (idEl) idEl.textContent = orderId;
+  if (totalEl) totalEl.textContent = total + '₽';
+  if (itemsEl) {
+    itemsEl.innerHTML = items.map(it => `
+      <div class="thanks-item">
+        <span class="thanks-item-flag">${it.flag}</span>
+        <span class="thanks-item-name">${escapeHtml(it.name)}</span>
+        <span class="thanks-item-price">${it.price}₽</span>
+      </div>
+    `).join('');
+  }
+
+  // Конфетти
+  const confettiEl = document.getElementById('thanksConfetti');
+  if (confettiEl) {
+    confettiEl.innerHTML = '';
+    const colors = ['#ff2d55', '#22c55e', '#fbbf24', '#3b82f6', '#a855f7', '#ff8fa3'];
+    for (let i = 0; i < 30; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.left = Math.random() * 100 + '%';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
+      c.style.animationDelay = (Math.random() * 0.6) + 's';
+      c.style.transform = `rotate(${Math.random() * 360}deg)`;
+      confettiEl.appendChild(c);
+    }
+  }
+
+  openModal('modalThanks');
+  haptic('heavy');
+}
+
+function thanksGoInventory() {
+  closeModal('modalThanks');
+  setTimeout(() => go('inventory'), 200);
+}
+
+function thanksShare() {
+  const text = 'Купил в desired — топовый маркет цифровых товаров! Автовыдача, гарантия, низкие цены 🔥';
+  const link = `${BOT_LINK}?start=ref_${state.currentUser?.username || 'user'}`;
+  if (navigator.share) navigator.share({ title: 'desired', text, url: link }).catch(()=>{});
+  else { navigator.clipboard?.writeText(`${text}\n${link}`); toast('Скопировано', 'success'); }
+}
+
+// ==================== STARS / PREMIUM BUY (п.11) ====================
+function openStarsBuy(mode) {
+  state.msbMode = mode || 'stars';
+  state.msbPremiumMonths = 12;
+  const modal = document.getElementById('modalStarsBuy');
+  if (!modal) return;
+  const selfUsername = state.currentUser?.username || '';
+  const recInput = document.getElementById('msbRecipient');
+  if (recInput) recInput.value = '@' + selfUsername;
+  document.querySelectorAll('.msb-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.msbMode));
+  updateMSBModeUI();
+  openModal('modalStarsBuy');
+}
+
+function updateMSBModeUI() {
+  const starsBlock = document.getElementById('msbStarsBlock');
+  const premBlock = document.getElementById('msbPremiumBlock');
+  const modeName = document.getElementById('msbModeName');
+  const modeSub = document.getElementById('msbModeSub');
+  const buyBtn = document.getElementById('msbBuyBtn');
+  if (state.msbMode === 'stars') {
+    starsBlock?.classList.remove('hidden');
+    premBlock?.classList.add('hidden');
+    if (modeName) modeName.textContent = 'Stars';
+    if (modeSub) modeSub.textContent = 'Купите себе или друзьям';
+    if (buyBtn) buyBtn.textContent = 'Купить Stars';
+  } else {
+    starsBlock?.classList.add('hidden');
+    premBlock?.classList.remove('hidden');
+    if (modeName) modeName.textContent = 'Premium';
+    if (modeSub) modeSub.textContent = 'Самые низкие цены на рынке';
+    if (buyBtn) buyBtn.textContent = `Купить Premium на ${state.msbPremiumMonths} мес · ~${PREMIUM_PRICES[state.msbPremiumMonths]}₽`;
+  }
+  // Иконка
+  const hero = document.getElementById('msbHeroStars');
+  if (hero) {
+    const big = hero.querySelector('.msb-star-big');
+    if (big) big.style.color = state.msbMode === 'stars' ? 'var(--yellow)' : 'var(--accent)';
+  }
+}
+
+function msbSetSelf() {
+  const u = state.currentUser?.username || '';
+  const inp = document.getElementById('msbRecipient');
+  if (inp) inp.value = '@' + u;
+  haptic('light');
+}
+
+function msbSetStars(n) {
+  const inp = document.getElementById('msbStarsAmount');
+  if (inp) inp.value = n;
+  haptic('light');
+}
+
+function msbSelectPremium(months) {
+  state.msbPremiumMonths = months;
+  document.querySelectorAll('.msb-prem-opt').forEach(o => o.classList.toggle('active', +o.dataset.months === months));
+  updateMSBModeUI();
+  haptic('light');
+}
+
+function msbBuy() {
+  const terms = document.getElementById('msbTerms')?.checked;
+  if (!terms) return toast('Прими условия', 'error');
+  const recipient = document.getElementById('msbRecipient')?.value.trim();
+  if (!recipient) return toast('Укажи получателя', 'error');
+
+  let name = '', price = 0, flag = '⭐';
+  if (state.msbMode === 'stars') {
+    const amount = +document.getElementById('msbStarsAmount')?.value || 0;
+    if (amount < 50) return toast('Минимум 50 звёзд', 'error');
+    price = Math.round(amount * STARS_PRICE_PER_STAR);
+    name = `Stars ${amount} → ${recipient}`;
+  } else {
+    const months = state.msbPremiumMonths;
+    price = PREMIUM_PRICES[months];
+    flag = '💎';
+    name = `Premium ${months} мес → ${recipient}`;
+  }
+
+  const balance = Storage.get('balance', 0);
+  if (balance < price) return toast('Недостаточно средств', 'error');
+
+  Storage.set('balance', balance - price);
+  state.stats.spent += price;
+  state.stats.orders += 1;
+  state.points += Math.round(price * 0.05);
+  Storage.set('stats', state.stats);
+  Storage.set('points', state.points);
+
+  const orderId = 'ORD' + Date.now();
+  state.orders.push({
+    id: orderId,
+    items: [{ name, flag, price }],
+    total: price,
+    status: 'Выдан',
+    date: Date.now()
+  });
+  Storage.set('orders', state.orders);
+
+  state.inventory.push({
+    id: 'INV' + Date.now() + Math.random().toString(36).slice(2,6),
+    orderId,
+    name, flag, price,
+    status: 'active', guarantee: '24ч', date: Date.now(),
+    data: `Получатель: ${recipient}\nТовар: ${name}\nДата: ${new Date().toLocaleString('ru-RU')}`
+  });
+  Storage.set('inventory', state.inventory);
+
+  state.transactions.unshift({ type: 'out', title: `Заказ ${price}₽`, amount: price, date: Date.now() });
+  Storage.set('transactions', state.transactions);
+
+  closeModal('modalStarsBuy');
+  updateProfileUI();
+  renderOrders();
+  renderInventory();
+  renderTransactions();
+  renderCart();
+  checkLoyalty();
+  checkAchievements();
+  haptic('heavy');
+  playSound();
+
+  showThanksScreen(orderId, [{ name, flag, price }], price);
+}
+
+// ==================== TRANSACTIONS ====================
 function renderTransactions() {
   const list = document.getElementById('txList');
   const empty = document.getElementById('txEmpty');
@@ -1100,6 +1427,7 @@ function renderTransactions() {
   `).join('');
 }
 
+// ==================== ORDERS ====================
 function renderOrders() {
   const list = document.getElementById('ordersList');
   const empty = document.getElementById('ordersEmpty');
@@ -1117,6 +1445,7 @@ function renderOrders() {
   `).join('');
 }
 
+// ==================== INVENTORY ====================
 function renderInventory() {
   const list = document.getElementById('inventoryList');
   const empty = document.getElementById('inventoryEmpty');
@@ -1137,9 +1466,18 @@ function renderInventory() {
         Гарантия: ${item.guarantee}
       </div>
       <div class="inv-card-actions">
-        <button class="inv-action-btn" data-inv-copy="${item.id}">📋 Данные</button>
-        <button class="inv-action-btn" data-inv-review="${encodeURIComponent(item.name)}">⭐ Оценить</button>
-        <button class="inv-action-btn" data-inv-again="${encodeURIComponent(item.name)}">🔄 Снова</button>
+        <button class="inv-action-btn" data-inv-copy="${item.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Данные
+        </button>
+        <button class="inv-action-btn" data-inv-review="${encodeURIComponent(item.name)}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Оценить
+        </button>
+        <button class="inv-action-btn" data-inv-again="${encodeURIComponent(item.name)}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Снова
+        </button>
       </div>
     </div>
   `).join('');
@@ -1161,6 +1499,7 @@ function renderRefLink() {
   const el = document.getElementById('refLink');
   if (el) el.value = `${BOT_LINK}?start=ref_${state.currentUser?.username || 'user'}`;
 }
+
 function copyRef() {
   const el = document.getElementById('refLink');
   if (!el) return;
@@ -1170,7 +1509,7 @@ function copyRef() {
   haptic('light');
 }
 
-// ==================== REVIEWS / FAQ / INFO ====================
+// ==================== REVIEWS ====================
 function renderReviews() {
   const list = document.getElementById('reviewsList');
   const avg = document.getElementById('reviewAvg');
@@ -1179,19 +1518,49 @@ function renderReviews() {
   let items = [...state.reviews];
   if (state.reviewFilter === '5') items = items.filter(r => r.rating === 5);
   if (state.reviewFilter === '4') items = items.filter(r => r.rating === 4);
+  if (state.reviewFilter === '3') items = items.filter(r => r.rating === 3);
   if (avg) avg.textContent = items.length ? (items.reduce((s, r) => s + (r.rating || 5), 0) / items.length).toFixed(1) : '5.0';
-  if (count) count.textContent = items.length;
+  if (count) count.textContent = state.reviews.length;
+
+  // Обновляем распределение
+  updateReviewDistribution();
+
   if (!items.length) { list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px;">Пока нет отзывов</div>'; return; }
-  list.innerHTML = items.map(r => `
-    <div class="review-item">
-      <div class="review-head">
-        <div class="review-author">@${escapeHtml(r.author)}</div>
-        <div class="review-date">${new Date(r.date).toLocaleDateString()}</div>
+  list.innerHTML = items.map(r => {
+    const authorName = r.authorName || r.author || 'user';
+    const initial = authorName[0].toUpperCase();
+    return `
+      <div class="review-item">
+        <div class="review-head">
+          <div class="review-author-wrap">
+            <div class="review-avatar">${escapeHtml(initial)}</div>
+            <div>
+              <div class="review-author-name">${escapeHtml(authorName)}</div>
+              <div class="review-author-sub">Покупатель</div>
+            </div>
+          </div>
+          <div class="review-date">${new Date(r.date).toLocaleDateString()}</div>
+        </div>
+        <div class="review-stars-row">
+          ${'<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'.repeat(r.rating || 5)}
+        </div>
+        <div class="review-text">${escapeHtml(r.text)}</div>
       </div>
-      <div class="review-stars">${'★'.repeat(r.rating || 5)}</div>
-      <div class="review-text">${escapeHtml(r.text)}</div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
+}
+
+function updateReviewDistribution() {
+  const total = state.reviews.length || 1;
+  const counts = [0,0,0,0,0];
+  state.reviews.forEach(r => { if (r.rating >= 1 && r.rating <= 5) counts[r.rating-1]++; });
+  [1,2,3,4,5].forEach(star => {
+    const bar = document.querySelector(`.rev-stat-fill[data-bar="${star}"]`);
+    const percentEl = bar?.parentElement?.parentElement?.querySelector('.rev-stat-percent');
+    const pct = Math.round((counts[star-1] / total) * 100);
+    if (bar) bar.style.width = pct + '%';
+    if (percentEl) percentEl.textContent = pct + '%';
+  });
 }
 
 function renderReviewsMini() {
@@ -1199,21 +1568,30 @@ function renderReviewsMini() {
   if (!el) return;
   const items = state.reviews.slice(0, 3);
   if (!items.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:16px;font-size:13px;">Пока нет отзывов</div>'; return; }
-  el.innerHTML = items.map(r => `
+  el.innerHTML = items.map(r => {
+    const authorName = r.authorName || r.author || 'user';
+    return `
     <div class="review-mini">
       <div class="review-mini-head">
-        <span class="review-mini-author">@${escapeHtml(r.author)}</span>
+        <span class="review-mini-author">${escapeHtml(authorName)}</span>
         <span class="review-mini-stars">${'★'.repeat(r.rating || 5)}</span>
       </div>
       <div class="review-mini-text">${escapeHtml(r.text).slice(0, 120)}</div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function addReview() {
   const text = document.getElementById('reviewText').value.trim();
   if (!text) return toast('Напиши отзыв', 'error');
-  state.reviews.unshift({ author: state.currentUser?.username || 'user', text, rating: state.reviewRating, date: Date.now() });
+  const authorName = state.tgUser?.first_name || state.currentUser?.firstName || 'user';
+  state.reviews.unshift({
+    author: state.currentUser?.username || 'user',
+    authorName: authorName,
+    text,
+    rating: state.reviewRating,
+    date: Date.now()
+  });
   Storage.set('reviews', state.reviews);
   document.getElementById('reviewText').value = '';
   state.reviewRating = 5;
@@ -1227,19 +1605,45 @@ function addReview() {
   checkAchievements();
 }
 
+function scrollToReviewForm() {
+  const el = document.getElementById('reviewFormAnchor');
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ==================== FAQ (п.7) ====================
 function renderFAQ() {
   const el = document.getElementById('faqList');
   if (!el) return;
   const q = document.getElementById('faqSearch')?.value?.toLowerCase().trim() || '';
-  const filtered = q ? FAQ.filter(f => f.q.toLowerCase().includes(q) || f.a.toLowerCase().includes(q)) : FAQ;
-  el.innerHTML = filtered.map(f => `
-    <div class="faq-item" data-faq>
-      <div class="faq-q">${escapeHtml(f.q)}<span>▾</span></div>
-      <div class="faq-a">${escapeHtml(f.a)}</div>
-    </div>
-  `).join('') || '<div style="text-align:center;color:var(--muted);padding:20px;">Ничего не найдено</div>';
+  let filtered = FAQ;
+  if (state.faqCat !== 'all') filtered = filtered.filter(f => f.cat === state.faqCat);
+  if (q) filtered = filtered.filter(f =>
+    f.q.toLowerCase().includes(q) || f.a.toLowerCase().includes(q)
+  );
+
+  if (!filtered.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">Ничего не найдено</div>';
+    return;
+  }
+
+  el.innerHTML = filtered.map(f => {
+    let qHtml = escapeHtml(f.q);
+    let aHtml = escapeHtml(f.a);
+    if (q) {
+      const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      qHtml = qHtml.replace(re, '<mark>$1</mark>');
+      aHtml = aHtml.replace(re, '<mark>$1</mark>');
+    }
+    return `
+      <div class="faq-item" data-faq>
+        <div class="faq-q">${qHtml}<span>▾</span></div>
+        <div class="faq-a">${aHtml}</div>
+      </div>
+    `;
+  }).join('');
 }
 
+// ==================== INFO ====================
 function renderInfo() {
   const el = document.getElementById('infoList');
   if (!el) return;
@@ -1251,7 +1655,274 @@ function renderInfo() {
   `).join('');
 }
 
-// ==================== LOYALTY / ACHIEVEMENTS ====================
+// ==================== SUPPORT: TICKETS (п.2) ====================
+function renderTickets() {
+  const list = document.getElementById('ticketsList');
+  const empty = document.getElementById('ticketsEmpty');
+  const countEl = document.getElementById('ticketsCount');
+  if (countEl) countEl.textContent = state.tickets.length;
+  if (!list) return;
+  if (!state.tickets.length) { list.innerHTML = ''; empty?.classList.remove('hidden'); return; }
+  empty?.classList.add('hidden');
+  list.innerHTML = state.tickets.slice().reverse().map(t => {
+    const lastMsg = t.messages[t.messages.length - 1];
+    const statusClass = {
+      open: 'ticket-status-open',
+      progress: 'ticket-status-progress',
+      answered: 'ticket-status-answered',
+      closed: 'ticket-status-closed'
+    }[t.status] || 'ticket-status-open';
+    const statusLabel = {
+      open: 'Открыт',
+      progress: 'В работе',
+      answered: 'Ответ админа',
+      closed: 'Закрыт'
+    }[t.status] || 'Открыт';
+    return `
+      <div class="ticket-item" data-ticket-open="${t.id}">
+        <div class="ticket-item-head">
+          <div class="ticket-item-subject">${escapeHtml(t.subject)}</div>
+          <div class="ticket-item-status ${statusClass}">${statusLabel}</div>
+        </div>
+        <div class="ticket-item-meta">
+          <span>${escapeHtml(t.categoryLabel)}</span>
+          <span>${new Date(t.date).toLocaleDateString()}</span>
+        </div>
+        ${lastMsg ? `<div class="ticket-item-preview">${escapeHtml(lastMsg.text).slice(0, 60)}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+const TICKET_CATEGORIES = {
+  order: 'Проблема с заказом',
+  payment: 'Проблема с оплатой',
+  product: 'Товар не работает',
+  refund: 'Возврат средств',
+  other: 'Другое'
+};
+
+function openNewTicket() {
+  document.getElementById('ticketCategory').value = 'order';
+  document.getElementById('ticketSubject').value = '';
+  document.getElementById('ticketMessage').value = '';
+  openModal('modalNewTicket');
+}
+
+function submitNewTicket() {
+  const category = document.getElementById('ticketCategory').value;
+  const subject = document.getElementById('ticketSubject').value.trim();
+  const message = document.getElementById('ticketMessage').value.trim();
+  if (!subject) return toast('Укажи тему', 'error');
+  if (!message) return toast('Опиши проблему', 'error');
+
+  const ticket = {
+    id: 'TCK' + Date.now(),
+    category,
+    categoryLabel: TICKET_CATEGORIES[category] || 'Другое',
+    subject,
+    status: 'open',
+    date: Date.now(),
+    messages: [
+      { role: 'user', text: message, date: Date.now() }
+    ]
+  };
+  state.tickets.push(ticket);
+  Storage.set('tickets', state.tickets);
+  closeModal('modalNewTicket');
+  renderTickets();
+  toast('Тикет создан', 'success');
+  haptic('medium');
+
+  // Авто-ответ от админа через 2 сек (мок)
+  setTimeout(() => {
+    ticket.messages.push({
+      role: 'admin',
+      text: 'Привет! Тикет принят в работу. Ответим в течение 15 минут. А пока можешь описать подробнее, если что-то забыл.',
+      date: Date.now()
+    });
+    ticket.status = 'answered';
+    Storage.set('tickets', state.tickets);
+    renderTickets();
+    if (state.currentTicketId === ticket.id) renderTicketView(ticket.id);
+  }, 2000);
+}
+
+function openTicketView(id) {
+  state.currentTicketId = id;
+  renderTicketView(id);
+  openModal('modalTicketView');
+}
+
+function renderTicketView(id) {
+  const t = state.tickets.find(x => x.id === id);
+  if (!t) return;
+  const subjectEl = document.getElementById('tvSubject');
+  const statusEl = document.getElementById('tvStatus');
+  const dateEl = document.getElementById('tvDate');
+  const msgsEl = document.getElementById('ticketMessages');
+  if (subjectEl) subjectEl.textContent = t.subject;
+  if (statusEl) {
+    statusEl.className = 'tvh-status ' + ({
+      open: 'ticket-status-open',
+      progress: 'ticket-status-progress',
+      answered: 'ticket-status-answered',
+      closed: 'ticket-status-closed'
+    }[t.status] || 'ticket-status-open');
+    statusEl.textContent = {
+      open: 'Открыт',
+      progress: 'В работе',
+      answered: 'Ответ админа',
+      closed: 'Закрыт'
+    }[t.status] || 'Открыт';
+  }
+  if (dateEl) dateEl.textContent = new Date(t.date).toLocaleString('ru-RU');
+  if (msgsEl) {
+    msgsEl.innerHTML = t.messages.map(m => `
+      <div class="tmsg ${m.role}">
+        ${escapeHtml(m.text)}
+        <span class="tmsg-meta">${new Date(m.date).toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}</span>
+      </div>
+    `).join('');
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+}
+
+function sendTicketReply() {
+  const inp = document.getElementById('ticketReplyText');
+  if (!inp) return;
+  const text = inp.value.trim();
+  if (!text) return;
+  const t = state.tickets.find(x => x.id === state.currentTicketId);
+  if (!t) return;
+  t.messages.push({ role: 'user', text, date: Date.now() });
+  t.status = 'progress';
+  Storage.set('tickets', state.tickets);
+  inp.value = '';
+  renderTicketView(t.id);
+  renderTickets();
+  haptic('light');
+
+  // Авто-ответ (мок)
+  setTimeout(() => {
+    t.messages.push({
+      role: 'admin',
+      text: 'Принял, сейчас разберусь. Дай пару минут 👌',
+      date: Date.now()
+    });
+    t.status = 'answered';
+    Storage.set('tickets', state.tickets);
+    renderTicketView(t.id);
+    renderTickets();
+  }, 2500);
+}
+
+function contactSupportDirect() {
+  window.open(DIRECT_CONTACT, '_blank');
+}
+
+function scrollToPopularQuestions() {
+  document.getElementById('supportPopular')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ==================== SUPPORT: AI CHAT (п.13) ====================
+function openAIChat(prefillText) {
+  openModal('modalAIChat');
+  renderAIChat();
+  if (prefillText) {
+    setTimeout(() => aicSendText(prefillText), 300);
+  } else {
+    setTimeout(() => {
+      const inp = document.getElementById('aicInput');
+      inp?.focus();
+    }, 300);
+  }
+}
+
+function renderAIChat() {
+  const el = document.getElementById('aicMessages');
+  if (!el) return;
+  if (!state.aiChat.length) {
+    state.aiChat.push({
+      role: 'ai',
+      text: 'Привет! Я ИИ-консультант desired. Помогу с заказами, оплатой, возвратом, товарами. Что интересует?',
+      date: Date.now()
+    });
+    Storage.set('aiChat', state.aiChat);
+  }
+  el.innerHTML = state.aiChat.map(m => `
+    <div class="aic-msg ${m.role}">${escapeHtml(m.text)}</div>
+  `).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+function aicQuickSend(text) {
+  aicSendText(text);
+}
+
+function aicSend() {
+  const inp = document.getElementById('aicInput');
+  if (!inp) return;
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  aicSendText(text);
+}
+
+function aicSendText(text) {
+  if (!text) return;
+  state.aiChat.push({ role: 'user', text, date: Date.now() });
+  Storage.set('aiChat', state.aiChat);
+  renderAIChat();
+  haptic('light');
+
+  // Показ "печатает"
+  const el = document.getElementById('aicMessages');
+  if (el) {
+    const typing = document.createElement('div');
+    typing.className = 'aic-typing';
+    typing.id = 'aicTyping';
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    el.appendChild(typing);
+    el.scrollTop = el.scrollHeight;
+  }
+
+  // Ответ через 900-1500мс
+  setTimeout(() => {
+    document.getElementById('aicTyping')?.remove();
+    const answer = getAIResponse(text);
+    state.aiChat.push({ role: 'ai', text: answer, date: Date.now() });
+    Storage.set('aiChat', state.aiChat);
+    renderAIChat();
+    haptic('light');
+  }, 900 + Math.random() * 600);
+}
+
+function requestHumanAdmin() {
+  // Уведомление юзеру
+  state.aiChat.push({
+    role: 'system',
+    text: '📣 Запрос отправлен администратору. Ожидай ответа в разделе «Поддержка» или напиши напрямую.',
+    date: Date.now()
+  });
+  Storage.set('aiChat', state.aiChat);
+  renderAIChat();
+  toast('Админ уведомлён', 'success');
+  haptic('medium');
+
+  // Через 1.5 сек предлагаем написать напрямую
+  setTimeout(() => {
+    state.aiChat.push({
+      role: 'ai',
+      text: `Если срочно — напиши админу напрямую: t.me/id912559442. Или создай тикет в разделе «Поддержка».`,
+      date: Date.now()
+    });
+    Storage.set('aiChat', state.aiChat);
+    renderAIChat();
+  }, 1500);
+}
+
+// ==================== LOYALTY v2 (п.8) ====================
 function getCashbackPercent() {
   const s = state.stats.spent;
   if (s >= 50000) return 12;
@@ -1262,10 +1933,11 @@ function getCashbackPercent() {
 
 function getLoyaltyLevel() {
   const s = state.stats.spent;
-  if (s >= 50000) return { name: 'Platinum', icon: '💎' };
-  if (s >= 20000) return { name: 'Gold', icon: '🥇' };
-  if (s >= 5000) return { name: 'Silver', icon: '🥈' };
-  return { name: 'Bronze', icon: '🥉' };
+  const o = state.stats.orders;
+  if (s >= 50000 || o >= 100) return { name: 'Platinum', icon: '💎', key: 'platinum' };
+  if (s >= 20000 || o >= 25) return { name: 'Gold', icon: '🥇', key: 'gold' };
+  if (s >= 5000 || o >= 5) return { name: 'Silver', icon: '🥈', key: 'silver' };
+  return { name: 'Bronze', icon: '🥉', key: 'bronze' };
 }
 
 function checkLoyalty() {
@@ -1273,21 +1945,36 @@ function checkLoyalty() {
   const badge = document.getElementById('loyaltyBadge');
   const fill = document.getElementById('loyaltyFill');
   const text = document.getElementById('loyaltyProgressText');
-  const cashback = document.getElementById('cashbackPercent');
-  const spent = document.getElementById('loyaltySpent');
   if (!badge) return;
-  badge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>${level.name}`;
+  badge.textContent = `${level.icon} ${level.name}`;
+
   const th = [0, 5000, 20000, 50000];
   const next = th.find(t => t > state.stats.spent) || 50000;
   const prev = th.filter(t => t <= state.stats.spent).pop() || 0;
-  const progress = Math.min(100, ((state.stats.spent - prev) / (next - prev)) * 100);
+  const progress = next === prev ? 100 : Math.min(100, ((state.stats.spent - prev) / (next - prev)) * 100);
   if (fill) fill.style.width = progress + '%';
-  if (text) text.textContent = `${state.stats.spent} / ${next}₽`;
-  if (cashback) cashback.textContent = getCashbackPercent() + '%';
-  if (spent) spent.textContent = state.stats.spent + '₽';
-  state.loyaltyLevel = level.name.toLowerCase();
+
+  const remaining = Math.max(0, next - state.stats.spent);
+  const nextName = next === 50000 ? 'Platinum' : next === 20000 ? 'Gold' : next === 5000 ? 'Silver' : 'Silver';
+  if (text) {
+    if (state.stats.spent >= 50000) text.textContent = 'Максимальный уровень достигнут 👑';
+    else text.textContent = `До ${nextName}: ${remaining}₽ или ${Math.max(0, (next === 5000 ? 5 : next === 20000 ? 25 : 100) - state.stats.orders)} покупок`;
+  }
+
+  // Подсветка рангов на дорожке
+  const rankKeys = ['bronze', 'silver', 'gold', 'platinum'];
+  const currentIdx = rankKeys.indexOf(level.key);
+  document.querySelectorAll('.lv2-rank').forEach((r, i) => {
+    r.classList.toggle('achieved', i <= currentIdx);
+    r.classList.toggle('current', i === currentIdx);
+  });
+
+  state.loyaltyLevel = level.key;
 }
 
+function openLoyaltyInfo() { openModal('modalLoyaltyInfo'); }
+
+// ==================== ACHIEVEMENTS ====================
 function checkAchievements() {
   const u = state.achievements;
   const check = (id, cond) => {
@@ -1305,6 +1992,8 @@ function checkAchievements() {
   check('loyal', ['gold', 'platinum'].includes(state.loyaltyLevel));
   check('favorite', state.favorites.length >= 5);
   check('explorer', state.recent.length >= 10);
+  check('case_hunter', state.caseSpins >= 5);
+  check('daily_master', state.dailyBonus.streak >= 7);
   Storage.set('achievements', u);
   renderAchievements();
 }
@@ -1319,32 +2008,46 @@ function renderAchievements() {
       <div class="ach-desc">${a.desc}</div>
     </div>
   `).join('');
+  const unlocked = document.getElementById('achUnlocked');
+  const total = document.getElementById('achTotal');
+  const fill = document.getElementById('achProgressFill');
+  if (unlocked) unlocked.textContent = state.achievements.length;
+  if (total) total.textContent = ACHIEVEMENTS.length;
+  if (fill) fill.style.width = (state.achievements.length / ACHIEVEMENTS.length * 100) + '%';
 }
 
+// ==================== LEADERBOARD (п.10) ====================
 function renderLeaderboard(type) {
   const el = document.getElementById('lbList');
   if (!el) return;
+  const userFirstName = state.tgUser?.first_name || state.currentUser?.firstName || 'you';
   const buyers = [
-    { name: '@whale_king', val: 287 }, { name: '@bulk_buyer', val: 194 },
-    { name: '@trader_pro', val: 156 }, { name: '@reseller', val: 98 },
-    { name: '@active_user', val: 67 }, { name: '@' + (state.currentUser?.username || 'you'), val: state.stats.orders || 0 },
-    { name: '@newbie', val: 3 }
+    { name: 'whale_king', val: 287 },
+    { name: 'bulk_buyer', val: 194 },
+    { name: 'trader_pro', val: 156 },
+    { name: 'reseller', val: 98 },
+    { name: 'active_user', val: 67 },
+    { name: userFirstName, val: state.stats.orders || 0 },
+    { name: 'newbie', val: 3 }
   ].sort((a,b) => b.val - a.val).slice(0, 10);
   const refs = [
-    { name: '@referrer_pro', val: 145 }, { name: '@invite_king', val: 98 },
-    { name: '@network', val: 76 }, { name: '@ambassador', val: 42 },
-    { name: '@' + (state.currentUser?.username || 'you'), val: state.achievements.length }
+    { name: 'referrer_pro', val: 145 },
+    { name: 'invite_king', val: 98 },
+    { name: 'network', val: 76 },
+    { name: 'ambassador', val: 42 },
+    { name: userFirstName, val: state.achievements.length }
   ].sort((a,b) => b.val - a.val).slice(0, 10);
   const data = type === 'buyers' ? buyers : refs;
   el.innerHTML = data.map((d, i) => `
     <div class="lb-item ${i < 3 ? 'top' + (i+1) : ''}">
       <div class="lb-rank">${i + 1}</div>
-      <div class="lb-name">${d.name}</div>
+      <div class="lb-name">${escapeHtml(d.name)}</div>
       <div class="lb-value">${d.val}</div>
     </div>
   `).join('');
 }
 
+// ==================== CHANGELOG ====================
 function renderChangelog() {
   const el = document.getElementById('changelogList');
   if (!el) return;
@@ -1374,14 +2077,14 @@ function renderLiveFeed() {
   `).join('');
 }
 
-function animateCounter(el, from, to, duration) {
+function animateCounter(el, from, to, duration, suffix) {
   if (!el) return;
   const start = performance.now();
   const step = (now) => {
     const t = Math.min(1, (now - start) / duration);
     const eased = 1 - Math.pow(1 - t, 3);
     const val = Math.round(from + (to - from) * eased);
-    el.textContent = val.toLocaleString('ru-RU');
+    el.textContent = val.toLocaleString('ru-RU') + (suffix || '');
     if (t < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
@@ -1394,11 +2097,222 @@ function startOnlineTicker() {
     if (state.onlineCount < 1000) state.onlineCount = 1000;
     state.soldToday += Math.random() > 0.7 ? 1 : 0;
     const a = document.getElementById('statOnline');
-    if (a) animateCounter(a, prev, state.onlineCount, 600);
+    if (a) animateCounter(a, prev, state.onlineCount, 600, '');
     const b = document.getElementById('statSoldToday');
     if (b) b.textContent = state.soldToday;
   }, 5000);
 }
+
+// ==================== TIMER (реальный до конца суток) ====================
+function startPromoTimer() {
+  const el = document.getElementById('promoTimer');
+  if (!el) return;
+  const tick = () => {
+    const now = new Date();
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+    let diff = Math.max(0, end - now);
+    const h = String(Math.floor(diff / 3600000)).padStart(2,'0');
+    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+    el.textContent = `${h}:${m}:${s}`;
+  };
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ==================== DAILY BONUS ====================
+function checkDailyBonusBadge() {
+  const badge = document.getElementById('qaBonusBadge');
+  if (!badge) return;
+  const today = new Date().setHours(0,0,0,0);
+  const last = state.dailyBonus.lastClaim || 0;
+  if (last < today) badge.classList.remove('hidden');
+  else badge.classList.add('hidden');
+}
+
+function openDailyBonus() {
+  updateBonusUI();
+  openModal('modalDailyBonus');
+}
+
+function updateBonusUI() {
+  const today = new Date().setHours(0,0,0,0);
+  const last = state.dailyBonus.lastClaim || 0;
+  const alreadyClaimedToday = last >= today;
+  const streak = state.dailyBonus.streak || 0;
+  const btn = document.getElementById('bonusClaimBtn');
+  const sub = document.getElementById('bonusSub');
+
+  document.querySelectorAll('.bonus-day').forEach(d => {
+    const day = +d.dataset.day;
+    d.classList.remove('claimed', 'today');
+    if (day <= streak) d.classList.add('claimed');
+    else if (day === streak + 1 && !alreadyClaimedToday) d.classList.add('today');
+  });
+
+  if (btn) {
+    if (alreadyClaimedToday) {
+      btn.disabled = true;
+      btn.textContent = 'Уже забрано сегодня';
+    } else {
+      btn.disabled = false;
+      const nextDay = Math.min(7, (streak % 7) + 1);
+      const amount = BONUS_AMOUNTS[nextDay - 1];
+      btn.textContent = `Забрать +${amount}₽`;
+    }
+  }
+  if (sub) {
+    sub.textContent = `Стрик: ${streak} дн. · Следующий бонус на 7-й день: +50₽`;
+  }
+}
+
+function claimBonus() {
+  const today = new Date().setHours(0,0,0,0);
+  const last = state.dailyBonus.lastClaim || 0;
+  if (last >= today) return toast('Уже забрано сегодня', 'error');
+
+  const yesterday = today - 86400000;
+  let streak = state.dailyBonus.streak || 0;
+  if (last >= yesterday && last < today) streak = Math.min(7, streak + 1);
+  else streak = 1;
+
+  const dayIdx = Math.min(6, streak - 1);
+  const amount = BONUS_AMOUNTS[dayIdx];
+
+  Storage.set('balance', Storage.get('balance', 0) + amount);
+  state.dailyBonus = { lastClaim: Date.now(), streak };
+  Storage.set('dailyBonus', state.dailyBonus);
+  state.transactions.unshift({ type: 'in', title: `Бонус (день ${streak})`, amount, date: Date.now() });
+  Storage.set('transactions', state.transactions);
+
+  updateProfileUI();
+  renderTransactions();
+  updateBonusUI();
+  checkDailyBonusBadge();
+  checkAchievements();
+  animateBalanceChange();
+  toast(`+${amount}₽ бонус!`, 'success');
+  haptic('heavy');
+  playSound();
+}
+
+// ==================== CASE (рулетка) ====================
+const CASE_PRIZES = [
+  { label: '+10₽', value: 10, type: 'balance', weight: 40 },
+  { label: '+50₽', value: 50, type: 'balance', weight: 25 },
+  { label: '+100₽', value: 100, type: 'balance', weight: 15 },
+  { label: '+10₽', value: 10, type: 'balance', weight: 8 },
+  { label: '🇺🇸 США', value: 0, type: 'product', productId: 1, weight: 6 },
+  { label: '+50₽', value: 50, type: 'balance', weight: 3 },
+  { label: '+250₽', value: 250, type: 'balance', weight: 2 },
+  { label: '💎 Premium 12м', value: 0, type: 'premium', months: 12, weight: 1 }
+];
+
+function openCase() {
+  const resEl = document.getElementById('caseResult');
+  if (resEl) resEl.textContent = '';
+  const btn = document.getElementById('caseBtn');
+  if (btn) {
+    const balance = Storage.get('balance', 0);
+    btn.disabled = balance < CASE_PRICE;
+    btn.textContent = balance < CASE_PRICE ? 'Недостаточно средств' : `Крутить за ${CASE_PRICE}₽`;
+  }
+  openModal('modalCase');
+}
+
+function spinCase() {
+  const balance = Storage.get('balance', 0);
+  if (balance < CASE_PRICE) return toast('Недостаточно средств', 'error');
+
+  Storage.set('balance', balance - CASE_PRICE);
+  state.stats.spent += CASE_PRICE;
+  Storage.set('stats', state.stats);
+  state.caseSpins = (state.caseSpins || 0) + 1;
+  Storage.set('caseSpins', state.caseSpins);
+
+  state.transactions.unshift({ type: 'out', title: 'Крутка кейса', amount: CASE_PRICE, date: Date.now() });
+  Storage.set('transactions', state.transactions);
+
+  // Взвешенный рандом
+  const totalWeight = CASE_PRIZES.reduce((s, p) => s + p.weight, 0);
+  let r = Math.random() * totalWeight;
+  let prize = CASE_PRIZES[0];
+  for (const p of CASE_PRIZES) {
+    if (r < p.weight) { prize = p; break; }
+    r -= p.weight;
+  }
+
+  // Индекс приза в визуальном массиве (8 элементов)
+  const visualIdx = CASE_PRIZES.findIndex(p => p === prize);
+  const sliceAngle = 360 / 8;
+  const targetAngle = 360 * 5 + (360 - visualIdx * sliceAngle - sliceAngle / 2);
+  const wheel = document.getElementById('caseWheel');
+  if (wheel) {
+    wheel.style.transform = `rotate(${targetAngle}deg)`;
+  }
+
+  const btn = document.getElementById('caseBtn');
+  if (btn) btn.disabled = true;
+  const resEl = document.getElementById('caseResult');
+  if (resEl) resEl.textContent = 'Крутим...';
+
+  haptic('heavy');
+
+  setTimeout(() => {
+    // Начисление приза
+    let resultText = '';
+    if (prize.type === 'balance') {
+      Storage.set('balance', Storage.get('balance', 0) + prize.value);
+      state.transactions.unshift({ type: 'in', title: `Кейс: +${prize.value}₽`, amount: prize.value, date: Date.now() });
+      Storage.set('transactions', state.transactions);
+      resultText = `🎉 Выигрыш: +${prize.value}₽`;
+    } else if (prize.type === 'product') {
+      const p = PRODUCTS.find(x => x.id === prize.productId);
+      const orderId = 'ORD' + Date.now();
+      state.orders.push({ id: orderId, items: [{ name: p.name, flag: p.flag, price: 0 }], total: 0, status: 'Выдан (кейс)', date: Date.now() });
+      state.inventory.push({
+        id: 'INV' + Date.now() + Math.random().toString(36).slice(2,6),
+        orderId, name: p.name, flag: p.flag, price: 0,
+        status: 'active', guarantee: '24ч', date: Date.now(),
+        data: 'Логин: example@user\nПароль: ' + Math.random().toString(36).slice(2, 12)
+      });
+      Storage.set('orders', state.orders);
+      Storage.set('inventory', state.inventory);
+      resultText = `🎉 Выигрыш: ${p.flag} ${p.name}! Смотри в инвентаре`;
+    } else if (prize.type === 'premium') {
+      const orderId = 'ORD' + Date.now();
+      state.orders.push({ id: orderId, items: [{ name: 'Premium 12 мес (кейс)', flag: '💎', price: 0 }], total: 0, status: 'Выдан (кейс)', date: Date.now() });
+      state.inventory.push({
+        id: 'INV' + Date.now() + Math.random().toString(36).slice(2,6),
+        orderId, name: 'Premium 12 мес (кейс)', flag: '💎', price: 0,
+        status: 'active', guarantee: '24ч', date: Date.now(),
+        data: 'Активация: напишите @desired_support'
+      });
+      Storage.set('orders', state.orders);
+      Storage.set('inventory', state.inventory);
+      resultText = `🎉 Джекпот! Premium 12 мес — в инвентаре`;
+    }
+
+    if (resEl) resEl.textContent = resultText;
+    updateProfileUI();
+    renderTransactions();
+    renderOrders();
+    renderInventory();
+    animateBalanceChange();
+    checkAchievements();
+    haptic('heavy');
+    playSound();
+
+    setTimeout(() => {
+      if (btn) {
+        const b = Storage.get('balance', 0);
+        btn.disabled = b < CASE_PRICE;
+        btn.textContent = b < CASE_PRICE ? 'Недостаточно средств' : `Крутить за ${CASE_PRICE}₽`;
+      }
+    }, 1500);
+  }, 3600);
+      }
 
 // ==================== ADMIN ====================
 function checkAdminPass() {
@@ -1489,6 +2403,17 @@ function renderAdminTab(tab) {
           </span>
         </div>`).join('')
       : '<div style="color:var(--muted);font-size:12px;">Нет заказов</div>');
+  } else if (tab === 'tickets') {
+    const list = state.tickets.slice().reverse().map((t, i) =>
+      `<div class="admin-row">
+        <span>${escapeHtml(t.subject)} <span style="color:var(--muted);font-size:11px;">· ${t.categoryLabel} · ${t.messages.length} сообщ.</span></span>
+        <span style="display:flex;gap:6px;align-items:center;">
+          <span style="font-size:11px;color:var(--muted);">${new Date(t.date).toLocaleDateString()}</span>
+          <button class="ghost" data-admin-ticket="${t.id}">💬</button>
+        </span>
+      </div>`
+    ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет тикетов</div>';
+    c.innerHTML = `<h4>💬 Тикеты (${state.tickets.length})</h4>${list}`;
   } else if (tab === 'promo') {
     c.innerHTML = `
       <h4>🎟 Промокоды (${state.promos.length})</h4>
@@ -1507,7 +2432,7 @@ function renderAdminTab(tab) {
     `;
   } else if (tab === 'reviews') {
     const list = state.reviews.map((r, i) =>
-      `<div class="admin-row"><span>@${escapeHtml(r.author)} · ${r.rating}★ · ${escapeHtml(r.text).slice(0, 40)}</span><button class="ghost" data-admin-delrev="${i}">🗑</button></div>`
+      `<div class="admin-row"><span>${escapeHtml(r.authorName || r.author)} · ${r.rating}★ · ${escapeHtml(r.text).slice(0, 40)}</span><button class="ghost" data-admin-delrev="${i}">🗑</button></div>`
     ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет отзывов</div>';
     c.innerHTML = `<h4>⭐ Отзывы (${state.reviews.length})</h4>${list}`;
   } else if (tab === 'backup') {
@@ -1523,7 +2448,8 @@ function renderAdminTab(tab) {
         Заказов: <b>${state.orders.length}</b><br>
         Промокодов: <b>${state.promos.length}</b><br>
         Отзывов: <b>${state.reviews.length}</b><br>
-        Инвентарь: <b>${state.inventory.length}</b>
+        Инвентарь: <b>${state.inventory.length}</b><br>
+        Тикетов: <b>${state.tickets.length}</b>
       </div>
     `;
   } else if (tab === 'logs') {
@@ -1674,6 +2600,12 @@ function refundOrder(i) {
   toast(`Возврат ${o.total}₽`, 'success');
 }
 
+function adminOpenTicket(id) {
+  closeModal('modalAdminTicket');
+  go('support');
+  setTimeout(() => openTicketView(id), 300);
+}
+
 function openAdminPromoModal() {
   document.getElementById('promoCodeInput').value = '';
   document.getElementById('promoDiscInput').value = '';
@@ -1721,6 +2653,7 @@ function exportBackup() {
     users: state.users, products: PRODUCTS, orders: state.orders,
     promos: state.promos, reviews: state.reviews, inventory: state.inventory,
     transactions: state.transactions, points: state.points, stats: state.stats,
+    tickets: state.tickets, aiChat: state.aiChat, dailyBonus: state.dailyBonus,
     balance: Storage.get('balance', 0), version: 'v1.0.0', exported: Date.now()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -1750,6 +2683,9 @@ function importBackup() {
       if (data.transactions) Storage.set('transactions', data.transactions);
       if (data.points !== undefined) Storage.set('points', data.points);
       if (data.stats) Storage.set('stats', data.stats);
+      if (data.tickets) Storage.set('tickets', data.tickets);
+      if (data.aiChat) Storage.set('aiChat', data.aiChat);
+      if (data.dailyBonus) Storage.set('dailyBonus', data.dailyBonus);
       if (data.balance !== undefined) Storage.set('balance', data.balance);
       logAction('backup_import');
       toast('Бэкап загружен! Перезагрузка...', 'success');
@@ -1770,20 +2706,21 @@ function changeAdminPassword() {
 // ==================== MODALS ====================
 function openModal(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.add('show');
+  if (!el) return;
+  el.classList.add('show');
+  // Закрытие по тапу на фон
+  el.onclick = (e) => { if (e.target === el) closeModal(id); };
 }
 function closeModal(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.remove('show');
+  if (el) { el.classList.remove('show'); el.onclick = null; }
 }
+
 function contactSupport() { window.open(SUPPORT_LINK, '_blank'); }
+
 function createTicket() {
-  const theme = document.getElementById('ticketTheme').value.trim();
-  const text = document.getElementById('ticketText').value.trim();
-  if (!theme || !text) return toast('Заполни поля', 'error');
-  document.getElementById('ticketTheme').value = '';
-  document.getElementById('ticketText').value = '';
-  toast('Тикет создан', 'success');
+  // Legacy — теперь через openNewTicket
+  openNewTicket();
 }
 
 // ==================== TOASTS / HAPTIC / SOUND ====================
@@ -1830,33 +2767,30 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-// ==================== TIMER ====================
-let promoSeconds = 41*3600 + 27*60 + 35;
-function startPromoTimer() {
-  const el = document.getElementById('promoTimer');
-  if (!el) return;
-  setInterval(() => {
-    if (promoSeconds <= 0) return;
-    promoSeconds--;
-    const h = String(Math.floor(promoSeconds/3600)).padStart(2,'0');
-    const m = String(Math.floor((promoSeconds%3600)/60)).padStart(2,'0');
-    const s = String(promoSeconds%60).padStart(2,'0');
-    el.textContent = `${h}:${m}:${s}`;
-  }, 1000);
-}
-
 // ==================== BIND ALL ====================
 function bindAllListeners() {
+  // NAV
   document.querySelectorAll('.nav-btn').forEach(b => b.addEventListener('click', () => go(b.dataset.page)));
   document.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); go(el.dataset.page); }));
 
+  // Dropdown
   const dotsBtn = document.getElementById('dotsBtn');
   const dropdown = document.getElementById('dropdownMenu');
-  dotsBtn?.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); haptic('light'); });
+  dotsBtn?.addEventListener('click', (e) => { e.stopPropagation(); dropdown?.classList.toggle('show'); haptic('light'); });
   document.addEventListener('click', () => dropdown?.classList.remove('show'));
   dropdown?.addEventListener('click', (e) => e.stopPropagation());
 
-  window.addEventListener('scroll', () => document.getElementById('topbar')?.classList.toggle('scrolled', window.scrollY > 10));
+  // Scroll topbar + scroll-to-top button
+  const scrollBtn = document.getElementById('scrollTopBtn');
+  window.addEventListener('scroll', () => {
+    document.getElementById('topbar')?.classList.toggle('scrolled', window.scrollY > 10);
+    if (scrollBtn) {
+      if (window.scrollY > 500) scrollBtn.classList.remove('hidden');
+      else scrollBtn.classList.add('hidden');
+    }
+  });
+  scrollBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
   window.addEventListener('hashchange', () => {
     const h = location.hash.replace('#', '');
     if (h && document.getElementById('page-' + h)) {
@@ -1867,6 +2801,7 @@ function bindAllListeners() {
     }
   });
 
+  // Brand logo — 5 taps → admin
   let taps = 0, tapTimer = null;
   document.getElementById('brandLogo')?.addEventListener('click', () => {
     taps++;
@@ -1881,6 +2816,7 @@ function bindAllListeners() {
     }
   });
 
+  // Admin tabs
   document.querySelectorAll('.admin-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
@@ -1889,6 +2825,12 @@ function bindAllListeners() {
     });
   });
 
+  // Onboarding
+  document.getElementById('onbNext')?.addEventListener('click', onbNext);
+  document.getElementById('onbSkip')?.addEventListener('click', onbSkip);
+  document.querySelectorAll('.onb2-dot').forEach(d => d.addEventListener('click', () => { onbSlide = +d.dataset.dot; updateOnbSlide(); }));
+
+  // LB tabs
   document.querySelectorAll('.lb-tab').forEach(t => {
     t.addEventListener('click', () => {
       document.querySelectorAll('.lb-tab').forEach(x => x.classList.remove('active'));
@@ -1897,6 +2839,7 @@ function bindAllListeners() {
     });
   });
 
+  // Review filters
   document.querySelectorAll('.quick-chip[data-rfilter]').forEach(c => {
     c.addEventListener('click', () => {
       document.querySelectorAll('.quick-chip[data-rfilter]').forEach(x => x.classList.remove('active'));
@@ -1906,6 +2849,7 @@ function bindAllListeners() {
     });
   });
 
+  // Inventory filters
   document.querySelectorAll('.inv-filter[data-inv]').forEach(f => {
     f.addEventListener('click', () => {
       document.querySelectorAll('.inv-filter[data-inv]').forEach(x => x.classList.remove('active'));
@@ -1915,6 +2859,7 @@ function bindAllListeners() {
     });
   });
 
+  // Tx filters
   document.querySelectorAll('.inv-filter[data-tx]').forEach(f => {
     f.addEventListener('click', () => {
       document.querySelectorAll('.inv-filter[data-tx]').forEach(x => x.classList.remove('active'));
@@ -1924,6 +2869,33 @@ function bindAllListeners() {
     });
   });
 
+  // Cart top tabs
+  document.querySelectorAll('.cart-top-tab').forEach(t => {
+    t.addEventListener('click', () => switchCartTab(t.dataset.ctab));
+  });
+
+  // Stars/Premium toggle
+  document.querySelectorAll('.msb-toggle-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      state.msbMode = b.dataset.mode;
+      document.querySelectorAll('.msb-toggle-btn').forEach(x => x.classList.toggle('active', x.dataset.mode === state.msbMode));
+      updateMSBModeUI();
+      haptic('light');
+    });
+  });
+
+  // FAQ categories
+  document.querySelectorAll('.faq-cat-chip').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('.faq-cat-chip').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+      state.faqCat = c.dataset.fcat;
+      renderFAQ();
+      haptic('light');
+    });
+  });
+
+  // Stars input (reviews)
   document.querySelectorAll('#starsInput span').forEach(s => {
     s.addEventListener('click', () => {
       state.reviewRating = +s.dataset.star;
@@ -1932,6 +2904,7 @@ function bindAllListeners() {
     });
   });
 
+  // Quick filters
   document.querySelectorAll('.quick-chip[data-quick]').forEach(c => {
     c.addEventListener('click', () => {
       document.querySelectorAll('.quick-chip[data-quick]').forEach(x => x.classList.remove('active'));
@@ -1942,6 +2915,7 @@ function bindAllListeners() {
     });
   });
 
+  // Catalog tabs
   document.querySelectorAll('.catalog-tab').forEach(t => {
     t.addEventListener('click', () => {
       document.querySelectorAll('.catalog-tab').forEach(x => x.classList.remove('active'));
@@ -1954,15 +2928,30 @@ function bindAllListeners() {
     });
   });
 
-  document.getElementById('searchInput')?.addEventListener('input', (e) => {
-    searchQuery = e.target.value.toLowerCase().trim();
-    visibleProducts = 6;
-    renderProducts();
-    saveSearchHistory(searchQuery);
+  // Search
+  const searchInput = document.getElementById('searchInput');
+  let searchTimer = null;
+  searchInput?.addEventListener('input', (e) => {
+    clearTimeout(searchTimer);
+    const val = e.target.value.toLowerCase().trim();
+    searchTimer = setTimeout(() => {
+      searchQuery = val;
+      visibleProducts = 6;
+      renderProducts();
+      if (val) saveSearchHistory(val);
+    }, 250);
   });
-  document.getElementById('searchInput')?.addEventListener('focus', renderSearchHistory);
-  document.getElementById('faqSearch')?.addEventListener('input', renderFAQ);
+  searchInput?.addEventListener('focus', renderSearchHistory);
 
+  // FAQ search (п.7) — фикс
+  const faqSearch = document.getElementById('faqSearch');
+  faqSearch?.addEventListener('input', () => {
+    renderFAQ();
+  });
+  // Предотвращаем закрытие клавиатуры/потерю фокуса
+  faqSearch?.addEventListener('click', (e) => e.stopPropagation());
+
+  // Settings
   document.addEventListener('change', (e) => {
     const id = e.target.id;
     if (id === 'radiusSelect') Storage.set('radius', e.target.value);
@@ -1978,39 +2967,70 @@ function bindAllListeners() {
     applyAllSettings();
   });
 
+  // Global click delegation
   document.addEventListener('click', (e) => {
+    // Theme swatch
     const swatch = e.target.closest('.theme-swatch');
     if (swatch) { Storage.set('theme', swatch.dataset.theme); applyAllSettings(); toast('Тема изменена', 'success'); haptic('light'); return; }
 
+    // Accent dot
     const dot = e.target.closest('.accent-dot');
     if (dot) { Storage.set('accent', dot.dataset.accent); applyAllSettings(); haptic('light'); return; }
 
+    // Sale card
     if (e.target.closest('#saleCard')) { openSaleProduct(); return; }
 
+    // Favorite (глобально)
     const fav = e.target.closest('[data-fav]');
     if (fav) { e.stopPropagation(); toggleFav(+fav.dataset.fav); return; }
 
-    const add = e.target.closest('[data-add]');
-    if (add) { e.stopPropagation(); addToCart(+add.dataset.add); return; }
+    // В избранное из модалки
+    const fm = e.target.closest('[data-fav-modal]');
+    if (fm) { toggleFav(+fm.dataset.favModal); closeModal('modalProduct'); return; }
 
-    const buy = e.target.closest('[data-buy]');
-    if (buy) { e.stopPropagation(); buyNow(+buy.dataset.buy); return; }
+    // Избранное → в корзину
+    const favToCart = e.target.closest('[data-fav-to-cart]');
+    if (favToCart) { addToCart(+favToCart.dataset.favToCart); toggleFav(+favToCart.dataset.favToCart); return; }
 
-    const open = e.target.closest('[data-product-open]');
-    if (open) { openProduct(+open.dataset.productOpen); return; }
-
+    // Избранное → удалить
     const favRm = e.target.closest('[data-fav-rm]');
     if (favRm) { toggleFav(+favRm.dataset.favRm); return; }
 
+    // Add to cart
+    const add = e.target.closest('[data-add]');
+    if (add) { e.stopPropagation(); addToCart(+add.dataset.add); return; }
+
+    // Buy now
+    const buy = e.target.closest('[data-buy]');
+    if (buy) { e.stopPropagation(); buyNow(+buy.dataset.buy); return; }
+
+    // Add from modal
+    const am = e.target.closest('[data-add-from-modal]');
+    if (am) { addToCart(+am.dataset.addFromModal); closeModal('modalProduct'); return; }
+    const bm = e.target.closest('[data-buy-from-modal]');
+    if (bm) { buyNow(+bm.dataset.buyFromModal); closeModal('modalProduct'); return; }
+
+    // Open product
+    const open = e.target.closest('[data-product-open]');
+    if (open) { openProduct(+open.dataset.productOpen); return; }
+
+    // Share product
+    const share = e.target.closest('[data-share]');
+    if (share) { shareProduct(+share.dataset.share); return; }
+
+    // Remove from cart
     const rmCart = e.target.closest('[data-rm-cart]');
     if (rmCart) { removeCart(+rmCart.dataset.rmCart); return; }
 
+    // Upsell
     const upAdd = e.target.closest('[data-upsell]');
     if (upAdd) { addToCart(+upAdd.dataset.upsell); return; }
 
+    // Package
     const pkg = e.target.closest('[data-pkg]');
     if (pkg) { addPackageToCart(pkg.dataset.pkg); return; }
 
+    // Inventory actions
     const invCopy = e.target.closest('[data-inv-copy]');
     if (invCopy) { copyInvData(invCopy.dataset.invCopy); return; }
     const invReview = e.target.closest('[data-inv-review]');
@@ -2018,18 +3038,15 @@ function bindAllListeners() {
     const invAgain = e.target.closest('[data-inv-again]');
     if (invAgain) { buyAgain(decodeURIComponent(invAgain.dataset.invAgain)); return; }
 
-    const fm = e.target.closest('[data-fav-modal]');
-    if (fm) { toggleFav(+fm.dataset.favModal); closeModal('modalProduct'); return; }
-    const share = e.target.closest('[data-share]');
-    if (share) { shareProduct(+share.dataset.share); return; }
-    const am = e.target.closest('[data-add-from-modal]');
-    if (am) { addToCart(+am.dataset.addFromModal); closeModal('modalProduct'); return; }
-    const bm = e.target.closest('[data-buy-from-modal]');
-    if (bm) { buyNow(+bm.dataset.buyFromModal); closeModal('modalProduct'); return; }
-
+    // FAQ toggle
     const faq = e.target.closest('[data-faq]');
     if (faq) { faq.classList.toggle('open'); return; }
 
+    // Tickets
+    const ticketOpen = e.target.closest('[data-ticket-open]');
+    if (ticketOpen) { openTicketView(ticketOpen.dataset.ticketOpen); return; }
+
+    // Admin actions
     if (e.target.closest('[data-ap-add]')) { addProductFromAdmin(); return; }
     const apEdit = e.target.closest('[data-ap-edit]');
     if (apEdit) { editProductFromAdmin(+apEdit.dataset.apEdit); return; }
@@ -2045,11 +3062,18 @@ function bindAllListeners() {
     if (adminDelRev) { delReview(+adminDelRev.dataset.adminDelrev); return; }
     const adminDelPromo = e.target.closest('[data-admin-delpromo]');
     if (adminDelPromo) { deletePromo(adminDelPromo.dataset.adminDelpromo); return; }
+    const adminTicket = e.target.closest('[data-admin-ticket]');
+    if (adminTicket) { adminOpenTicket(adminTicket.dataset.adminTicket); return; }
     if (e.target.closest('[data-open-promo-modal]')) { openAdminPromoModal(); return; }
     if (e.target.closest('[data-admin-export]')) { exportBackup(); return; }
     if (e.target.closest('[data-admin-import]')) { importBackup(); return; }
     if (e.target.closest('[data-change-pass]')) { changeAdminPassword(); return; }
 
+    // History chip
+    const chip = e.target.closest('.hist-chip');
+    if (chip) { setSearch(chip.dataset.search); return; }
+
+    // Ripple
     const btn = e.target.closest('.btn');
     if (btn && Storage.get('animEnabled', true)) {
       const rect = btn.getBoundingClientRect();
@@ -2066,9 +3090,30 @@ function bindAllListeners() {
     }
   });
 
-  document.addEventListener('click', (e) => {
-    const chip = e.target.closest('.hist-chip');
-    if (chip) { setSearch(chip.dataset.search); }
+  // aicInput — авто-рост + Enter-отправка (Shift+Enter = перенос)
+  const aicInput = document.getElementById('aicInput');
+  aicInput?.addEventListener('input', () => {
+    aicInput.style.height = 'auto';
+    aicInput.style.height = Math.min(aicInput.scrollHeight, 100) + 'px';
+  });
+  aicInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      aicSend();
+    }
+  });
+
+  // ticketReplyText
+  const trt = document.getElementById('ticketReplyText');
+  trt?.addEventListener('input', () => {
+    trt.style.height = 'auto';
+    trt.style.height = Math.min(trt.scrollHeight, 100) + 'px';
+  });
+  trt?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendTicketReply();
+    }
   });
 }
 
@@ -2093,13 +3138,13 @@ window.applyPromoInCart = applyPromoInCart;
 window.openModal = openModal;
 window.closeModal = closeModal;
 window.contactSupport = contactSupport;
+window.contactSupportDirect = contactSupportDirect;
 window.createTicket = createTicket;
 window.copyRef = copyRef;
 window.addReview = addReview;
 window.setSearch = setSearch;
 window.toast = toast;
 window.resetSettings = resetSettings;
-window.clearAllData = clearAllData;
 window.openFilters = openFilters;
 window.applyFilters = applyFilters;
 window.resetFilters = resetFilters;
@@ -2114,3 +3159,29 @@ window.importBackup = importBackup;
 window.adminAddBalance = adminAddBalance;
 window.confirmAdminBalance = confirmAdminBalance;
 window.openAdminPromoModal = openAdminPromoModal;
+window.openStarsBuy = openStarsBuy;
+window.msbSetSelf = msbSetSelf;
+window.msbSetStars = msbSetStars;
+window.msbSelectPremium = msbSelectPremium;
+window.msbBuy = msbBuy;
+window.openCase = openCase;
+window.spinCase = spinCase;
+window.openDailyBonus = openDailyBonus;
+window.claimBonus = claimBonus;
+window.openLoyaltyInfo = openLoyaltyInfo;
+window.showThanksScreen = showThanksScreen;
+window.thanksGoInventory = thanksGoInventory;
+window.thanksShare = thanksShare;
+window.openAIChat = openAIChat;
+window.aicSend = aicSend;
+window.aicQuickSend = aicQuickSend;
+window.requestHumanAdmin = requestHumanAdmin;
+window.openNewTicket = openNewTicket;
+window.submitNewTicket = submitNewTicket;
+window.sendTicketReply = sendTicketReply;
+window.openTicketView = openTicketView;
+window.scrollToReviewForm = scrollToReviewForm;
+window.scrollToPopularQuestions = scrollToPopularQuestions;
+window.switchCartTab = switchCartTab;
+window.onbNext = onbNext;
+window.onbSkip = onbSkip;
