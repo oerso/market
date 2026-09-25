@@ -15,13 +15,12 @@
 </head>
 <body data-theme="dark" data-accent="red">
 
-<!-- ==================== SPLASH v3 PREMIUM ==================== -->
+<!-- ==================== SPLASH v3 ==================== -->
 <div id="splash" class="splash3">
   <div class="splash3-noise"></div>
   <div class="splash3-glow splash3-glow-1"></div>
   <div class="splash3-glow splash3-glow-2"></div>
   <div class="splash3-particles" id="splashParticles"></div>
-
   <div class="splash3-inner">
     <div class="splash3-logo-wrap">
       <div class="splash3-logo-ring"></div>
@@ -39,41 +38,62 @@
         </svg>
       </div>
     </div>
-
     <div class="splash3-name">desired</div>
-
     <div class="splash3-tagline" id="splashTagline">Маркет звёзд, премиума и аккаунтов</div>
-
     <div class="splash3-features">
-      <div class="splash3-feature">
-        <span class="splash3-feature-dot"></span>
-        <span>Автовыдача 24/7</span>
-      </div>
+      <div class="splash3-feature"><span class="splash3-feature-dot"></span><span>Автовыдача 24/7</span></div>
       <div class="splash3-feature-divider"></div>
-      <div class="splash3-feature">
-        <span class="splash3-feature-dot"></span>
-        <span>100% гарантия</span>
-      </div>
+      <div class="splash3-feature"><span class="splash3-feature-dot"></span><span>100% гарантия</span></div>
       <div class="splash3-feature-divider"></div>
-      <div class="splash3-feature">
-        <span class="splash3-feature-dot"></span>
-        <span>Тысячи юзеров</span>
-      </div>
+      <div class="splash3-feature"><span class="splash3-feature-dot"></span><span>Тысячи юзеров</span></div>
     </div>
-
     <div class="splash3-progress">
-      <div class="splash3-progress-track">
-        <div class="splash3-progress-fill" id="splashProgressFill"></div>
-      </div>
+      <div class="splash3-progress-track"><div class="splash3-progress-fill" id="splashProgressFill"></div></div>
       <div class="splash3-progress-info">
         <span class="splash3-progress-status" id="splashStatus">Инициализация...</span>
         <span class="splash3-progress-percent" id="splashPercent">0%</span>
       </div>
     </div>
   </div>
+  <div class="splash3-footer"><span>swill way · 2025</span></div>
+</div>
 
-  <div class="splash3-footer">
-    <span>swill way · 2025</span>
+<!-- ==================== ONBOARDING ==================== -->
+<div id="onboarding" class="onboarding-v2 hidden">
+  <div class="onb2-glow"></div>
+  <div class="onb2-inner">
+    <div class="onb2-slides" id="onbSlides">
+      <div class="onb2-slide active" data-slide="0">
+        <div class="onb2-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h2>Добро пожаловать в desired</h2>
+        <p>Маркет цифровых товаров: аккаунты, звёзды, Premium, NFT-подарки. Всё в одном месте.</p>
+      </div>
+      <div class="onb2-slide" data-slide="1">
+        <div class="onb2-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h2>Автовыдача 24/7</h2>
+        <p>Купил — получил моментально. Никаких ожиданий и переписок. Всё работает само.</p>
+      </div>
+      <div class="onb2-slide" data-slide="2">
+        <div class="onb2-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h2>Зарабатывай с нами</h2>
+        <p>Реферальная программа: 10% с друзей + 3% со второго уровня. Вывод от 500₽.</p>
+      </div>
+    </div>
+    <div class="onb2-dots">
+      <span class="onb2-dot active" data-dot="0"></span>
+      <span class="onb2-dot" data-dot="1"></span>
+      <span class="onb2-dot" data-dot="2"></span>
+    </div>
+    <div class="onb2-actions">
+      <button class="onb2-skip" id="onbSkip">Пропустить</button>
+      <button class="onb2-next" id="onbNext">Дальше</button>
+    </div>
   </div>
 </div>
 
@@ -83,10 +103,7 @@
   <header class="topbar" id="topbar">
     <div class="topbar-left">
       <button class="back-btn hidden" id="backBtn" aria-label="Назад">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"/>
-          <polyline points="12 19 5 12 12 5"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       </button>
       <div class="brand" id="brandLogo">
         <div class="brand-logo-wrap">
@@ -112,9 +129,13 @@
       </div>
     </div>
     <div class="topbar-right">
-      <button class="balance-pill" onclick="openTopUp()">
+      <button class="balance-pill" id="balancePill" onclick="openTopUp()">
         <span class="plus">+</span>
         <span id="topBalance">0₽</span>
+      </button>
+      <button class="eye-btn" id="eyeBtn" aria-label="Скрыть баланс">
+        <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <svg class="eye-closed hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
       </button>
       <button class="dots-btn" id="dotsBtn" aria-label="Меню">
         <svg width="4" height="18" viewBox="0 0 4 18" fill="currentColor"><circle cx="2" cy="2" r="1.8"/><circle cx="2" cy="9" r="1.8"/><circle cx="2" cy="16" r="1.8"/></svg>
@@ -126,7 +147,6 @@
     <div class="dropdown-section">
       <div class="dropdown-label">Магазин</div>
       <a data-page="main"><span class="dd-icon">⌂</span> Каталог</a>
-      <a data-page="favorites"><span class="dd-icon">♡</span> Избранное</a>
       <a data-page="inventory"><span class="dd-icon">▣</span> Инвентарь</a>
       <a data-page="orders"><span class="dd-icon">☰</span> Заказы</a>
       <a data-page="transactions"><span class="dd-icon">⇄</span> Транзакции</a>
@@ -154,6 +174,34 @@
       <span class="hello-sub" id="helloSub">Удачных покупок!</span>
     </div>
 
+    <div class="quick-actions">
+      <button class="qa-item" onclick="openDailyBonus()" id="qaBonus">
+        <span class="qa-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+        </span>
+        <span class="qa-label">Бонус</span>
+        <span class="qa-badge hidden" id="qaBonusBadge">!</span>
+      </button>
+      <button class="qa-item" onclick="openCase()">
+        <span class="qa-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12h18"/><path d="M12 8V4"/><path d="M8 4h8"/></svg>
+        </span>
+        <span class="qa-label">Кейс</span>
+      </button>
+      <button class="qa-item" onclick="go('ref')">
+        <span class="qa-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <span class="qa-label">Реферал</span>
+      </button>
+      <button class="qa-item" onclick="go('support')">
+        <span class="qa-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </span>
+        <span class="qa-label">Поддержка</span>
+      </button>
+    </div>
+
     <div class="hero-banner">
       <div class="hero-bg"></div>
       <div class="hero-bg-2"></div>
@@ -166,7 +214,7 @@
         <p class="hero-sub">На аккаунты, звёзды и Premium</p>
         <div class="hero-timer">
           <span class="hero-timer-label">До конца акции</span>
-          <span class="hero-timer-value" id="promoTimer">41:27:35</span>
+          <span class="hero-timer-value" id="promoTimer">00:00:00</span>
         </div>
       </div>
       <div class="hero-icon">%</div>
@@ -175,16 +223,11 @@
     <div class="catalog-tabs" id="catalogTabs">
       <div class="catalog-tab-slider" id="catalogTabSlider"></div>
       <button class="catalog-tab active" data-cat="accounts">
-        <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
+        <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span class="tab-label">Аккаунты</span>
       </button>
       <button class="catalog-tab" data-cat="stars">
-        <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-        </svg>
+        <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         <span class="tab-label">Звёзды и Премиум</span>
       </button>
     </div>
@@ -192,9 +235,7 @@
     <div class="stat-cards">
       <div class="stat-card">
         <div class="stat-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
         </div>
         <div class="stat-card-info">
           <div class="stat-card-value" id="statSoldToday">32</div>
@@ -203,12 +244,7 @@
       </div>
       <div class="stat-card">
         <div class="stat-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <div class="stat-card-info">
           <div class="stat-card-value" id="statOnline">1 247</div>
@@ -247,12 +283,7 @@
     <div class="search-row">
       <input type="text" class="search" placeholder="Поиск по каталогу" id="searchInput" autocomplete="off">
       <button class="filter-btn" id="filterBtn" onclick="openFilters()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
-          <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
-          <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
-          <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
         <span class="filter-badge hidden" id="filterBadge">0</span>
       </button>
     </div>
@@ -262,58 +293,40 @@
     <div class="products-end hidden" id="productsEnd">— Конец каталога —</div>
 
     <div class="section-title hidden" id="recentTitle">
-      <span>👀 Недавно смотрел</span>
+      <span>Недавно смотрел</span>
       <button class="section-clear" onclick="clearRecent()">Очистить</button>
     </div>
     <div class="hscroll" id="recentList"></div>
 
     <div class="section-title">
-      <span>🔴 Сейчас покупают</span>
+      <span>Сейчас покупают</span>
       <span class="live-dot-inline"></span>
     </div>
     <div class="live-feed" id="liveFeed"></div>
 
-    <div class="section-title">🎁 Готовые пакеты</div>
+    <div class="section-title">Готовые пакеты</div>
     <div class="packages" id="packagesList"></div>
 
-    <div class="section-title">⭐ Что говорят юзеры</div>
+    <div class="section-title">Что говорят юзеры</div>
     <div class="reviews-mini" id="reviewsMini"></div>
   </main>
 
   <main id="page-profile" class="page">
     <h1 class="page-title">Профиль</h1>
 
-    <div class="profile-hero">
+    <div class="profile-hero-v2">
       <div class="profile-avatar-ring">
         <div class="profile-avatar" id="userAvatar">d</div>
       </div>
-      <div class="profile-name" id="userName">@desired</div>
-      <div class="profile-id" id="userId">@id0</div>
-      <div class="profile-badges">
-        <span class="p-badge p-badge-green">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Авторизован
-        </span>
-        <span class="p-badge p-badge-gold" id="loyaltyBadge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
-          Bronze
-        </span>
-        <span class="p-badge p-badge-blue hidden" id="verifiedBadge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          Verified
-        </span>
-      </div>
+      <div class="profile-name" id="userName">desired</div>
+      <div class="profile-id-chip" id="userId">@id0</div>
     </div>
 
     <div class="profile-balance-card">
       <div class="pbc-glow"></div>
       <div class="pbc-top">
         <span class="pbc-label">Баланс</span>
-        <svg class="pbc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="6" width="20" height="14" rx="3"/>
-          <path d="M2 10h20"/>
-          <circle cx="17" cy="15" r="1.4" fill="currentColor"/>
-        </svg>
+        <svg class="pbc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="3"/><path d="M2 10h20"/><circle cx="17" cy="15" r="1.4" fill="currentColor"/></svg>
       </div>
       <div class="pbc-amount" id="profileBalance">0₽</div>
       <button class="pbc-btn" onclick="openTopUp()">
@@ -322,109 +335,115 @@
       </button>
     </div>
 
-    <div class="loyalty-card">
-      <div class="loyalty-head">
-        <span class="loyalty-head-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <div class="loyalty-v2" id="loyaltyBlock">
+      <div class="loyalty-v2-head">
+        <span class="loyalty-v2-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
           Уровень лояльности
         </span>
-        <span id="loyaltyProgressText">0 / 5000₽</span>
+        <button class="loyalty-v2-help" onclick="openLoyaltyInfo()">?</button>
       </div>
-      <div class="loyalty-bar"><div class="loyalty-fill" id="loyaltyFill" style="width:0%"></div></div>
-      <div class="loyalty-hint">Кэшбэк: <b id="cashbackPercent">3%</b> · Потрачено: <b id="loyaltySpent">0₽</b></div>
+      <div class="loyalty-v2-current">
+        <div class="loyalty-v2-badge" id="loyaltyBadge">Bronze</div>
+        <div class="loyalty-v2-days">С нами <b id="daysOnMarket">0</b> дней</div>
+      </div>
+      <div class="loyalty-v2-track">
+        <div class="loyalty-v2-ranks">
+          <div class="lv2-rank" data-rank="bronze"><div class="lv2-rank-dot"></div><div class="lv2-rank-name">Bronze</div><div class="lv2-rank-req">0₽</div></div>
+          <div class="lv2-rank" data-rank="silver"><div class="lv2-rank-dot"></div><div class="lv2-rank-name">Silver</div><div class="lv2-rank-req">5k</div></div>
+          <div class="lv2-rank" data-rank="gold"><div class="lv2-rank-dot"></div><div class="lv2-rank-name">Gold</div><div class="lv2-rank-req">20k</div></div>
+          <div class="lv2-rank" data-rank="platinum"><div class="lv2-rank-dot"></div><div class="lv2-rank-name">Platinum</div><div class="lv2-rank-req">50k</div></div>
+        </div>
+        <div class="lv2-progress-bar"><div class="lv2-progress-fill" id="loyaltyFill" style="width:0%"></div></div>
+      </div>
+      <div class="loyalty-v2-hint" id="loyaltyProgressText">До Silver: 5000₽ или 5 покупок</div>
     </div>
 
     <div class="profile-stats-grid">
       <div class="p-stat p-stat-green">
-        <div class="p-stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-        </div>
+        <div class="p-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
         <div class="p-stat-value" id="statTopUp">0₽</div>
         <div class="p-stat-label">Пополнено</div>
       </div>
       <div class="p-stat p-stat-red">
-        <div class="p-stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 17 17 7 17"/></svg>
-        </div>
+        <div class="p-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 17 17 7 17"/></svg></div>
         <div class="p-stat-value" id="statSpent">0₽</div>
         <div class="p-stat-label">Потрачено</div>
       </div>
       <div class="p-stat p-stat-purple">
-        <div class="p-stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
+        <div class="p-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
         <div class="p-stat-value" id="statPoints">0</div>
         <div class="p-stat-label">Баллы</div>
       </div>
       <div class="p-stat p-stat-blue">
-        <div class="p-stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-        </div>
+        <div class="p-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
         <div class="p-stat-value" id="statOrders">0</div>
         <div class="p-stat-label">Заказов</div>
       </div>
     </div>
 
-    <div class="profile-menu">
-      <button class="profile-menu-item" onclick="openPromoModal()">
-        <span class="pmi-icon pmi-icon-pink">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-        </span>
-        <span class="pmi-text">Ввести промокод</span>
-        <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
+    <!-- Рефералы section -->
+    <div class="profile-section-label">Рефералы</div>
+    <button class="profile-menu-item" onclick="go('ref')">
+      <span class="pmi-icon pmi-icon-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+      <span class="pmi-text">Реферальная программа</span>
+      <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
 
-      <button class="profile-menu-item" onclick="go('transactions')">
-        <span class="pmi-icon pmi-icon-blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
-        </span>
-        <span class="pmi-text">Все транзакции</span>
-        <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
+    <!-- Ещё section -->
+    <div class="profile-section-label">Ещё</div>
+    <button class="profile-menu-item" onclick="go('reviews')">
+      <span class="pmi-icon pmi-icon-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+      <span class="pmi-text">Отзывы</span>
+      <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <button class="profile-menu-item" onclick="go('transactions')">
+      <span class="pmi-icon pmi-icon-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></span>
+      <span class="pmi-text">Транзакции</span>
+      <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <button class="profile-menu-item" onclick="go('achievements')">
+      <span class="pmi-icon pmi-icon-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg></span>
+      <span class="pmi-text">Достижения</span>
+      <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <button class="profile-menu-item" onclick="go('info')">
+      <span class="pmi-icon pmi-icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
+      <span class="pmi-text">Информация</span>
+      <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <button class="profile-menu-item" onclick="go('settings')">
+      <span class="pmi-icon pmi-icon-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+      <span class="pmi-text">Настройки</span>
+      <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
 
-      <button class="profile-menu-item" onclick="go('orders')">
-        <span class="pmi-icon pmi-icon-green">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-        </span>
-        <span class="pmi-text">Мои заказы</span>
-        <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-
-      <button class="profile-menu-item" onclick="go('ref')">
-        <span class="pmi-icon pmi-icon-purple">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </span>
-        <span class="pmi-text">Реферальная программа</span>
-        <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-
-      <button class="profile-menu-item" onclick="go('favorites')">
-        <span class="pmi-icon pmi-icon-red">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        </span>
-        <span class="pmi-text">Избранное</span>
-        <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-
-      <button class="profile-menu-item" onclick="go('achievements')">
-        <span class="pmi-icon pmi-icon-gold">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
-        </span>
-        <span class="pmi-text">Достижения</span>
-        <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-    </div>
+    <!-- Big Support card -->
+    <button class="support-big-card" onclick="go('support')">
+      <div class="sbc-glow"></div>
+      <div class="sbc-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        24/7
+      </div>
+      <div class="sbc-content">
+        <div class="sbc-title">Поддержка</div>
+        <div class="sbc-sub">Обратитесь к нам, если есть вопросы</div>
+      </div>
+      <div class="sbc-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      </div>
+    </button>
   </main>
 
   <main id="page-inventory" class="page">
-    <h1 class="page-title">📦 Инвентарь</h1>
+    <h1 class="page-title">Инвентарь</h1>
     <div class="inv-filters">
       <button class="inv-filter active" data-inv="all">Все</button>
       <button class="inv-filter" data-inv="active">Активные</button>
     </div>
     <div id="inventoryList"></div>
     <div class="empty-state" id="inventoryEmpty">
-      <div class="empty-emoji">📦</div>
+      <div class="empty-icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
       <div class="empty-title">Пока пусто</div>
       <div class="empty-sub">Купленные товары появятся здесь</div>
       <button class="btn btn-primary" onclick="go('main')">В каталог</button>
@@ -433,50 +452,62 @@
 
   <main id="page-cart" class="page">
     <h1 class="page-title">Корзина</h1>
-    <div class="cart-stepper">
-      <div class="step active" id="step1"><span>1</span>Товары</div>
-      <div class="step" id="step2"><span>2</span>Оплата</div>
-      <div class="step" id="step3"><span>3</span>Готово</div>
+    <div class="cart-top-tabs">
+      <button class="cart-top-tab active" data-ctab="cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        Корзина
+      </button>
+      <button class="cart-top-tab" data-ctab="fav">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Избранное
+      </button>
     </div>
-    <div id="cartList"></div>
-    <div class="upsell hidden" id="upsell">
-      <div class="upsell-title">🎁 С этим часто берут:</div>
-      <div id="upsellList"></div>
-    </div>
-    <div class="cart-summary hidden" id="cartSummary">
-      <div class="cart-row"><span>Товары</span><span id="cartCount">0</span></div>
-      <div class="cart-row"><span>Скидка лояльности</span><span id="cartLoyalty">0₽</span></div>
-      <div class="cart-row"><span>Промокод</span><span id="cartPromo">—</span></div>
-      <button class="btn btn-secondary btn-full promo-btn" onclick="applyPromoInCart()">💎 Применить промокод</button>
-      <div class="cart-row total"><span>Итого</span><span id="cartTotal">0₽</span></div>
-      <div class="balance-check" id="balanceCheck">
-        <div class="balance-check-info"><span id="balanceCheckText">Баланс: 0₽</span></div>
-        <button class="btn btn-primary btn-sm hidden" id="topUpQuick" onclick="openTopUp()">Докинуть</button>
-      </div>
-      <div class="cart-note">⚡ Автовыдача после оплаты</div>
-      <button class="btn btn-primary btn-full" onclick="checkout()">Оформить заказ</button>
-    </div>
-    <div class="empty-state" id="cartEmpty">
-      <div class="empty-emoji">🛒</div>
-      <div class="empty-title">Корзина пуста</div>
-      <div class="empty-sub">Добавь товары из каталога</div>
-      <button class="btn btn-primary" onclick="go('main')">В каталог</button>
-    </div>
-  </main>
 
-  <main id="page-favorites" class="page">
-    <h1 class="page-title">❤️ Избранное</h1>
-    <div id="favList"></div>
-    <div class="empty-state" id="favEmpty">
-      <div class="empty-emoji">💔</div>
-      <div class="empty-title">Пока пусто</div>
-      <div class="empty-sub">Добавляй товары в избранное</div>
-      <button class="btn btn-primary" onclick="go('main')">В каталог</button>
+    <div class="cart-tab-content" id="cartTabContent">
+      <div class="cart-stepper">
+        <div class="step active" id="step1"><span>1</span>Товары</div>
+        <div class="step" id="step2"><span>2</span>Оплата</div>
+        <div class="step" id="step3"><span>3</span>Готово</div>
+      </div>
+      <div id="cartList"></div>
+      <div class="upsell hidden" id="upsell">
+        <div class="upsell-title">С этим часто берут:</div>
+        <div id="upsellList"></div>
+      </div>
+      <div class="cart-summary hidden" id="cartSummary">
+        <div class="cart-row"><span>Товары</span><span id="cartCount">0</span></div>
+        <div class="cart-row"><span>Скидка лояльности</span><span id="cartLoyalty">0₽</span></div>
+        <div class="cart-row"><span>Промокод</span><span id="cartPromo">—</span></div>
+        <button class="btn btn-secondary btn-full promo-btn" onclick="applyPromoInCart()">Применить промокод</button>
+        <div class="cart-row total"><span>Итого</span><span id="cartTotal">0₽</span></div>
+        <div class="balance-check" id="balanceCheck">
+          <div class="balance-check-info"><span id="balanceCheckText">Баланс: 0₽</span></div>
+          <button class="btn btn-primary btn-sm hidden" id="topUpQuick" onclick="openTopUp()">Докинуть</button>
+        </div>
+        <div class="cart-note">Автовыдача после оплаты</div>
+        <button class="btn btn-primary btn-full" onclick="checkout()">Оформить заказ</button>
+      </div>
+      <div class="empty-state" id="cartEmpty">
+        <div class="empty-icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
+        <div class="empty-title">Корзина пуста</div>
+        <div class="empty-sub">Добавь товары из каталога</div>
+        <button class="btn btn-primary" onclick="go('main')">В каталог</button>
+      </div>
+    </div>
+
+    <div class="cart-tab-content hidden" id="favTabContent">
+      <div id="favListFull"></div>
+      <div class="empty-state" id="favEmptyFull">
+        <div class="empty-icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div class="empty-title">Избранное пусто</div>
+        <div class="empty-sub">Жми ♡ на товарах, чтобы сохранить их здесь</div>
+        <button class="btn btn-primary" onclick="go('main')">В каталог</button>
+      </div>
     </div>
   </main>
 
   <main id="page-transactions" class="page">
-    <h1 class="page-title">📋 Транзакции</h1>
+    <h1 class="page-title">Транзакции</h1>
     <div class="tx-filters">
       <button class="inv-filter active" data-tx="all">Все</button>
       <button class="inv-filter" data-tx="in">Пополнения</button>
@@ -484,17 +515,17 @@
     </div>
     <div id="txList"></div>
     <div class="empty-state" id="txEmpty">
-      <div class="empty-emoji">💳</div>
+      <div class="empty-icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg></div>
       <div class="empty-title">История пуста</div>
       <div class="empty-sub">Здесь появятся пополнения и покупки</div>
     </div>
   </main>
 
   <main id="page-orders" class="page">
-    <h1 class="page-title">📦 Мои заказы</h1>
+    <h1 class="page-title">Мои заказы</h1>
     <div id="ordersList"></div>
     <div class="empty-state" id="ordersEmpty">
-      <div class="empty-emoji">📦</div>
+      <div class="empty-icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
       <div class="empty-title">Заказов пока нет</div>
       <div class="empty-sub">Купи первый товар</div>
       <button class="btn btn-primary" onclick="go('main')">В каталог</button>
@@ -502,86 +533,280 @@
   </main>
 
   <main id="page-ref" class="page">
-    <h1 class="page-title">👥 Реферальная программа</h1>
+    <h1 class="page-title">Реферальная программа</h1>
     <div class="ref-hero">
-      <div class="ref-emoji">📣</div>
-      <div class="ref-title">Зови друзей — 10%</div>
-      <div class="ref-sub">+3% со второго уровня. Вывод от 500₽.</div>
+      <div class="ref-hero-glow"></div>
+      <div class="ref-hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="ref-hero-title">Зови друзей — 10%</div>
+      <div class="ref-hero-sub">+3% со второго уровня. Вывод от 500₽.</div>
     </div>
     <div class="ref-link-box">
       <input type="text" id="refLink" readonly>
       <button class="btn btn-primary" onclick="copyRef()">Копировать</button>
     </div>
-    <div class="stats">
-      <div class="stat gray"><div class="stat-value" id="refCount">0</div><div class="stat-label">Уровень 1</div></div>
-      <div class="stat gray"><div class="stat-value" id="refCount2">0</div><div class="stat-label">Уровень 2</div></div>
+    <div class="ref-stats-grid">
+      <div class="ref-stat">
+        <div class="ref-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="ref-stat-value" id="refCount">0</div>
+        <div class="ref-stat-label">Уровень 1</div>
+      </div>
+      <div class="ref-stat">
+        <div class="ref-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="ref-stat-value" id="refCount2">0</div>
+        <div class="ref-stat-label">Уровень 2</div>
+      </div>
+      <div class="ref-stat ref-stat-green">
+        <div class="ref-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="ref-stat-value" id="refEarn">0₽</div>
+        <div class="ref-stat-label">Заработано</div>
+      </div>
+      <div class="ref-stat">
+        <div class="ref-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="ref-stat-value">500₽</div>
+        <div class="ref-stat-label">Мин. вывод</div>
+      </div>
     </div>
-    <div class="stats">
-      <div class="stat green"><div class="stat-value" id="refEarn">0₽</div><div class="stat-label">Заработано</div></div>
-      <div class="stat gray"><div class="stat-value">500₽</div><div class="stat-label">Мин. вывод</div></div>
-    </div>
-    <button class="btn btn-secondary btn-full" onclick="copyRef()">📤 Поделиться ссылкой</button>
+    <button class="btn btn-primary btn-full" onclick="copyRef()" style="margin-top:16px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Поделиться ссылкой
+    </button>
   </main>
+    <main id="page-reviews" class="page">
+    <h1 class="page-title">Отзывы</h1>
 
-  <main id="page-reviews" class="page">
-    <h1 class="page-title">⭐ Отзывы</h1>
-    <div class="review-summary">
-      <div class="review-avg" id="reviewAvg">5.0</div>
-      <div class="review-avg-sub">средняя оценка</div>
-      <div class="review-avg-count"><span id="reviewCount">0</span> отзывов</div>
+    <div class="reviews-hero">
+      <div class="reviews-hero-glow"></div>
+      <div class="reviews-hero-score">
+        <div class="rhs-value" id="reviewAvg">5.0</div>
+        <div class="rhs-stars">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="rhs-count">На основе <b id="reviewCount">0</b> отзывов</div>
+      </div>
+      <button class="reviews-write-btn" onclick="scrollToReviewForm()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Написать отзыв
+      </button>
     </div>
+
+    <div class="reviews-stats">
+      <div class="rev-stat-row">
+        <span class="rev-stat-label">5</span>
+        <div class="rev-stat-bar"><div class="rev-stat-fill" style="width:92%" data-bar="5"></div></div>
+        <span class="rev-stat-percent">92%</span>
+      </div>
+      <div class="rev-stat-row">
+        <span class="rev-stat-label">4</span>
+        <div class="rev-stat-bar"><div class="rev-stat-fill" style="width:6%" data-bar="4"></div></div>
+        <span class="rev-stat-percent">6%</span>
+      </div>
+      <div class="rev-stat-row">
+        <span class="rev-stat-label">3</span>
+        <div class="rev-stat-bar"><div class="rev-stat-fill" style="width:2%" data-bar="3"></div></div>
+        <span class="rev-stat-percent">2%</span>
+      </div>
+      <div class="rev-stat-row">
+        <span class="rev-stat-label">2</span>
+        <div class="rev-stat-bar"><div class="rev-stat-fill" style="width:0%" data-bar="2"></div></div>
+        <span class="rev-stat-percent">0%</span>
+      </div>
+      <div class="rev-stat-row">
+        <span class="rev-stat-label">1</span>
+        <div class="rev-stat-bar"><div class="rev-stat-fill" style="width:0%" data-bar="1"></div></div>
+        <span class="rev-stat-percent">0%</span>
+      </div>
+    </div>
+
     <div class="review-filters">
       <button class="quick-chip active" data-rfilter="all">Все</button>
       <button class="quick-chip" data-rfilter="5">5★</button>
       <button class="quick-chip" data-rfilter="4">4★</button>
+      <button class="quick-chip" data-rfilter="3">3★</button>
     </div>
-    <div class="review-form">
-      <div class="stars-input" id="starsInput">
-        <span data-star="1">★</span><span data-star="2">★</span>
-        <span data-star="3">★</span><span data-star="4">★</span>
-        <span data-star="5" class="active">★</span>
+
+    <div class="review-form" id="reviewFormAnchor">
+      <div class="review-form-head">
+        <div class="rfh-title">Оставь свой отзыв</div>
+        <div class="rfh-sub">Помоги другим сделать правильный выбор</div>
       </div>
-      <textarea id="reviewText" placeholder="Напиши свой отзыв..."></textarea>
-      <button class="btn btn-primary" onclick="addReview()">Отправить</button>
+      <div class="stars-input" id="starsInput">
+        <span data-star="1">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </span>
+        <span data-star="2">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </span>
+        <span data-star="3">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </span>
+        <span data-star="4">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </span>
+        <span data-star="5" class="active">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </span>
+      </div>
+      <textarea id="reviewText" placeholder="Поделись впечатлениями о покупке..."></textarea>
+      <button class="btn btn-primary btn-full" onclick="addReview()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Отправить отзыв
+      </button>
     </div>
+
     <div id="reviewsList"></div>
   </main>
 
   <main id="page-faq" class="page">
-    <h1 class="page-title">❓ FAQ</h1>
+    <h1 class="page-title">FAQ</h1>
     <div class="faq-search-wrap">
       <svg class="faq-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" class="search faq-search-input" id="faqSearch" placeholder="Поиск по вопросам...">
+      <input type="text" class="search faq-search-input" id="faqSearch" placeholder="Поиск по вопросам..." autocomplete="off">
+    </div>
+    <div class="faq-categories" id="faqCategories">
+      <button class="faq-cat-chip active" data-fcat="all">Все</button>
+      <button class="faq-cat-chip" data-fcat="payment">Оплата</button>
+      <button class="faq-cat-chip" data-fcat="products">Товары</button>
+      <button class="faq-cat-chip" data-fcat="warranty">Гарантия</button>
+      <button class="faq-cat-chip" data-fcat="account">Аккаунт</button>
+      <button class="faq-cat-chip" data-fcat="other">Другое</button>
     </div>
     <div class="faq-list" id="faqList"></div>
   </main>
 
   <main id="page-info" class="page">
-    <h1 class="page-title">ℹ️ Информация</h1>
-    <div class="faq-list" id="infoList"></div>
+    <h1 class="page-title">Информация</h1>
+    <div class="info-hero">
+      <div class="info-hero-logo">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="infoLogoGrad" x1="0" y1="0" x2="64" y2="64"><stop offset="0%" stop-color="#ff2d55"/><stop offset="100%" stop-color="#a80020"/></linearGradient></defs>
+          <path d="M32 3 L59 19.5 L59 44.5 L32 61 L5 44.5 L5 19.5 Z" fill="url(#infoLogoGrad)"/>
+          <text x="32" y="42" font-family="Manrope, sans-serif" font-size="28" font-weight="800" fill="#fff" text-anchor="middle">d</text>
+        </svg>
+      </div>
+      <div class="info-hero-title">desired market</div>
+      <div class="info-hero-sub">Маркет цифровых товаров · v1.0.0</div>
+      <div class="info-hero-badges">
+        <span class="ihb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Автовыдача</span>
+        <span class="ihb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Гарантия</span>
+        <span class="ihb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>24/7</span>
+      </div>
+    </div>
+    <div class="info-team-title">Наша команда</div>
+    <div class="info-team">
+      <div class="info-team-member">
+        <div class="itm-avatar" style="background:linear-gradient(135deg,#ff2d55,#a80020)">D</div>
+        <div class="itm-name">desired</div>
+        <div class="itm-role">Основатель</div>
+      </div>
+      <div class="info-team-member">
+        <div class="itm-avatar" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">S</div>
+        <div class="itm-name">swill</div>
+        <div class="itm-role">Разработка</div>
+      </div>
+      <div class="info-team-member">
+        <div class="itm-avatar" style="background:linear-gradient(135deg,#22c55e,#15803d)">K</div>
+        <div class="itm-name">kent</div>
+        <div class="itm-role">Маркетинг</div>
+      </div>
+    </div>
+    <div class="faq-list" id="infoList" style="margin-top:20px;"></div>
   </main>
 
   <main id="page-support" class="page">
-    <h1 class="page-title">💬 Поддержка</h1>
-    <div class="support-hero">
-      <div class="empty-emoji">💬</div>
-      <div class="empty-title">Мы на связи</div>
-      <div class="empty-sub">Обычно отвечаем за 15 минут</div>
+    <h1 class="page-title">Поддержка</h1>
+
+    <div class="support-hero-v2">
+      <div class="sh2-glow"></div>
+      <div class="sh2-status">
+        <span class="sh2-dot"></span>
+        ИИ-консультант онлайн
+      </div>
+      <div class="sh2-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="sh2-title">Чем помочь?</div>
+      <div class="sh2-sub">ИИ отвечает мгновенно 24/7,<br>живой админ подключится если нужно</div>
     </div>
-    <div class="info-block">
-      <h3>Создать тикет</h3>
-      <input type="text" class="search" id="ticketTheme" placeholder="Тема">
-      <textarea class="support-textarea" id="ticketText" placeholder="Опиши проблему..."></textarea>
-      <button class="btn btn-primary btn-full" onclick="createTicket()">Отправить</button>
+
+    <div class="support-actions">
+      <button class="support-action-btn primary" onclick="openAIChat()">
+        <span class="sab-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>
+        </span>
+        <span class="sab-content">
+          <span class="sab-title">Чат с ИИ-консультантом</span>
+          <span class="sab-sub">Мгновенные ответы на любые вопросы</span>
+        </span>
+        <svg class="sab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <button class="support-action-btn" onclick="openNewTicket()">
+        <span class="sab-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        </span>
+        <span class="sab-content">
+          <span class="sab-title">Создать тикет</span>
+          <span class="sab-sub">Опиши проблему, админ ответит в чате тикета</span>
+        </span>
+        <svg class="sab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <button class="support-action-btn" onclick="contactSupportDirect()">
+        <span class="sab-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </span>
+        <span class="sab-content">
+          <span class="sab-title">Связаться напрямую</span>
+          <span class="sab-sub">Написать админу в Telegram</span>
+        </span>
+        <svg class="sab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
     </div>
-    <div class="info-block">
-      <h3>Прямой контакт</h3>
-      <button class="btn btn-secondary btn-full" onclick="contactSupport()">💬 Написать в Telegram</button>
+
+    <div class="support-my-tickets">
+      <div class="section-title" style="margin-top:24px;">
+        <span>Мои тикеты</span>
+        <span class="tickets-count" id="ticketsCount">0</span>
+      </div>
+      <div id="ticketsList"></div>
+      <div class="empty-state hidden" id="ticketsEmpty">
+        <div class="empty-icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="empty-title">Тикетов пока нет</div>
+        <div class="empty-sub">Создай тикет, если есть проблема</div>
+      </div>
+    </div>
+
+    <div class="faq-categories" style="margin-top:24px;">
+      <button class="faq-cat-chip active" onclick="scrollToPopularQuestions()">Популярные вопросы</button>
+    </div>
+    <div class="support-popular" id="supportPopular">
+      <div class="spq-item" onclick="openAIChat('Где мой заказ?')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Где мой заказ?
+      </div>
+      <div class="spq-item" onclick="openAIChat('Как оплатить?')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>
+        Как оплатить?
+      </div>
+      <div class="spq-item" onclick="openAIChat('Хочу вернуть товар')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        Хочу вернуть товар
+      </div>
+      <div class="spq-item" onclick="openAIChat('Товар не работает')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Товар не работает
+      </div>
     </div>
   </main>
 
   <main id="page-leaderboard" class="page">
-    <h1 class="page-title">🏆 Лидеры</h1>
+    <h1 class="page-title">Лидеры</h1>
     <div class="lb-tabs">
       <button class="lb-tab active" data-lb="buyers">Покупатели</button>
       <button class="lb-tab" data-lb="refs">Рефереры</button>
@@ -590,21 +815,25 @@
   </main>
 
   <main id="page-achievements" class="page">
-    <h1 class="page-title">🎖 Достижения</h1>
+    <h1 class="page-title">Достижения</h1>
+    <div class="ach-progress">
+      <div class="ach-progress-text">Открыто <b id="achUnlocked">0</b> из <b id="achTotal">10</b></div>
+      <div class="ach-progress-bar"><div class="ach-progress-fill" id="achProgressFill" style="width:0%"></div></div>
+    </div>
     <div class="ach-grid" id="achList"></div>
   </main>
 
   <main id="page-changelog" class="page">
-    <h1 class="page-title">📋 Ченджлог</h1>
+    <h1 class="page-title">Ченджлог</h1>
     <div class="changelog-list" id="changelogList"></div>
   </main>
 
   <main id="page-settings" class="page">
-    <h1 class="page-title">⚙️ Настройки</h1>
+    <h1 class="page-title">Настройки</h1>
 
     <div class="setting-row col">
       <div class="setting-head">
-        <span>🎨 Тема оформления</span>
+        <span>Тема оформления</span>
         <span class="setting-hint">Меняет всю палитру</span>
       </div>
       <div class="theme-grid">
@@ -622,7 +851,7 @@
 
     <div class="setting-row col">
       <div class="setting-head">
-        <span>🌈 Акцентный цвет</span>
+        <span>Акцентный цвет</span>
         <span class="setting-hint">Кнопки, границы, свечение</span>
       </div>
       <div class="accent-grid">
@@ -638,7 +867,7 @@
     </div>
 
     <div class="setting-row">
-      <div><div>📐 Радиус углов</div><div class="setting-hint">Скругление карточек и кнопок</div></div>
+      <div><div>Радиус углов</div><div class="setting-hint">Скругление карточек и кнопок</div></div>
       <select id="radiusSelect" class="season-select">
         <option value="sharp">Острые</option>
         <option value="default">Обычные</option>
@@ -648,7 +877,7 @@
     </div>
 
     <div class="setting-row">
-      <div><div>🔠 Размер шрифта</div><div class="setting-hint">Для удобного чтения</div></div>
+      <div><div>Размер шрифта</div><div class="setting-hint">Для удобного чтения</div></div>
       <select id="fontScaleSelect" class="season-select">
         <option value="small">Мелкий</option>
         <option value="default" selected>Обычный</option>
@@ -658,110 +887,114 @@
     </div>
 
     <div class="setting-row">
-      <div><div>📱 Компактный режим</div><div class="setting-hint">Больше контента на экране</div></div>
+      <div><div>Компактный режим</div><div class="setting-hint">Больше контента на экране</div></div>
       <label class="switch"><input type="checkbox" id="compactToggle"><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div><div>✨ Анимации</div><div class="setting-hint">Плавные переходы и эффекты</div></div>
+      <div><div>Анимации</div><div class="setting-hint">Плавные переходы и эффекты</div></div>
       <label class="switch"><input type="checkbox" id="animToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div><div>💡 Свечение</div><div class="setting-hint">Неоновый glow на кнопках</div></div>
+      <div><div>Свечение</div><div class="setting-hint">Неоновый glow на кнопках</div></div>
       <label class="switch"><input type="checkbox" id="glowToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div><div>🎄 Сезонная тема</div><div class="setting-hint">Акцент под праздник</div></div>
+      <div><div>Сезонная тема</div><div class="setting-hint">Акцент под праздник</div></div>
       <select id="seasonSelect" class="season-select">
         <option value="default">Обычная</option>
-        <option value="newyear">🎄 Новый год</option>
-        <option value="halloween">🎃 Хэллоуин</option>
-        <option value="blackfriday">🖤 Чёрная пятница</option>
+        <option value="newyear">Новый год</option>
+        <option value="halloween">Хэллоуин</option>
+        <option value="blackfriday">Чёрная пятница</option>
       </select>
     </div>
 
     <div class="setting-row">
-      <div><div>🔊 Звук покупки</div><div class="setting-hint">Звук при оплате</div></div>
+      <div><div>Звук покупки</div><div class="setting-hint">Звук при оплате</div></div>
       <label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div><div>🔔 Уведомления</div><div class="setting-hint">Пуш-уведомления в боте</div></div>
+      <div><div>Уведомления</div><div class="setting-hint">Пуш-уведомления в боте</div></div>
       <label class="switch"><input type="checkbox" id="notifyToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div><div>📳 Вибрация</div><div class="setting-hint">Тактильный отклик</div></div>
+      <div><div>Вибрация</div><div class="setting-hint">Тактильный отклик</div></div>
       <label class="switch"><input type="checkbox" id="hapticToggle" checked><span class="slider"></span></label>
     </div>
 
-    <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="resetSettings()">🔄 Сбросить настройки</button>
+    <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="resetSettings()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+      Сбросить настройки
+    </button>
   </main>
 
   <main id="page-admin" class="page">
-    <h1 class="page-title">🛠 Админ-панель</h1>
+    <h1 class="page-title">Админ-панель</h1>
     <div class="admin-tabs">
-      <button class="admin-tab active" data-tab="dashboard">📊 Дашборд</button>
-      <button class="admin-tab" data-tab="products">🏷 Товары</button>
-      <button class="admin-tab" data-tab="users">👤 Юзеры</button>
-      <button class="admin-tab" data-tab="orders">📦 Заказы</button>
-      <button class="admin-tab" data-tab="promo">🎟 Промокоды</button>
-      <button class="admin-tab" data-tab="reviews">⭐ Отзывы</button>
-      <button class="admin-tab" data-tab="backup">💾 Бэкап</button>
-      <button class="admin-tab" data-tab="logs">📜 Логи</button>
-      <button class="admin-tab" data-tab="settings">⚙️ Админ</button>
+      <button class="admin-tab active" data-tab="dashboard">Дашборд</button>
+      <button class="admin-tab" data-tab="products">Товары</button>
+      <button class="admin-tab" data-tab="users">Юзеры</button>
+      <button class="admin-tab" data-tab="orders">Заказы</button>
+      <button class="admin-tab" data-tab="tickets">Тикеты</button>
+      <button class="admin-tab" data-tab="promo">Промокоды</button>
+      <button class="admin-tab" data-tab="reviews">Отзывы</button>
+      <button class="admin-tab" data-tab="backup">Бэкап</button>
+      <button class="admin-tab" data-tab="logs">Логи</button>
+      <button class="admin-tab" data-tab="settings">Админ</button>
     </div>
     <div class="admin-content" id="adminContent"></div>
+  </main>
+
+  <main id="page-404" class="page">
+    <div class="page404">
+      <div class="page404-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="page404-title">Страница не найдена</div>
+      <div class="page404-sub">Похоже, здесь ничего нет. Вернись на главную.</div>
+      <button class="btn btn-primary" onclick="go('main')">На главную</button>
+    </div>
   </main>
 
   <nav class="bottom-nav">
     <button class="nav-btn active" data-page="main">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-          <polyline points="9 22 9 12 15 12 15 22"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       </span>
       <span>Маркет</span>
     </button>
     <button class="nav-btn" data-page="inventory">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-          <line x1="12" y1="22.08" x2="12" y2="12"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
       </span>
       <span>Инвентарь</span>
     </button>
     <button class="nav-btn" data-page="cart">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="9" cy="21" r="1"/>
-          <circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
       </span>
       <span>Корзина</span>
       <span class="cart-badge hidden" id="cartBadge">0</span>
     </button>
     <button class="nav-btn" data-page="profile">
       <span class="nav-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </span>
       <span>Профиль</span>
     </button>
   </nav>
 </div>
 
+<!-- ==================== MODAL: ADMIN PASS ==================== -->
 <div class="modal" id="modalAdminPass">
   <div class="modal-box">
-    <div class="modal-emoji">🔐</div>
+    <div class="modal-emoji">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
     <h3>Введите пароль</h3>
     <input type="password" id="adminPassInput" placeholder="••••••" autocomplete="off">
     <div class="modal-actions">
@@ -773,7 +1006,9 @@
 
 <div class="modal" id="modalDenied">
   <div class="modal-box">
-    <div class="modal-emoji">⛔</div>
+    <div class="modal-emoji">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+    </div>
     <h3>Доступ запрещён</h3>
     <p class="modal-text">У вас нет прав администратора.</p>
     <div class="modal-actions">
@@ -782,9 +1017,12 @@
   </div>
 </div>
 
+<!-- ==================== MODAL: TOPUP ==================== -->
 <div class="modal" id="modalTopUp">
   <div class="modal-box">
-    <div class="modal-emoji">💳</div>
+    <div class="modal-emoji">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="3"/><path d="M2 10h20"/><circle cx="17" cy="15" r="1.4" fill="currentColor"/></svg>
+    </div>
     <h3>Пополнение баланса</h3>
     <input type="number" id="topUpAmount" placeholder="Сумма" min="25">
     <div class="topup-quick">
@@ -793,7 +1031,10 @@
       <button onclick="document.getElementById('topUpAmount').value=500">500₽</button>
       <button onclick="document.getElementById('topUpAmount').value=1000">1000₽</button>
     </div>
-    <p class="modal-text" style="margin-top:12px;">Оплата появится после переезда на сервер: СБП, карты РФ, Stars, CryptoBot.</p>
+    <div class="topup-notice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      Оплата появится после переезда на сервер: СБП, карты РФ, Stars, CryptoBot.
+    </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('modalTopUp')">Отмена</button>
       <button class="btn btn-primary" onclick="submitTopUp()">Пополнить</button>
@@ -801,9 +1042,12 @@
   </div>
 </div>
 
+<!-- ==================== MODAL: PROMO ==================== -->
 <div class="modal" id="modalPromo">
   <div class="modal-box">
-    <div class="modal-emoji">💎</div>
+    <div class="modal-emoji">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+    </div>
     <h3>Ввести промокод</h3>
     <input type="text" id="promoInput" placeholder="ПРОМОКОД" style="letter-spacing:2px;text-transform:uppercase;">
     <p class="modal-text" id="promoResult"></p>
@@ -814,6 +1058,7 @@
   </div>
 </div>
 
+<!-- ==================== MODAL: PRODUCT ==================== -->
 <div class="modal" id="modalProduct">
   <div class="modal-box modal-product">
     <button class="modal-close" onclick="closeModal('modalProduct')">✕</button>
@@ -821,6 +1066,81 @@
   </div>
 </div>
 
+<!-- ==================== MODAL: BUY STARS / PREMIUM ==================== -->
+<div class="modal" id="modalStarsBuy">
+  <div class="modal-box modal-stars-buy">
+    <button class="modal-close" onclick="closeModal('modalStarsBuy')">✕</button>
+    <div class="msb-head">
+      <div class="msb-toggle">
+        <button class="msb-toggle-btn active" data-mode="stars">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Звёзды
+        </button>
+        <button class="msb-toggle-btn" data-mode="premium">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20L18 4l-6 10-6-10L2 20z"/></svg>
+          Премиум
+        </button>
+      </div>
+    </div>
+
+    <div class="msb-hero">
+      <div class="msb-hero-stars" id="msbHeroStars">
+        <svg class="msb-star-big" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="msb-star-small msb-star-1" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg class="msb-star-small msb-star-2" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div class="msb-title">Покупка <b id="msbModeName">Stars</b></div>
+      <div class="msb-sub" id="msbModeSub">Купите себе или друзьям</div>
+    </div>
+
+    <div class="msb-recipient">
+      <input type="text" id="msbRecipient" placeholder="@username получателя">
+      <button class="msb-self-btn" onclick="msbSetSelf()">Для себя</button>
+    </div>
+
+    <div id="msbStarsBlock">
+      <input type="number" id="msbStarsAmount" placeholder="Количество звёзд" min="50">
+      <div class="msb-quick-stars">
+        <button onclick="msbSetStars(50)">50</button>
+        <button onclick="msbSetStars(100)">100</button>
+        <button onclick="msbSetStars(250)">250</button>
+        <button onclick="msbSetStars(500)">500</button>
+      </div>
+    </div>
+
+    <div id="msbPremiumBlock" class="hidden">
+      <div class="msb-premium-options">
+        <div class="msb-prem-opt" data-months="3" onclick="msbSelectPremium(3)">
+          <div class="msb-prem-radio"></div>
+          <div class="msb-prem-months">3 месяца</div>
+          <div class="msb-prem-price">1239₽</div>
+        </div>
+        <div class="msb-prem-opt" data-months="6" onclick="msbSelectPremium(6)">
+          <div class="msb-prem-radio"></div>
+          <div class="msb-prem-months">6 месяцев</div>
+          <div class="msb-prem-price">1649₽</div>
+        </div>
+        <div class="msb-prem-opt active" data-months="12" onclick="msbSelectPremium(12)">
+          <div class="msb-prem-radio"></div>
+          <div class="msb-prem-months">1 год</div>
+          <div class="msb-prem-price">2979₽</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-full msb-buy-btn" id="msbBuyBtn" onclick="msbBuy()">
+      Купить Stars
+    </button>
+
+    <label class="msb-terms">
+      <input type="checkbox" id="msbTerms">
+      <span class="msb-terms-check"></span>
+      <span class="msb-terms-text">Я принимаю <b>Условия использования</b></span>
+    </label>
+  </div>
+</div>
+
+<!-- ==================== MODAL: FILTERS ==================== -->
 <div class="modal" id="modalFilters">
   <div class="modal-box modal-product">
     <button class="modal-close" onclick="closeModal('modalFilters')">✕</button>
@@ -860,6 +1180,7 @@
   </div>
 </div>
 
+<!-- ==================== MODAL: ADMIN PRODUCT ==================== -->
 <div class="modal" id="modalAdminProduct">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('modalAdminProduct')">✕</button>
@@ -888,6 +1209,7 @@
   </div>
 </div>
 
+<!-- ==================== MODAL: ADMIN PROMO ==================== -->
 <div class="modal" id="modalAdminPromo">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('modalAdminPromo')">✕</button>
@@ -903,6 +1225,7 @@
   </div>
 </div>
 
+<!-- ==================== MODAL: ADMIN BALANCE ==================== -->
 <div class="modal" id="modalAdminBalance">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('modalAdminBalance')">✕</button>
@@ -917,8 +1240,257 @@
   </div>
 </div>
 
+<!-- ==================== MODAL: NEW TICKET ==================== -->
+<div class="modal" id="modalNewTicket">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalNewTicket')">✕</button>
+    <div class="modal-emoji">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+    </div>
+    <h3>Новый тикет</h3>
+    <select id="ticketCategory" class="season-select" style="width:100%;margin-bottom:12px;">
+      <option value="order">Проблема с заказом</option>
+      <option value="payment">Проблема с оплатой</option>
+      <option value="product">Товар не работает</option>
+      <option value="refund">Возврат средств</option>
+      <option value="other">Другое</option>
+    </select>
+    <input type="text" id="ticketSubject" placeholder="Тема" maxlength="80">
+    <textarea id="ticketMessage" class="support-textarea" placeholder="Опиши проблему подробно..." style="min-height:100px;text-align:left;margin-bottom:12px;"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modalNewTicket')">Отмена</button>
+      <button class="btn btn-primary" onclick="submitNewTicket()">Отправить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: TICKET VIEW ==================== -->
+<div class="modal" id="modalTicketView">
+  <div class="modal-box modal-ticket-view">
+    <button class="modal-close" onclick="closeModal('modalTicketView')">✕</button>
+    <div class="ticket-view-head">
+      <div class="tvh-subject" id="tvSubject">—</div>
+      <div class="tvh-meta">
+        <span class="tvh-status" id="tvStatus">Открыт</span>
+        <span class="tvh-date" id="tvDate">—</span>
+      </div>
+    </div>
+    <div class="ticket-messages" id="ticketMessages"></div>
+    <div class="ticket-reply">
+      <textarea id="ticketReplyText" placeholder="Ответить..." rows="1"></textarea>
+      <button class="ticket-reply-btn" onclick="sendTicketReply()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: AI CHAT ==================== -->
+<div class="modal" id="modalAIChat">
+  <div class="modal-box modal-ai-chat">
+    <div class="aic-head">
+      <button class="aic-back" onclick="closeModal('modalAIChat')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <div class="aic-head-info">
+        <div class="aic-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>
+        </div>
+        <div>
+          <div class="aic-name">ИИ-консультант</div>
+          <div class="aic-status"><span class="aic-status-dot"></span> Онлайн</div>
+        </div>
+      </div>
+      <button class="aic-human" onclick="requestHumanAdmin()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Админ
+      </button>
+    </div>
+
+    <div class="aic-messages" id="aicMessages"></div>
+
+    <div class="aic-quick" id="aicQuick">
+      <button onclick="aicQuickSend('Где мой заказ?')">Где заказ?</button>
+      <button onclick="aicQuickSend('Как оплатить?')">Как оплатить?</button>
+      <button onclick="aicQuickSend('Хочу вернуть')">Возврат</button>
+      <button onclick="aicQuickSend('Товар не работает')">Не работает</button>
+    </div>
+
+    <div class="aic-input-wrap">
+      <textarea id="aicInput" placeholder="Напиши сообщение..." rows="1"></textarea>
+      <button class="aic-send" onclick="aicSend()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: CASE / ROULETTE ==================== -->
+<div class="modal" id="modalCase">
+  <div class="modal-box modal-case">
+    <button class="modal-close" onclick="closeModal('modalCase')">✕</button>
+    <div class="case-head">
+      <div class="case-title">Кейс дня</div>
+      <div class="case-sub">Крути за 50₽, выигрывай до 5х</div>
+    </div>
+    <div class="case-wheel-wrap">
+      <div class="case-pointer"></div>
+      <div class="case-wheel" id="caseWheel">
+        <div class="case-item" style="--angle:0deg" data-prize="+10₽">+10₽</div>
+        <div class="case-item" style="--angle:45deg" data-prize="+50₽">+50₽</div>
+        <div class="case-item" style="--angle:90deg" data-prize="+100₽">+100₽</div>
+        <div class="case-item" style="--angle:135deg" data-prize="+10₽">+10₽</div>
+        <div class="case-item" style="--angle:180deg" data-prize="США">🇺🇸 США</div>
+        <div class="case-item" style="--angle:225deg" data-prize="+50₽">+50₽</div>
+        <div class="case-item" style="--angle:270deg" data-prize="+250₽">+250₽</div>
+        <div class="case-item" style="--angle:315deg" data-prize="Premium">💎 Premium</div>
+      </div>
+    </div>
+    <div class="case-result" id="caseResult"></div>
+    <button class="btn btn-primary btn-full" id="caseBtn" onclick="spinCase()">
+      Крутить за 50₽
+    </button>
+    <div class="case-note">Крути кейс — получай от 10₽ до Premium 12 мес</div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: DAILY BONUS ==================== -->
+<div class="modal" id="modalDailyBonus">
+  <div class="modal-box modal-bonus">
+    <button class="modal-close" onclick="closeModal('modalDailyBonus')">✕</button>
+    <div class="bonus-head">
+      <div class="bonus-emoji">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+      </div>
+      <div class="bonus-title">Ежедневный бонус</div>
+      <div class="bonus-sub" id="bonusSub">Заходи каждый день — получай монеты</div>
+    </div>
+    <div class="bonus-streak">
+      <div class="bonus-day" data-day="1"><span>+5₽</span></div>
+      <div class="bonus-day" data-day="2"><span>+5₽</span></div>
+      <div class="bonus-day" data-day="3"><span>+15₽</span></div>
+      <div class="bonus-day" data-day="4"><span>+15₽</span></div>
+      <div class="bonus-day" data-day="5"><span>+15₽</span></div>
+      <div class="bonus-day" data-day="6"><span>+25₽</span></div>
+      <div class="bonus-day" data-day="7"><span>+50₽</span></div>
+    </div>
+    <button class="btn btn-primary btn-full" id="bonusClaimBtn" onclick="claimBonus()">
+      Забрать бонус
+    </button>
+  </div>
+</div>
+
+<!-- ==================== MODAL: LOYALTY INFO ==================== -->
+<div class="modal" id="modalLoyaltyInfo">
+  <div class="modal-box modal-loyalty">
+    <button class="modal-close" onclick="closeModal('modalLoyaltyInfo')">✕</button>
+    <div class="loyalty-modal-head">
+      <div class="lmh-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+      </div>
+      <div class="lmh-title">Уровни лояльности</div>
+      <div class="lmh-sub">Чем больше тратишь — тем больше кэшбэк и бонусов</div>
+    </div>
+    <div class="loyalty-modal-ranks">
+      <div class="lmr-item" data-rank="bronze">
+        <div class="lmr-badge lmr-bronze">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+        </div>
+        <div class="lmr-info">
+          <div class="lmr-name">Bronze</div>
+          <div class="lmr-req">0₽ потрачено</div>
+        </div>
+        <div class="lmr-cashback">3%</div>
+      </div>
+      <div class="lmr-item" data-rank="silver">
+        <div class="lmr-badge lmr-silver">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+        </div>
+        <div class="lmr-info">
+          <div class="lmr-name">Silver</div>
+          <div class="lmr-req">5000₽ или 5 покупок</div>
+        </div>
+        <div class="lmr-cashback">5%</div>
+      </div>
+      <div class="lmr-item" data-rank="gold">
+        <div class="lmr-badge lmr-gold">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+        </div>
+        <div class="lmr-info">
+          <div class="lmr-name">Gold</div>
+          <div class="lmr-req">20 000₽ или 25 покупок</div>
+        </div>
+        <div class="lmr-cashback">8%</div>
+      </div>
+      <div class="lmr-item" data-rank="platinum">
+        <div class="lmr-badge lmr-platinum">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 18 3 22 9 12 22 2 9 6 3"/></svg>
+        </div>
+        <div class="lmr-info">
+          <div class="lmr-name">Platinum</div>
+          <div class="lmr-req">50 000₽ или 100 покупок</div>
+        </div>
+        <div class="lmr-cashback">12%</div>
+      </div>
+    </div>
+    <div class="loyalty-modal-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      Также учитывается время, проведённое на маркете — активные юзеры получают бонусные баллы
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: THANK YOU ==================== -->
+<div class="modal" id="modalThanks">
+  <div class="modal-box modal-thanks">
+    <div class="thanks-confetti" id="thanksConfetti"></div>
+    <div class="thanks-glow"></div>
+    <div class="thanks-content">
+      <div class="thanks-check">
+        <svg viewBox="0 0 52 52">
+          <circle class="thanks-check-circle" cx="26" cy="26" r="24" fill="none"/>
+          <path class="thanks-check-path" fill="none" d="M14 27l8 8 16-16"/>
+        </svg>
+      </div>
+      <div class="thanks-title">Спасибо за покупку!</div>
+      <div class="thanks-sub">Заказ <b id="thanksOrderId">ORD123</b> успешно оформлен</div>
+      <div class="thanks-items" id="thanksItems"></div>
+      <div class="thanks-total">Итого: <b id="thanksTotal">0₽</b></div>
+      <div class="thanks-actions">
+        <button class="btn btn-primary btn-full" onclick="thanksGoInventory()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Открыть инвентарь
+        </button>
+        <button class="btn btn-secondary btn-full" onclick="thanksShare()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Поделиться
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: PROFILE NAME EDIT (не используется но заглушка) ==================== -->
+<div class="modal" id="modal404">
+  <div class="modal-box">
+    <div class="modal-emoji">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <h3>Функция в разработке</h3>
+    <p class="modal-text">Скоро здесь появится что-то крутое.</p>
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-full" onclick="closeModal('modal404')">Понятно</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-wrap" id="toastWrap"></div>
+
+<!-- Floating scroll to top -->
+<button class="scroll-top-btn hidden" id="scrollTopBtn" aria-label="Наверх">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+</button>
 
 <script src="script.js"></script>
 </body>
-</html>
+        </html>
