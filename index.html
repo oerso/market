@@ -15,80 +15,25 @@
 </head>
 <body data-theme="dark" data-accent="red">
 
-<!-- ==================== SPLASH ==================== -->
-<div id="splash" class="splash">
-  <div class="splash-logo">
-    <svg viewBox="0 0 64 64" fill="none">
-      <defs><linearGradient id="sg" x1="0" y1="0" x2="64" y2="64"><stop offset="0%" stop-color="#ff2d55"/><stop offset="100%" stop-color="#a80020"/></linearGradient></defs>
-      <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#sg)"/>
-      <text x="32" y="42" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
-    </svg>
-  </div>
-  <div class="splash-name">desired</div>
-  <div class="splash-loader"><span></span><span></span><span></span></div>
-</div>
-
-<!-- ==================== ONBOARDING ==================== -->
-<div id="onboarding" class="onboarding hidden">
-  <div class="onb-track" id="onbTrack">
-    <div class="onb-slide">
-      <div class="onb-emoji">🛍️</div>
-      <h2 class="onb-title">Добро пожаловать</h2>
-      <p class="onb-text">Маркет звёзд, премиума и аккаунтов. Всё в одном месте, всё с автовыдачей.</p>
+<!-- ==================== SPLASH (НОВЫЙ) ==================== -->
+<div id="splash" class="splash2">
+  <div class="splash2-glow"></div>
+  <div class="splash2-inner">
+    <div class="splash2-logo">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="sp2g" x1="0" y1="0" x2="64" y2="64">
+            <stop offset="0%" stop-color="#ff2d55"/>
+            <stop offset="100%" stop-color="#a80020"/>
+          </linearGradient>
+        </defs>
+        <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#sp2g)"/>
+        <text x="32" y="42" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
+      </svg>
     </div>
-    <div class="onb-slide">
-      <div class="onb-emoji">⚡</div>
-      <h2 class="onb-title">Мгновенная выдача</h2>
-      <p class="onb-text">Купил — получил сразу. Никаких ожиданий. Работаем 24/7.</p>
-    </div>
-    <div class="onb-slide">
-      <div class="onb-emoji">💸</div>
-      <h2 class="onb-title">Заработай на рефке</h2>
-      <p class="onb-text">Приглашай друзей — получай до 10% с каждой их покупки.</p>
-    </div>
-  </div>
-  <div class="onb-dots"><span class="onb-dot active"></span><span class="onb-dot"></span><span class="onb-dot"></span></div>
-  <button class="btn btn-primary btn-full" id="onbNext">Далее</button>
-  <button class="btn-link" id="onbSkip">Пропустить</button>
-</div>
-
-<!-- ==================== AUTH ==================== -->
-<div id="authScreen" class="auth-screen hidden">
-  <div class="auth-bg-glow"></div>
-  <div class="auth-logo">
-    <svg viewBox="0 0 64 64" fill="none">
-      <defs><linearGradient id="ag" x1="0" y1="0" x2="64" y2="64"><stop offset="0%" stop-color="#ff2d55"/><stop offset="100%" stop-color="#a80020"/></linearGradient></defs>
-      <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#ag)"/>
-      <text x="32" y="42" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
-    </svg>
-  </div>
-  <h1 class="auth-title">desired</h1>
-  <p class="auth-sub">Маркет звёзд, премиума и аккаунтов</p>
-
-  <div class="auth-form" id="authChoice">
-    <button class="btn btn-primary btn-full" id="btnGoLogin" type="button">Войти</button>
-    <button class="btn btn-secondary btn-full" id="btnGoRegister" type="button">Зарегистрироваться</button>
-  </div>
-
-  <div class="auth-form hidden" id="loginForm">
-    <h2 class="form-title">Вход</h2>
-    <input type="text" id="loginUsername" placeholder="Имя пользователя" autocomplete="off">
-    <input type="password" id="loginPassword" placeholder="Пароль" autocomplete="off">
-    <button class="btn btn-primary btn-full" id="btnDoLogin" type="button">Войти</button>
-    <button class="btn-link" id="btnGoChoiceFromLogin" type="button">← Назад</button>
-  </div>
-
-  <div class="auth-form hidden" id="registerForm">
-    <h2 class="form-title">Регистрация</h2>
-    <input type="text" id="regUsername" placeholder="Имя пользователя" autocomplete="off">
-    <input type="password" id="regPassword" placeholder="Пароль" autocomplete="off">
-    <div class="warn-box">⚠️ Убедитесь, что записали пароль + имя пользователя в надёжное место. Восстановление пароля будет реализовано лишь через поддержку.</div>
-    <label class="checkbox-row">
-      <input type="checkbox" id="regConfirm">
-      <span>Я записал(а) данные в надёжное место</span>
-    </label>
-    <button class="btn btn-primary btn-full" id="regBtn" type="button">Создать аккаунт</button>
-    <button class="btn-link" id="btnGoChoiceFromReg" type="button">← Назад</button>
+    <div class="splash2-name">desired</div>
+    <div class="splash2-sub">Маркет звёзд, премиума и аккаунтов</div>
+    <div class="splash2-bar"><div class="splash2-bar-fill"></div></div>
   </div>
 </div>
 
@@ -288,7 +233,6 @@
     <button class="btn-wide" onclick="go('ref')">👥 Реферальная программа</button>
     <button class="btn-wide" onclick="go('favorites')">❤️ Избранное</button>
     <button class="btn-wide" onclick="go('achievements')">🎖 Достижения</button>
-    <button class="btn-wide danger" onclick="logout()">🚪 Выйти из аккаунта</button>
   </main>
 
   <main id="page-inventory" class="page">
@@ -451,7 +395,6 @@
       <h3>Прямой контакт</h3>
       <button class="btn btn-secondary btn-full" onclick="contactSupport()">💬 Написать в Telegram</button>
     </div>
-    <div class="warn-box">Восстановление пароля возможно только через поддержку.</div>
   </main>
 
   <main id="page-leaderboard" class="page">
@@ -608,18 +551,6 @@
   </nav>
 </div>
 
-<div class="modal" id="modalConfirmReg">
-  <div class="modal-box">
-    <div class="modal-emoji">⚠️</div>
-    <h3>Уверены?</h3>
-    <p class="modal-text">Вы точно записали имя пользователя и пароль? Восстановление возможно только через поддержку.</p>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal('modalConfirmReg')">Отмена</button>
-      <button class="btn btn-primary" onclick="confirmRegister()">Да</button>
-    </div>
-  </div>
-</div>
-
 <div class="modal" id="modalAdminPass">
   <div class="modal-box">
     <div class="modal-emoji">🔐</div>
@@ -658,28 +589,6 @@
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('modalTopUp')">Отмена</button>
       <button class="btn btn-primary" onclick="submitTopUp()">Пополнить</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="modalCaseResult">
-  <div class="modal-box">
-    <div class="modal-emoji" id="caseResultEmoji">🎉</div>
-    <h3 id="caseResultTitle">Поздравляем!</h3>
-    <p class="modal-text" id="caseResultText"></p>
-    <div class="modal-actions">
-      <button class="btn btn-primary btn-full" onclick="closeModal('modalCaseResult')">Забрать</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="modalWheelResult">
-  <div class="modal-box">
-    <div class="modal-emoji" id="wheelResultEmoji">🎡</div>
-    <h3 id="wheelResultTitle"></h3>
-    <p class="modal-text" id="wheelResultText"></p>
-    <div class="modal-actions">
-      <button class="btn btn-primary btn-full" onclick="closeModal('modalWheelResult')">Забрать</button>
     </div>
   </div>
 </div>
@@ -804,4 +713,4 @@
 
 <script src="script.js"></script>
 </body>
-</html>
+          </html>
