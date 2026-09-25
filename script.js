@@ -2097,3 +2097,4 @@ window.importBackup = importBackup;
 window.adminAddBalance = adminAddBalance;
 window.confirmAdminBalance = confirmAdminBalance;
 window.openAdminPromoModal = openAdminPromoModal;
+}
