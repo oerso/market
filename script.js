@@ -89,7 +89,6 @@ const FAQ = [
   { q: 'Скидки постоянным?', a: 'Bronze 3%, Silver 5%, Gold 8%, Platinum 12% кэшбэка.' },
   { q: 'Вывод рефки?', a: 'От 500₽ на карту или CryptoBot.' },
   { q: 'Рассрочка?', a: 'Для крупных покупок — да.' },
-  { q: 'Что за кейс дня?', a: 'Раз в 24 часа можно выбить промокод на скидку.' },
   { q: 'Что за баллы?', a: 'Копятся с покупок, входов, отзывов.' },
   { q: 'Как стать Verified?', a: '5+ отзывов и покупок на 5000₽+.' },
   { q: 'Обманул продавец?', a: 'У нас нет продавцов. Пишите в поддержку.' },
@@ -123,6 +122,12 @@ const ACHIEVEMENTS = [
 ];
 
 const CHANGELOG = [
+  { ver: 'v0.8.1', date: 'Сегодня', changes: [
+    'Фикс авторизации — регистрация и вход работают',
+    'Кнопка регистрации активна всегда',
+    'Проверка чекбокса при клике',
+    'Явная привязка обработчиков кнопок'
+  ] },
   { ver: 'v0.8.0', date: 'Сегодня', changes: [
     'Каталог 2.0: табы Аккаунты / Звёзды и Премиум',
     'Расширенные фильтры: цена, сортировка, метки',
@@ -130,16 +135,13 @@ const CHANGELOG = [
     'Скидка дня вместо 3 кейсов',
     'Кнопка баланса → пополнение',
     'Убран общий чат и дневник',
-    'Полная админка 2.0: дашборд с графиком, CRUD товаров, юзеры (баланс/бан), заказы (возврат), промокоды с описанием, отзывы (удаление), бэкап JSON, логи, смена пароля',
-    'Модалки для работы с юзерами',
+    'Полная админка 2.0',
     'Фикс размера шрифта',
-    'Радиус углов = максимум по умолчанию',
-    'Кнопка полного сброса данных'
+    'Радиус углов = максимум по умолчанию'
   ] },
   { ver: 'v0.7.0', date: '2 дня назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек', 'Сезонные ивенты'] },
   { ver: 'v0.6.0', date: '4 дня назад', changes: ['Кейс дня и колесо', 'Ежедневный бонус', 'Лояльность и баллы'] },
-  { ver: 'v0.5.0', date: 'Неделю назад', changes: ['Полный редизайн', 'Авторизация', 'Корзина и профиль'] },
-  { ver: 'v0.4.0', date: '10 дней назад', changes: ['Первый каркас Mini App', 'Каталог товаров'] }
+  { ver: 'v0.5.0', date: 'Неделю назад', changes: ['Полный редизайн', 'Авторизация', 'Корзина и профиль'] }
 ];
 
 const LIVE_BUYERS = [
@@ -159,6 +161,7 @@ const LIVE_BUYERS = [
 window.addEventListener('DOMContentLoaded', () => {
   applyAllSettings();
   initTelegram();
+  bindAuthButtons();
 
   setTimeout(() => {
     document.getElementById('splash')?.classList.add('hide');
@@ -190,6 +193,97 @@ function initTelegram() {
     tg.setBackgroundColor?.('#08080a');
     state.tgUser = tg.initDataUnsafe?.user || null;
   } catch {}
+}
+
+// ==================== AUTH BUTTONS — ЯВНАЯ ПРИВЯЗКА ====================
+function bindAuthButtons() {
+  // Кнопки на главном экране авторизации
+  const choiceLogin = document.querySelector('#authChoice .btn-primary');
+  const choiceReg = document.querySelector('#authChoice .btn-secondary');
+  
+  if (choiceLogin) {
+    choiceLogin.onclick = (e) => { e.preventDefault(); showAuthForm('login'); };
+  }
+  if (choiceReg) {
+    choiceReg.onclick = (e) => { e.preventDefault(); showAuthForm('register'); };
+  }
+
+  // Кнопка "Войти" на форме логина
+  const loginBtn = document.querySelector('#loginForm .btn-primary');
+  if (loginBtn) {
+    loginBtn.onclick = (e) => { e.preventDefault(); doLogin(); };
+  }
+
+  // Кнопка "Назад" на форме логина
+  const loginBack = document.querySelector('#loginForm .btn-link');
+  if (loginBack) {
+    loginBack.onclick = (e) => { e.preventDefault(); showAuthForm('choice'); };
+  }
+
+  // Кнопка "Создать аккаунт" на форме регистрации
+  const regBtn = document.getElementById('regBtn');
+  if (regBtn) {
+    // Снимаем disabled по умолчанию — проверим при клике
+    regBtn.disabled = false;
+    regBtn.onclick = (e) => { e.preventDefault(); doRegister(); };
+  }
+
+  // Кнопка "Назад" на форме регистрации
+  const regBack = document.querySelector('#registerForm .btn-link');
+  if (regBack) {
+    regBack.onclick = (e) => { e.preventDefault(); showAuthForm('choice'); };
+  }
+
+  // Чекбокс — визуально разблокирует кнопку (но она и так работает)
+  const regCb = document.getElementById('regConfirm');
+  if (regCb) {
+    regCb.onchange = () => {
+      if (regBtn) regBtn.disabled = false;
+    };
+  }
+
+  // Кнопки модалки подтверждения регистрации
+  const modalReg = document.getElementById('modalConfirmReg');
+  if (modalReg) {
+    const btnCancel = modalReg.querySelector('.btn-secondary');
+    const btnConfirm = modalReg.querySelector('.btn-primary');
+    if (btnCancel) btnCancel.onclick = () => closeModal('modalConfirmReg');
+    if (btnConfirm) btnConfirm.onclick = () => confirmRegister();
+  }
+
+  // Кнопки модалки админ-пароля
+  const modalAdmin = document.getElementById('modalAdminPass');
+  if (modalAdmin) {
+    const btnCancel = modalAdmin.querySelector('.btn-secondary');
+    const btnConfirm = modalAdmin.querySelector('.btn-primary');
+    if (btnCancel) btnCancel.onclick = () => closeModal('modalAdminPass');
+    if (btnConfirm) btnConfirm.onclick = () => checkAdminPass();
+  }
+
+  // Кнопка "Понятно" в модалке "Доступ запрещён"
+  const modalDenied = document.getElementById('modalDenied');
+  if (modalDenied) {
+    const btn = modalDenied.querySelector('.btn-primary');
+    if (btn) btn.onclick = () => closeModal('modalDenied');
+  }
+
+  // Кнопки модалки топ-апа
+  const modalTopUp = document.getElementById('modalTopUp');
+  if (modalTopUp) {
+    const btnCancel = modalTopUp.querySelector('.btn-secondary');
+    const btnConfirm = modalTopUp.querySelector('.btn-primary');
+    if (btnCancel) btnCancel.onclick = () => closeModal('modalTopUp');
+    if (btnConfirm) btnConfirm.onclick = () => submitTopUp();
+  }
+
+  // Кнопки модалки промокода
+  const modalPromo = document.getElementById('modalPromo');
+  if (modalPromo) {
+    const btnCancel = modalPromo.querySelector('.btn-secondary');
+    const btnConfirm = modalPromo.querySelector('.btn-primary');
+    if (btnCancel) btnCancel.onclick = () => closeModal('modalPromo');
+    if (btnConfirm) btnConfirm.onclick = () => applyPromo();
+  }
 }
 
 // ==================== SETTINGS ====================
@@ -269,10 +363,14 @@ function showAuthForm(which) {
 function doRegister() {
   const u = document.getElementById('regUsername').value.trim();
   const p = document.getElementById('regPassword').value.trim();
+  const cb = document.getElementById('regConfirm');
+  
   if (!u || !p) return toast('Заполни все поля', 'error');
-  if (u.length < 3) return toast('Имя минимум 3', 'error');
-  if (p.length < 4) return toast('Пароль минимум 4', 'error');
+  if (u.length < 3) return toast('Имя минимум 3 символа', 'error');
+  if (p.length < 4) return toast('Пароль минимум 4 символа', 'error');
+  if (cb && !cb.checked) return toast('Подтверди, что записал данные', 'error');
   if (state.users[u]) return toast('Имя занято', 'error');
+  
   state._pendingReg = { username: u, password: p };
   openModal('modalConfirmReg');
 }
@@ -1602,7 +1700,7 @@ function exportBackup() {
     users: state.users, products: PRODUCTS, orders: state.orders,
     promos: state.promos, reviews: state.reviews, inventory: state.inventory,
     transactions: state.transactions, points: state.points, stats: state.stats,
-    balance: Storage.get('balance', 0), version: 'v0.8.0', exported: Date.now()
+    balance: Storage.get('balance', 0), version: 'v0.8.1', exported: Date.now()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1649,8 +1747,15 @@ function changeAdminPassword() {
 }
 
 // ==================== MODALS ====================
-function openModal(id) { document.getElementById(id)?.classList.add('show'); }
-function closeModal(id) { document.getElementById(id)?.classList.remove('show'); }
+function openModal(id) { 
+  const el = document.getElementById(id);
+  if (el) el.classList.add('show');
+  else console.error('Modal not found:', id);
+}
+function closeModal(id) { 
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('show');
+}
 function contactSupport() { window.open(SUPPORT_LINK, '_blank'); }
 function createTicket() {
   const theme = document.getElementById('ticketTheme').value.trim();
@@ -1722,22 +1827,18 @@ function startPromoTimer() {
 
 // ==================== BIND ALL ====================
 function bindAllListeners() {
-  // Навигация
   document.querySelectorAll('.nav-btn').forEach(b => b.addEventListener('click', () => go(b.dataset.page)));
   document.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); go(el.dataset.page); }));
 
-  // Меню 3 точки
   const dotsBtn = document.getElementById('dotsBtn');
   const dropdown = document.getElementById('dropdownMenu');
   dotsBtn?.addEventListener('click', (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); haptic('light'); });
   document.addEventListener('click', () => dropdown?.classList.remove('show'));
   dropdown?.addEventListener('click', (e) => e.stopPropagation());
 
-  // Скролл
   window.addEventListener('scroll', () => document.getElementById('topbar')?.classList.toggle('scrolled', window.scrollY > 10));
   window.addEventListener('hashchange', routeFromHash);
 
-  // Админ — 5 тапов на лого
   let taps = 0, tapTimer = null;
   document.getElementById('brandLogo')?.addEventListener('click', () => {
     taps++;
@@ -1752,7 +1853,6 @@ function bindAllListeners() {
     }
   });
 
-  // Админ-табы
   document.querySelectorAll('.admin-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
@@ -1761,7 +1861,6 @@ function bindAllListeners() {
     });
   });
 
-  // Лидеры
   document.querySelectorAll('.lb-tab').forEach(t => {
     t.addEventListener('click', () => {
       document.querySelectorAll('.lb-tab').forEach(x => x.classList.remove('active'));
@@ -1770,7 +1869,6 @@ function bindAllListeners() {
     });
   });
 
-  // Отзывы-фильтры
   document.querySelectorAll('.quick-chip[data-rfilter]').forEach(c => {
     c.addEventListener('click', () => {
       document.querySelectorAll('.quick-chip[data-rfilter]').forEach(x => x.classList.remove('active'));
@@ -1780,7 +1878,6 @@ function bindAllListeners() {
     });
   });
 
-  // Инвентарь-фильтры
   document.querySelectorAll('.inv-filter[data-inv]').forEach(f => {
     f.addEventListener('click', () => {
       document.querySelectorAll('.inv-filter[data-inv]').forEach(x => x.classList.remove('active'));
@@ -1790,7 +1887,6 @@ function bindAllListeners() {
     });
   });
 
-  // Транзакции-фильтры
   document.querySelectorAll('.inv-filter[data-tx]').forEach(f => {
     f.addEventListener('click', () => {
       document.querySelectorAll('.inv-filter[data-tx]').forEach(x => x.classList.remove('active'));
@@ -1800,7 +1896,6 @@ function bindAllListeners() {
     });
   });
 
-  // Звёзды в отзыве
   document.querySelectorAll('#starsInput span').forEach(s => {
     s.addEventListener('click', () => {
       state.reviewRating = +s.dataset.star;
@@ -1809,7 +1904,6 @@ function bindAllListeners() {
     });
   });
 
-  // Быстрые фильтры
   document.querySelectorAll('.quick-chip[data-quick]').forEach(c => {
     c.addEventListener('click', () => {
       document.querySelectorAll('.quick-chip[data-quick]').forEach(x => x.classList.remove('active'));
@@ -1820,7 +1914,6 @@ function bindAllListeners() {
     });
   });
 
-  // Табы каталога
   document.querySelectorAll('.catalog-tab').forEach(t => {
     t.addEventListener('click', () => {
       document.querySelectorAll('.catalog-tab').forEach(x => x.classList.remove('active'));
@@ -1832,7 +1925,6 @@ function bindAllListeners() {
     });
   });
 
-  // Поиск
   document.getElementById('searchInput')?.addEventListener('input', (e) => {
     searchQuery = e.target.value.toLowerCase().trim();
     visibleProducts = 6;
@@ -1842,15 +1934,13 @@ function bindAllListeners() {
   document.getElementById('searchInput')?.addEventListener('focus', renderSearchHistory);
   document.getElementById('faqSearch')?.addEventListener('input', renderFAQ);
 
-  // Reg checkbox
   document.addEventListener('input', (e) => {
     if (e.target.id === 'regConfirm') {
       const btn = document.getElementById('regBtn');
-      if (btn) btn.disabled = !e.target.checked;
+      if (btn) btn.disabled = false;
     }
   });
 
-  // Настройки
   document.addEventListener('change', (e) => {
     const id = e.target.id;
     if (id === 'radiusSelect') Storage.set('radius', e.target.value);
@@ -1866,52 +1956,39 @@ function bindAllListeners() {
     applyAllSettings();
   });
 
-  // Делегирование кликов
   document.addEventListener('click', (e) => {
-    // Тема
     const swatch = e.target.closest('.theme-swatch');
     if (swatch) { Storage.set('theme', swatch.dataset.theme); applyAllSettings(); toast('Тема изменена', 'success'); haptic('light'); return; }
 
-    // Акцент
     const dot = e.target.closest('.accent-dot');
     if (dot) { Storage.set('accent', dot.dataset.accent); applyAllSettings(); haptic('light'); return; }
 
-    // Скидка дня
     if (e.target.closest('#saleCard')) { openSaleProduct(); return; }
 
-    // FAV
     const fav = e.target.closest('[data-fav]');
     if (fav) { e.stopPropagation(); toggleFav(+fav.dataset.fav); return; }
 
-    // ADD CART
     const add = e.target.closest('[data-add]');
     if (add) { e.stopPropagation(); addToCart(+add.dataset.add); return; }
 
-    // BUY NOW
     const buy = e.target.closest('[data-buy]');
     if (buy) { e.stopPropagation(); buyNow(+buy.dataset.buy); return; }
 
-    // OPEN PRODUCT
     const open = e.target.closest('[data-product-open]');
     if (open) { openProduct(+open.dataset.productOpen); return; }
 
-    // FAV REMOVE
     const favRm = e.target.closest('[data-fav-rm]');
     if (favRm) { toggleFav(+favRm.dataset.favRm); return; }
 
-    // REMOVE CART
     const rmCart = e.target.closest('[data-rm-cart]');
     if (rmCart) { removeCart(+rmCart.dataset.rmCart); return; }
 
-    // UPSELL ADD
     const upAdd = e.target.closest('[data-upsell]');
     if (upAdd) { addToCart(+upAdd.dataset.upsell); return; }
 
-    // PACKAGE
     const pkg = e.target.closest('[data-pkg]');
     if (pkg) { addPackageToCart(pkg.dataset.pkg); return; }
 
-    // INV
     const invCopy = e.target.closest('[data-inv-copy]');
     if (invCopy) { copyInvData(invCopy.dataset.invCopy); return; }
     const invReview = e.target.closest('[data-inv-review]');
@@ -1919,7 +1996,6 @@ function bindAllListeners() {
     const invAgain = e.target.closest('[data-inv-again]');
     if (invAgain) { buyAgain(decodeURIComponent(invAgain.dataset.invAgain)); return; }
 
-    // Product modal actions
     const fm = e.target.closest('[data-fav-modal]');
     if (fm) { toggleFav(+fm.dataset.favModal); closeModal('modalProduct'); return; }
     const share = e.target.closest('[data-share]');
@@ -1929,11 +2005,9 @@ function bindAllListeners() {
     const bm = e.target.closest('[data-buy-from-modal]');
     if (bm) { buyNow(+bm.dataset.buyFromModal); closeModal('modalProduct'); return; }
 
-    // FAQ accordion
     const faq = e.target.closest('[data-faq]');
     if (faq) { faq.classList.toggle('open'); return; }
 
-    // Admin actions
     if (e.target.closest('[data-ap-add]')) { addProductFromAdmin(); return; }
     const apEdit = e.target.closest('[data-ap-edit]');
     if (apEdit) { editProductFromAdmin(+apEdit.dataset.apEdit); return; }
@@ -1955,7 +2029,6 @@ function bindAllListeners() {
     if (e.target.closest('[data-change-pass]')) { changeAdminPassword(); return; }
     if (e.target.closest('[data-admin-clear]')) { clearAllData(); return; }
 
-    // Ripple
     const btn = e.target.closest('.btn');
     if (btn && Storage.get('animEnabled', true)) {
       const rect = btn.getBoundingClientRect();
@@ -1972,7 +2045,6 @@ function bindAllListeners() {
     }
   });
 
-  // Клик по истории поиска
   document.addEventListener('click', (e) => {
     const chip = e.target.closest('.hist-chip');
     if (chip) { setSearch(chip.dataset.search); }
