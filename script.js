@@ -40,6 +40,7 @@ const state = {
   quickFilter: 'all',
   loyaltyLevel: 'bronze',
   pendingAdminBalance: null,
+  navStack: [],
   filters: { priceMin: 0, priceMax: 0, sort: 'popular', hit: false, isNew: false, sale: false }
 };
 
@@ -67,45 +68,65 @@ const PACKAGES = [
 ];
 
 const FAQ = [
-  { q: 'Как получить товар?', a: 'После оплаты товар выдаётся автоматически в разделе «Инвентарь».' },
-  { q: 'Способы оплаты?', a: 'СБП, карты РФ, Telegram Stars, CryptoBot. Появятся после переезда на сервер.' },
-  { q: 'Товар не работает?', a: 'Напишите в поддержку с номером заказа. Решим в течение 24 часов.' },
-  { q: 'Реферальная программа?', a: '10% с покупок рефералов 1 уровня и 3% со 2 уровня. Вывод от 500₽.' },
-  { q: 'Восстановление пароля?', a: 'Только через поддержку. Сохраняйте данные в надёжном месте!' },
-  { q: 'Безопасно ли?', a: 'Да, все товары проверяются, оплата через защищённые шлюзы.' },
-  { q: 'Сколько идёт выдача?', a: 'Автовыдача мгновенно. Если не пришло — напишите в поддержку.' },
-  { q: 'Возврат денег?', a: 'Да, если товар не работает — в течение 24 часов.' },
-  { q: 'Какие аккаунты?', a: 'Отлежавшиеся, с полным доступом. Логин, пароль, почта.' },
-  { q: 'Оптовые скидки?', a: 'От 10 штук — 15%, от 50 — 25%. Пишите в поддержку.' },
-  { q: 'Как пополнить?', a: 'Нажми на баланс сверху → Пополнение.' },
-  { q: 'Оплата не прошла?', a: 'Проверь баланс. Если списалось — в поддержку.' },
-  { q: 'Гарантия?', a: 'От 24ч до 7 дней в зависимости от типа товара.' },
-  { q: 'Перепродажа?', a: 'Да, без раскрытия источника и без демпинга.' },
-  { q: 'Срок жизни аккаунта?', a: 'От 6 месяцев при правильном использовании.' },
-  { q: 'Что такое аренда NFT?', a: 'Подарок в профиль на 30 дней. Потом — продление.' },
-  { q: 'Что такое Stars?', a: 'Внутренняя валюта Telegram для подарков.' },
-  { q: 'Куда приходят звёзды?', a: 'На твой Telegram-аккаунт.' },
-  { q: 'Без Premium?', a: 'Да, Stars продаются отдельно.' },
-  { q: 'Скидки постоянным?', a: 'Bronze 3%, Silver 5%, Gold 8%, Platinum 12% кэшбэка.' },
-  { q: 'Вывод рефки?', a: 'От 500₽ на карту или CryptoBot.' },
-  { q: 'Рассрочка?', a: 'Для крупных покупок — да.' },
-  { q: 'Что за баллы?', a: 'Копятся с покупок, входов, отзывов.' },
-  { q: 'Как стать Verified?', a: '5+ отзывов и покупок на 5000₽+.' },
-  { q: 'Обманул продавец?', a: 'У нас нет продавцов. Пишите в поддержку.' },
-  { q: 'Оплата с чужой карты?', a: 'Только с разрешения.' },
-  { q: 'Есть приложение?', a: 'Работает в Telegram как Mini App.' },
-  { q: 'Новые товары?', a: 'Следи за обновлениями.' },
-  { q: 'Стать модератором?', a: 'Активным юзерам по приглашению.' }
+  { q: 'Как получить товар после оплаты?', a: 'После успешной оплаты товар моментально выдаётся в разделе «Инвентарь». Там будут логин, пароль и все данные.' },
+  { q: 'Какие способы оплаты?', a: 'СБП, карты РФ, Telegram Stars, CryptoBot. Подключим сразу после переезда на сервер.' },
+  { q: 'Что делать, если товар не работает?', a: 'Напиши в поддержку с номером заказа. Заменим или вернём деньги в течение 24 часов.' },
+  { q: 'Как работает реферальная программа?', a: '10% с покупок рефералов 1 уровня и 3% со 2 уровня. Вывод от 500₽ на карту или CryptoBot.' },
+  { q: 'Как восстановить пароль от аккаунта?', a: 'Только через поддержку. Сохраняй данные в надёжном месте сразу после покупки!' },
+  { q: 'Безопасно ли покупать у вас?', a: 'Да. Все товары проверяются перед выдачей, оплата через защищённые шлюзы, гарантия возврата.' },
+  { q: 'Сколько идёт выдача товара?', a: 'Автовыдача мгновенная 24/7. Если товар не пришёл за 5 минут — пиши в поддержку.' },
+  { q: 'Можно ли вернуть деньги?', a: 'Да, если товар не работает и заявка подана в течение 24 часов после покупки.' },
+  { q: 'Что за аккаунты вы продаёте?', a: 'Отлежавшиеся, с полным доступом: логин, пароль, почта, иногда привязанный номер.' },
+  { q: 'Есть ли оптовые скидки?', a: 'Да: от 10 штук — 15%, от 50 — 25%, от 100 — 30%. Пиши в поддержку для индивидуального расчёта.' },
+  { q: 'Как пополнить баланс?', a: 'Нажми на кнопку с балансом сверху → выбери сумму → оплати удобным способом.' },
+  { q: 'Что делать, если оплата не прошла?', a: 'Проверь баланс. Если списалось, но не зачислилось — пиши в поддержку с чеком.' },
+  { q: 'Какая гарантия на товары?', a: 'От 24 часов до 7 дней в зависимости от типа товара. Указано в карточке и в инвентаре.' },
+  { q: 'Можно ли перепродавать товары?', a: 'Да, без раскрытия источника и без демпинга. Мы не против реселла.' },
+  { q: 'Как долго живут аккаунты?', a: 'От 6 месяцев при правильном использовании: без резких смен IP, без спама.' },
+  { q: 'Что такое аренда NFT-подарка?', a: 'Подарок на твой профиль Telegram на 30 дней. По окончании — продление по той же цене.' },
+  { q: 'Что такое Telegram Stars?', a: 'Внутренняя валюта Telegram для подарков, реакций и покупок внутри приложений.' },
+  { q: 'Куда приходят звёзды?', a: 'На твой Telegram-аккаунт после оплаты. Нужен только юзернейм или ID.' },
+  { q: 'Можно купить Stars без Premium?', a: 'Да, Stars продаются отдельно. Premium не обязателен.' },
+  { q: 'Есть ли скидки постоянным клиентам?', a: 'Да, кэшбэк по уровню: Bronze 3%, Silver 5%, Gold 8%, Platinum 12%.' },
+  { q: 'Как вывести реферальные?', a: 'От 500₽ на карту РФ, СБП или CryptoBot. Обработка до 24 часов.' },
+  { q: 'Можно ли купить в рассрочку?', a: 'Для крупных заказов от 5000₽ — да. Пиши в поддержку, обсудим условия.' },
+  { q: 'Что такое баллы и зачем они?', a: 'Копятся с покупок, входов в приложение, отзывов. Можно тратить на скидки.' },
+  { q: 'Как получить статус Verified?', a: 'Нужно 5+ отзывов и сумма покупок от 5000₽. Значок появится автоматически.' },
+  { q: 'Что делать, если меня обманули?', a: 'У нас нет продавцов — только маркет. Пиши в поддержку, разберёмся.' },
+  { q: 'Можно оплатить с чужой карты?', a: 'Только с письменного разрешения владельца. Мы не поддерживаем мошенничество.' },
+  { q: 'Есть ли мобильное приложение?', a: 'Мы работаем прямо в Telegram как Mini App. Устанавливать ничего не нужно.' },
+  { q: 'Как узнать о новых товарах?', a: 'Подпишись на наш Telegram-канал. Анонсы и скидки публикуем там первыми.' },
+  { q: 'Как стать модератором?', a: 'Активных юзеров приглашаем вручную. Пиши в поддержку с рассказом о себе.' },
+  { q: 'Что если аккаунт забанят?', a: 'В течение гарантийного срока заменим на новый или вернём деньги. Всё честно.' },
+  { q: 'Нужен ли VPN для использования?', a: 'Нет. Аккаунты и товары работают без VPN, если у тебя стабильный интернет.' },
+  { q: 'Сколько заказов в день вы обрабатываете?', a: 'Тысячи. Автовыдача работает 24/7, сбоев почти не бывает.' },
+  { q: 'Что делать, если я ошибся с покупкой?', a: 'До выдачи товара можно отменить заказ через поддержку. После — только возврат по гарантии.' },
+  { q: 'Как связаться с вами?', a: 'Через раздел «Поддержка» в приложении или напрямую в Telegram.' },
+  { q: 'Ваши контакты?', a: 'Официальный канал и бот — в разделе «Инфо». Остерегайся фейков, у нас только один аккаунт.' },
+  { q: 'Как часто обновляется каталог?', a: 'Ежедневно. Новые аккаунты и товары появляются каждый день.' },
+  { q: 'Можно ли забронировать товар?', a: 'Да, для крупных оптовых заказов. Пиши в поддержку заранее.' },
+  { q: 'Что если закончился товар?', a: 'Кнопка покажет «Нет в наличии», а ты можешь подписаться на уведомление о появлении.' },
+  { q: 'У вас есть партнёрская программа?', a: 'Да, рефералка 10% + 3%. Отдельные условия для блогеров и крупных партнёров.' },
+  { q: 'Как стать партнёром?', a: 'Пиши в поддержку с описанием аудитории. Обсудим индивидуальный процент.' },
+  { q: 'Что такое уровень лояльности?', a: 'Система кэшбэка. Растёт по сумме покупок: Bronze → Silver → Gold → Platinum.' }
 ];
 
 const INFO_ITEMS = [
-  { q: 'О маркете', a: 'desired — маркет цифровых товаров: Telegram-аккаунты, звёзды, премиум, аренда NFT. Автовыдача 24/7.' },
-  { q: 'Гарантии', a: '100% возврат, если товар не работает. Заявку подаёшь в течение 24 часов после покупки.' },
-  { q: 'Правила', a: 'Возврат возможен только в случае нерабочего товара. Спорные ситуации решаются через поддержку.' },
-  { q: 'Публичная статистика', a: 'Продано заказов: 12 458. Оценка: 4.9. Онлайн: постоянно растёт.' },
-  { q: 'Пользовательское соглашение', a: 'Открывается после переезда на сервер.' },
-  { q: 'Политика конфиденциальности', a: 'Открывается после переезда на сервер.' },
-  { q: 'Правила возврата', a: 'Заявка в течение 24 часов после покупки. Возврат на баланс или на карту.' }
+  { q: 'О маркете', a: 'desired — маркет цифровых товаров: Telegram-аккаунты, звёзды, премиум, аренда NFT. Автовыдача 24/7, поддержка, гарантия на все товары.' },
+  { q: 'Наша миссия', a: 'Сделать покупку цифровых товаров такой же простой, как покупка кофе. Без скамов, без сложностей, без ожидания.' },
+  { q: 'Гарантии', a: '100% возврат, если товар не работает. Заявку подаёшь в течение 24 часов после покупки. Замена или деньги на выбор.' },
+  { q: 'Правила маркета', a: 'Возврат возможен только в случае нерабочего товара. Спорные ситуации решаются через поддержку в течение 24 часов.' },
+  { q: 'Публичная статистика', a: 'Продано заказов: 12 458. Средняя оценка: 4.9/5. Онлайн: постоянно растёт. Мы открыты и не скрываем цифры.' },
+  { q: 'Пользовательское соглашение', a: 'Полная версия откроется после переезда на сервер. Сейчас действует базовая: покупатель получает товар в течение гарантии.' },
+  { q: 'Политика конфиденциальности', a: 'Мы не передаём данные третьим лицам. Всё хранится локально в твоём Telegram. Полная версия — после переезда на сервер.' },
+  { q: 'Правила возврата', a: 'Заявка в течение 24 часов после покупки. Возврат на баланс или на карту. По решению поддержки — замена товара.' },
+  { q: 'Как мы работаем', a: 'Автоматизированная система: заказ → оплата → моментальная выдача данных. Поддержка подключается только при проблемах.' },
+  { q: 'Поддержка', a: 'Отвечаем в течение 15 минут в рабочее время и до 2 часов ночью. Пиши в раздел «Поддержка».' },
+  { q: 'Оптовым клиентам', a: 'Индивидуальные условия от 50 заказов в месяц. Отдельный менеджер, спеццены, приоритетная выдача.' },
+  { q: 'Партнёрам и блогерам', a: 'Повышенный процент по рефералке, промокоды, персональные скидки для аудитории. Пиши в поддержку.' },
+  { q: 'Безопасность', a: 'Все данные передаются по HTTPS, оплата через защищённые шлюзы, у нас нет доступа к твоим картам.' },
+  { q: 'Будущее маркета', a: 'Скоро: полноценная админка, личный кабинет партнёра, подписки, автопополнение, розыгрыши и кейсы.' },
+  { q: 'Обратная связь', a: 'Нашли баг или есть идея? Пиши в поддержку. Лучшие идеи получают бонусы на баланс.' }
 ];
 
 const ACHIEVEMENTS = [
@@ -122,23 +143,26 @@ const ACHIEVEMENTS = [
 ];
 
 const CHANGELOG = [
-  { ver: 'v0.9.1', date: 'Сегодня', changes: [
-    'Новый премиум-сплэш с частицами и прогрессом',
+  { ver: 'v1.0.0', date: 'Сегодня', changes: [
+    'Полная переработка раздела «Профиль»',
+    'Кнопка «Назад» на всех внутренних страницах',
     'Приветствие с именем из Telegram',
-    'Переработанные табы каталога со слайдером',
-    'Иконки переведены на SVG (nav, stat-cards, dropdown)',
-    'Реордер: пакеты над отзывами'
+    'Новый анимированный логотип',
+    'Убраны счётчики и «История» в инвентаре',
+    'Расширены FAQ и Инфо (40+ вопросов)',
+    'Убрана кнопка «Сбросить все данные»'
   ] },
-  { ver: 'v0.9.0', date: 'Ранее', changes: [
+  { ver: 'v0.9.1', date: 'Ранее', changes: [
+    'Новый премиум-сплэш с частицами',
+    'Переработанные табы каталога',
+    'SVG-иконки в nav и dropdown'
+  ] },
+  { ver: 'v0.9.0', date: '2 дня назад', changes: [
     'Полностью вырезана авторизация',
-    'Новый сплэш-экран с прогресс-баром',
-    'Авто-создание профиля при входе',
-    'Фикс бесконечной загрузки'
+    'Авто-создание профиля при входе'
   ] },
-  { ver: 'v0.8.3', date: '2 дня назад', changes: ['Фикс авторизации', 'Привязка onclick-кнопок'] },
-  { ver: 'v0.8.0', date: '3 дня назад', changes: ['Каталог 2.0', 'Расширенные фильтры', 'Hero-баннер', 'Полная админка'] },
-  { ver: 'v0.7.0', date: '5 дней назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек'] },
-  { ver: 'v0.6.0', date: '7 дней назад', changes: ['Кейс дня и колесо', 'Лояльность и баллы'] }
+  { ver: 'v0.8.0', date: '4 дня назад', changes: ['Каталог 2.0', 'Расширенные фильтры', 'Полная админка'] },
+  { ver: 'v0.7.0', date: '6 дней назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек'] }
 ];
 
 const LIVE_BUYERS = [
@@ -197,7 +221,6 @@ function startSplashAnim(done) {
   const statusEl = document.getElementById('splashStatus');
   const percentEl = document.getElementById('splashPercent');
 
-  // Смена теглайнов
   let tagIdx = 0;
   const tagInterval = setInterval(() => {
     if (!tagEl) return;
@@ -209,7 +232,6 @@ function startSplashAnim(done) {
     }, 350);
   }, 1600);
 
-  // Прогресс — плавно от 0 до 100 за ~1.9 сек
   const totalDuration = 1900;
   const startTime = Date.now();
   let lastStage = -1;
@@ -217,12 +239,10 @@ function startSplashAnim(done) {
   const tick = () => {
     const elapsed = Date.now() - startTime;
     const raw = Math.min(100, (elapsed / totalDuration) * 100);
-    // easing (easeOutCubic)
     const eased = 100 * (1 - Math.pow(1 - raw / 100, 3));
     if (fillEl) fillEl.style.width = eased + '%';
     if (percentEl) percentEl.textContent = Math.floor(eased) + '%';
 
-    // статус-сообщения
     for (let i = SPLASH_STAGES.length - 1; i >= 0; i--) {
       if (eased >= SPLASH_STAGES[i].at && lastStage < i) {
         lastStage = i;
@@ -260,19 +280,22 @@ window.addEventListener('DOMContentLoaded', () => {
 
   startPromoTimer();
   startOnlineTicker();
+  startLogoJump();
   renderLiveFeed();
   renderReviewsMini();
   renderSaleCard();
   bindAllListeners();
+  setupBackButton();
 });
 
 function autoCreateUser() {
-  if (state.currentUser) return;
+  if (state.currentUser && state.currentUser.firstName) return;
   const tg = state.tgUser;
   const username = tg?.username || tg?.first_name || 'desired';
+  const firstName = tg?.first_name || username;
   state.currentUser = {
     username: username,
-    firstName: tg?.first_name || username,
+    firstName: firstName,
     tgId: tg?.id || null,
     createdAt: Date.now()
   };
@@ -397,12 +420,12 @@ function enterApp() {
   renderChangelog();
   renderLiveFeed();
   renderSaleCard();
-  updateCatalogCounts();
   updateHello();
   checkLoyalty();
   checkAchievements();
   moveCatalogSlider();
   routeFromHash();
+  updateBackButton();
 }
 
 function updateHello() {
@@ -410,17 +433,19 @@ function updateHello() {
   const sub = document.getElementById('helloSub');
   if (!el) return;
   const name = state.tgUser?.first_name || state.currentUser?.firstName || state.currentUser?.username || 'друг';
-  el.textContent = `Привет, ${name} 👋`;
+  el.innerHTML = `Приветствую, ${escapeHtml(name)} <svg class="hello-wave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11.5V14a5 5 0 0 0 5 5h0a5 5 0 0 0 5-5V5.5a1.5 1.5 0 0 0-3 0V11"/><path d="M11 5.5V11"/><path d="M14.5 5.5V11"/><path d="M4 11.5V14a8 8 0 0 0 8 8h0a8 8 0 0 0 8-8V5.5a1.5 1.5 0 0 0-3 0"/></svg>`;
   if (sub) sub.textContent = 'Удачных покупок!';
 }
 
 function updateProfileUI() {
-  const name = state.currentUser?.username || 'user';
+  const username = state.currentUser?.username || 'user';
+  const firstName = state.tgUser?.first_name || state.currentUser?.firstName || username;
   const tgId = state.tgUser?.id || state.currentUser?.tgId || '—';
   const setT = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-  setT('userName', '@' + name);
+  setT('userName', '@' + username);
   setT('userId', '@id' + tgId);
-  setT('userAvatar', name[0].toUpperCase());
+  const avatarEl = document.getElementById('userAvatar');
+  if (avatarEl) avatarEl.textContent = firstName[0]?.toUpperCase() || 'd';
   setT('topBalance', Storage.get('balance', 0) + '₽');
   setT('profileBalance', Storage.get('balance', 0) + '₽');
   setT('statTopUp', state.stats.topUp + '₽');
@@ -435,6 +460,13 @@ function updateProfileUI() {
 
 // ==================== NAV ====================
 function go(page) {
+  const current = document.querySelector('.page.active');
+  const currentId = current?.id?.replace('page-', '');
+  if (currentId && currentId !== page) {
+    state.navStack.push(currentId);
+    if (state.navStack.length > 30) state.navStack.shift();
+  }
+
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + page)?.classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === page));
@@ -442,14 +474,63 @@ function go(page) {
   window.scrollTo(0, 0);
   haptic('light');
   closeDropdown();
+  updateBackButton();
+}
+
+function goBack() {
+  const prev = state.navStack.pop();
+  if (prev && document.getElementById('page-' + prev)) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + prev).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === prev));
+    location.hash = prev;
+    window.scrollTo(0, 0);
+    haptic('light');
+    updateBackButton();
+  } else {
+    go('main');
+  }
+}
+
+function updateBackButton() {
+  const btn = document.getElementById('backBtn');
+  const activePage = document.querySelector('.page.active');
+  const id = activePage?.id?.replace('page-', '');
+  if (!btn) return;
+  if (id && id !== 'main') btn.classList.remove('hidden');
+  else btn.classList.add('hidden');
+}
+
+function setupBackButton() {
+  const btn = document.getElementById('backBtn');
+  btn?.addEventListener('click', () => {
+    haptic('light');
+    goBack();
+  });
 }
 
 function routeFromHash() {
   const h = location.hash.replace('#', '');
-  if (h && document.getElementById('page-' + h)) go(h);
+  if (h && document.getElementById('page-' + h)) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + h).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === h));
+    updateBackButton();
+  }
 }
 
 function closeDropdown() { document.getElementById('dropdownMenu')?.classList.remove('show'); }
+
+// ==================== LOGO JUMP ====================
+function startLogoJump() {
+  const brand = document.getElementById('brandLogo');
+  if (!brand) return;
+  setInterval(() => {
+    if (document.hidden) return;
+    brand.classList.add('jump');
+    setTimeout(() => brand.classList.remove('jump'), 600);
+  }, 2000);
+}
 
 // ==================== FILTERS ====================
 function openFilters() {
@@ -501,15 +582,6 @@ function updateFilterBadge() {
 }
 
 // ==================== CATALOG TABS ====================
-function updateCatalogCounts() {
-  const acc = PRODUCTS.filter(p => p.category === 'accounts').length;
-  const stars = PRODUCTS.filter(p => p.category === 'stars').length;
-  const a = document.getElementById('countAccounts');
-  const s = document.getElementById('countStars');
-  if (a) a.textContent = acc;
-  if (s) s.textContent = stars;
-}
-
 function moveCatalogSlider() {
   const slider = document.getElementById('catalogTabSlider');
   if (!slider) return;
@@ -1051,7 +1123,6 @@ function renderInventory() {
   if (!list) return;
   let items = [...state.inventory];
   if (state.inventoryFilter === 'active') items = items.filter(i => i.status === 'active');
-  if (state.inventoryFilter === 'history') items = items.filter(i => i.status !== 'active');
   if (!items.length) { list.innerHTML = ''; empty?.classList.remove('hidden'); return; }
   empty?.classList.add('hidden');
   list.innerHTML = items.map(item => `
@@ -1191,10 +1262,10 @@ function getCashbackPercent() {
 
 function getLoyaltyLevel() {
   const s = state.stats.spent;
-  if (s >= 50000) return { name: 'Platinum', emoji: '💎' };
-  if (s >= 20000) return { name: 'Gold', emoji: '🥇' };
-  if (s >= 5000) return { name: 'Silver', emoji: '🥈' };
-  return { name: 'Bronze', emoji: '🥉' };
+  if (s >= 50000) return { name: 'Platinum', icon: '💎' };
+  if (s >= 20000) return { name: 'Gold', icon: '🥇' };
+  if (s >= 5000) return { name: 'Silver', icon: '🥈' };
+  return { name: 'Bronze', icon: '🥉' };
 }
 
 function checkLoyalty() {
@@ -1205,7 +1276,7 @@ function checkLoyalty() {
   const cashback = document.getElementById('cashbackPercent');
   const spent = document.getElementById('loyaltySpent');
   if (!badge) return;
-  badge.textContent = `${level.emoji} ${level.name}`;
+  badge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>${level.name}`;
   const th = [0, 5000, 20000, 50000];
   const next = th.find(t => t > state.stats.spent) || 50000;
   const prev = th.filter(t => t <= state.stats.spent).pop() || 0;
@@ -1470,7 +1541,6 @@ function renderAdminTab(tab) {
         <p style="color:var(--muted);font-size:12px;margin-bottom:8px;">ID админов (только им разрешён вход):</p>
         ${ADMIN_IDS.map(id => `<div class="admin-row"><span>ID ${id}</span></div>`).join('')}
       </div>
-      <button class="ghost" data-admin-clear="1" style="background:rgba(255,45,85,0.15);color:var(--accent);margin-top:20px;">⚠️ Очистить все данные</button>
     `;
   }
 }
@@ -1534,7 +1604,6 @@ function saveAdminProduct() {
   closeModal('modalAdminProduct');
   renderAdminTab('products');
   renderProducts();
-  updateCatalogCounts();
   logAction(`product_save: ${data.name}`);
   toast('Товар сохранён', 'success');
 }
@@ -1546,7 +1615,6 @@ function deleteProductFromAdmin(id) {
   saveProducts();
   renderAdminTab('products');
   renderProducts();
-  updateCatalogCounts();
   logAction(`product_delete: ${p?.name || id}`);
   toast('Товар удалён', 'success');
 }
@@ -1653,7 +1721,7 @@ function exportBackup() {
     users: state.users, products: PRODUCTS, orders: state.orders,
     promos: state.promos, reviews: state.reviews, inventory: state.inventory,
     transactions: state.transactions, points: state.points, stats: state.stats,
-    balance: Storage.get('balance', 0), version: 'v0.9.1', exported: Date.now()
+    balance: Storage.get('balance', 0), version: 'v1.0.0', exported: Date.now()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1789,7 +1857,15 @@ function bindAllListeners() {
   dropdown?.addEventListener('click', (e) => e.stopPropagation());
 
   window.addEventListener('scroll', () => document.getElementById('topbar')?.classList.toggle('scrolled', window.scrollY > 10));
-  window.addEventListener('hashchange', routeFromHash);
+  window.addEventListener('hashchange', () => {
+    const h = location.hash.replace('#', '');
+    if (h && document.getElementById('page-' + h)) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + h).classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === h));
+      updateBackButton();
+    }
+  });
 
   let taps = 0, tapTimer = null;
   document.getElementById('brandLogo')?.addEventListener('click', () => {
@@ -1973,7 +2049,6 @@ function bindAllListeners() {
     if (e.target.closest('[data-admin-export]')) { exportBackup(); return; }
     if (e.target.closest('[data-admin-import]')) { importBackup(); return; }
     if (e.target.closest('[data-change-pass]')) { changeAdminPassword(); return; }
-    if (e.target.closest('[data-admin-clear]')) { clearAllData(); return; }
 
     const btn = e.target.closest('.btn');
     if (btn && Storage.get('animEnabled', true)) {
@@ -1999,6 +2074,7 @@ function bindAllListeners() {
 
 // ==================== WINDOW EXPORTS ====================
 window.go = go;
+window.goBack = goBack;
 window.checkAdminPass = checkAdminPass;
 window.addPromo = addPromo;
 window.delReview = delReview;
