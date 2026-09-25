@@ -122,16 +122,23 @@ const ACHIEVEMENTS = [
 ];
 
 const CHANGELOG = [
-  { ver: 'v0.9.0', date: 'Сегодня', changes: [
+  { ver: 'v0.9.1', date: 'Сегодня', changes: [
+    'Новый премиум-сплэш с частицами и прогрессом',
+    'Приветствие с именем из Telegram',
+    'Переработанные табы каталога со слайдером',
+    'Иконки переведены на SVG (nav, stat-cards, dropdown)',
+    'Реордер: пакеты над отзывами'
+  ] },
+  { ver: 'v0.9.0', date: 'Ранее', changes: [
     'Полностью вырезана авторизация',
     'Новый сплэш-экран с прогресс-баром',
     'Авто-создание профиля при входе',
     'Фикс бесконечной загрузки'
   ] },
-  { ver: 'v0.8.3', date: 'Вчера', changes: ['Фикс авторизации', 'Привязка onclick-кнопок'] },
-  { ver: 'v0.8.0', date: '2 дня назад', changes: ['Каталог 2.0', 'Расширенные фильтры', 'Hero-баннер', 'Полная админка'] },
-  { ver: 'v0.7.0', date: '4 дня назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек'] },
-  { ver: 'v0.6.0', date: '6 дней назад', changes: ['Кейс дня и колесо', 'Лояльность и баллы'] }
+  { ver: 'v0.8.3', date: '2 дня назад', changes: ['Фикс авторизации', 'Привязка onclick-кнопок'] },
+  { ver: 'v0.8.0', date: '3 дня назад', changes: ['Каталог 2.0', 'Расширенные фильтры', 'Hero-баннер', 'Полная админка'] },
+  { ver: 'v0.7.0', date: '5 дней назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек'] },
+  { ver: 'v0.6.0', date: '7 дней назад', changes: ['Кейс дня и колесо', 'Лояльность и баллы'] }
 ];
 
 const LIVE_BUYERS = [
@@ -147,23 +154,109 @@ const LIVE_BUYERS = [
   { name: '@colombia_x', flag: '🇨🇴', product: 'Колумбия' }
 ];
 
+// ==================== SPLASH v3 ====================
+const SPLASH_TAGLINES = [
+  'Маркет звёзд, премиума и аккаунтов',
+  'Автовыдача 24/7 без выходных',
+  'Тысячи довольных покупателей',
+  'Твой маркет цифровых товаров'
+];
+const SPLASH_STAGES = [
+  { at: 0, status: 'Инициализация...' },
+  { at: 20, status: 'Загрузка каталога...' },
+  { at: 45, status: 'Проверка товаров...' },
+  { at: 70, status: 'Синхронизация...' },
+  { at: 90, status: 'Почти готово...' },
+  { at: 100, status: 'Добро пожаловать!' }
+];
+
+function spawnSplashParticles() {
+  const wrap = document.getElementById('splashParticles');
+  if (!wrap) return;
+  const count = 24;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'splash3-particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (6 + Math.random() * 6) + 's';
+    p.style.animationDelay = (Math.random() * 6) + 's';
+    p.style.opacity = (0.4 + Math.random() * 0.6);
+    if (Math.random() > 0.7) {
+      p.style.background = '#ffffff';
+      p.style.boxShadow = '0 0 6px #fff, 0 0 12px rgba(255,255,255,0.5)';
+    }
+    wrap.appendChild(p);
+  }
+}
+
+function startSplashAnim(done) {
+  spawnSplashParticles();
+
+  const tagEl = document.getElementById('splashTagline');
+  const fillEl = document.getElementById('splashProgressFill');
+  const statusEl = document.getElementById('splashStatus');
+  const percentEl = document.getElementById('splashPercent');
+
+  // Смена теглайнов
+  let tagIdx = 0;
+  const tagInterval = setInterval(() => {
+    if (!tagEl) return;
+    tagEl.classList.add('fade');
+    setTimeout(() => {
+      tagIdx = (tagIdx + 1) % SPLASH_TAGLINES.length;
+      tagEl.textContent = SPLASH_TAGLINES[tagIdx];
+      tagEl.classList.remove('fade');
+    }, 350);
+  }, 1600);
+
+  // Прогресс — плавно от 0 до 100 за ~1.9 сек
+  const totalDuration = 1900;
+  const startTime = Date.now();
+  let lastStage = -1;
+
+  const tick = () => {
+    const elapsed = Date.now() - startTime;
+    const raw = Math.min(100, (elapsed / totalDuration) * 100);
+    // easing (easeOutCubic)
+    const eased = 100 * (1 - Math.pow(1 - raw / 100, 3));
+    if (fillEl) fillEl.style.width = eased + '%';
+    if (percentEl) percentEl.textContent = Math.floor(eased) + '%';
+
+    // статус-сообщения
+    for (let i = SPLASH_STAGES.length - 1; i >= 0; i--) {
+      if (eased >= SPLASH_STAGES[i].at && lastStage < i) {
+        lastStage = i;
+        if (statusEl) statusEl.textContent = SPLASH_STAGES[i].status;
+        break;
+      }
+    }
+
+    if (raw < 100) {
+      requestAnimationFrame(tick);
+    } else {
+      clearInterval(tagInterval);
+      setTimeout(done, 320);
+    }
+  };
+  requestAnimationFrame(tick);
+}
+
 // ==================== INIT ====================
 window.addEventListener('DOMContentLoaded', () => {
   applyAllSettings();
   initTelegram();
   bindAllOnclicks();
 
-  // Авто-создание юзера если нет
   autoCreateUser();
 
-  setTimeout(() => {
+  startSplashAnim(() => {
     const splash = document.getElementById('splash');
     if (splash) splash.classList.add('hide');
     setTimeout(() => {
       splash?.remove();
       enterApp();
-    }, 500);
-  }, 1400);
+    }, 600);
+  });
 
   startPromoTimer();
   startOnlineTicker();
@@ -179,6 +272,7 @@ function autoCreateUser() {
   const username = tg?.username || tg?.first_name || 'desired';
   state.currentUser = {
     username: username,
+    firstName: tg?.first_name || username,
     tgId: tg?.id || null,
     createdAt: Date.now()
   };
@@ -307,22 +401,17 @@ function enterApp() {
   updateHello();
   checkLoyalty();
   checkAchievements();
+  moveCatalogSlider();
   routeFromHash();
 }
 
 function updateHello() {
   const el = document.getElementById('helloText');
   const sub = document.getElementById('helloSub');
-  const name = state.currentUser?.username || 'user';
-  if (el) el.textContent = `Привет, ${name} 👋`;
-  if (sub) {
-    const hour = new Date().getHours();
-    let greet = 'Хорошего дня!';
-    if (hour < 12) greet = 'Доброе утро!';
-    else if (hour < 18) greet = 'Хорошего дня!';
-    else greet = 'Хорошего вечера!';
-    sub.textContent = greet;
-  }
+  if (!el) return;
+  const name = state.tgUser?.first_name || state.currentUser?.firstName || state.currentUser?.username || 'друг';
+  el.textContent = `Привет, ${name} 👋`;
+  if (sub) sub.textContent = 'Удачных покупок!';
 }
 
 function updateProfileUI() {
@@ -419,6 +508,13 @@ function updateCatalogCounts() {
   const s = document.getElementById('countStars');
   if (a) a.textContent = acc;
   if (s) s.textContent = stars;
+}
+
+function moveCatalogSlider() {
+  const slider = document.getElementById('catalogTabSlider');
+  if (!slider) return;
+  if (state.catalogTab === 'stars') slider.classList.add('right');
+  else slider.classList.remove('right');
 }
 
 // ==================== SALE OF DAY ====================
@@ -1207,13 +1303,27 @@ function renderLiveFeed() {
   `).join('');
 }
 
+function animateCounter(el, from, to, duration) {
+  if (!el) return;
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const val = Math.round(from + (to - from) * eased);
+    el.textContent = val.toLocaleString('ru-RU');
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
 function startOnlineTicker() {
   setInterval(() => {
+    const prev = state.onlineCount;
     state.onlineCount += Math.floor(Math.random() * 7) - 3;
     if (state.onlineCount < 1000) state.onlineCount = 1000;
     state.soldToday += Math.random() > 0.7 ? 1 : 0;
     const a = document.getElementById('statOnline');
-    if (a) a.textContent = state.onlineCount.toLocaleString();
+    if (a) animateCounter(a, prev, state.onlineCount, 600);
     const b = document.getElementById('statSoldToday');
     if (b) b.textContent = state.soldToday;
   }, 5000);
@@ -1543,7 +1653,7 @@ function exportBackup() {
     users: state.users, products: PRODUCTS, orders: state.orders,
     promos: state.promos, reviews: state.reviews, inventory: state.inventory,
     transactions: state.transactions, points: state.points, stats: state.stats,
-    balance: Storage.get('balance', 0), version: 'v0.9.0', exported: Date.now()
+    balance: Storage.get('balance', 0), version: 'v0.9.1', exported: Date.now()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1763,6 +1873,7 @@ function bindAllListeners() {
       state.catalogTab = t.dataset.cat;
       visibleProducts = 6;
       renderProducts();
+      moveCatalogSlider();
       haptic('light');
     });
   });
