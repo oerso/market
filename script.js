@@ -35,9 +35,11 @@ const state = {
   reviewRating: 5,
   reviewFilter: 'all',
   inventoryFilter: 'all',
+  txFilter: 'all',
   catalogTab: 'accounts',
   quickFilter: 'all',
   loyaltyLevel: 'bronze',
+  pendingAdminBalance: null,
   filters: { priceMin: 0, priceMax: 0, sort: 'popular', hit: false, isNew: false, sale: false }
 };
 
@@ -48,12 +50,13 @@ let PRODUCTS = Storage.get('products', null) || [
   { id: 3, flag: '🇯🇵', name: 'Япония', sub: '52 покупки · автовыдача', price: 349, rating: 4.9, stock: 7, category: 'accounts', tags: ['⚡ автовыдача', '🛡 гарантия'] },
   { id: 4, flag: '🇨🇴', name: 'Колумбия', sub: '34 покупки · автовыдача', price: 129, rating: 4.7, stock: 12, category: 'accounts', tags: ['⚡ автовыдача'] },
   { id: 5, flag: '🇰🇿', name: 'Казахстан', sub: '88 покупок · автовыдача', price: 99, rating: 4.8, stock: 25, category: 'accounts', tags: ['⚡ автовыдача'] },
-  { id: 6, flag: '⭐', name: 'Telegram Stars 100', sub: 'Мгновенная выдача', price: 145, rating: 5, badge: 'NEW', stock: 89, category: 'stars', tags: ['⚡ автовыдача'] },
-  { id: 7, flag: '⭐', name: 'Telegram Stars 500', sub: 'Мгновенная выдача', price: 690, rating: 5, stock: 45, category: 'stars', tags: ['⚡ автовыдача'] },
-  { id: 8, flag: '💎', name: 'Telegram Premium 3 мес', sub: 'Активация на аккаунт', price: 590, rating: 4.9, badge: 'ХИТ', stock: 30, category: 'stars', tags: ['⚡ автовыдача', '🛡 гарантия'] },
-  { id: 9, flag: '💎', name: 'Telegram Premium 12 мес', sub: 'Активация на аккаунт', price: 1890, rating: 4.9, stock: 15, category: 'stars', tags: ['⚡ автовыдача', '🛡 гарантия'] },
-  { id: 10, flag: '🎁', name: 'NFT подарок Basic', sub: 'Аренда 30 дней', price: 249, rating: 4.6, stock: 22, category: 'stars', tags: ['🎁 аренда'] },
-  { id: 11, flag: '🎁', name: 'NFT подарок Rare', sub: 'Аренда 30 дней', price: 890, rating: 4.8, badge: 'NEW', stock: 8, category: 'stars', tags: ['🎁 аренда'] }
+  { id: 6, flag: '🇩🇪', name: 'Германия', sub: '64 покупки · автовыдача', price: 179, rating: 4.7, stock: 15, category: 'accounts', tags: ['⚡ автовыдача'] },
+  { id: 7, flag: '⭐', name: 'Telegram Stars 100', sub: 'Мгновенная выдача', price: 145, rating: 5, badge: 'NEW', stock: 89, category: 'stars', tags: ['⚡ автовыдача'] },
+  { id: 8, flag: '⭐', name: 'Telegram Stars 500', sub: 'Мгновенная выдача', price: 690, rating: 5, stock: 45, category: 'stars', tags: ['⚡ автовыдача'] },
+  { id: 9, flag: '💎', name: 'Telegram Premium 3 мес', sub: 'Активация на аккаунт', price: 590, rating: 4.9, badge: 'ХИТ', stock: 30, category: 'stars', tags: ['⚡ автовыдача', '🛡 гарантия'] },
+  { id: 10, flag: '💎', name: 'Telegram Premium 12 мес', sub: 'Активация на аккаунт', price: 1890, rating: 4.9, stock: 15, category: 'stars', tags: ['⚡ автовыдача', '🛡 гарантия'] },
+  { id: 11, flag: '🎁', name: 'NFT подарок Basic', sub: 'Аренда 30 дней', price: 249, rating: 4.6, stock: 22, category: 'stars', tags: ['🎁 аренда'] },
+  { id: 12, flag: '🎁', name: 'NFT подарок Rare', sub: 'Аренда 30 дней', price: 890, rating: 4.8, badge: 'NEW', stock: 8, category: 'stars', tags: ['🎁 аренда'] }
 ];
 function saveProducts() { Storage.set('products', PRODUCTS); }
 
@@ -93,7 +96,6 @@ const FAQ = [
   { q: 'Оплата с чужой карты?', a: 'Только с разрешения.' },
   { q: 'Есть приложение?', a: 'Работает в Telegram как Mini App.' },
   { q: 'Новые товары?', a: 'Следи за обновлениями.' },
-  { q: 'Что за чат?', a: 'Чат отключён до переезда на сервер.' },
   { q: 'Стать модератором?', a: 'Активным юзерам по приглашению.' }
 ];
 
@@ -115,15 +117,29 @@ const ACHIEVEMENTS = [
   { id: 'reviewer', icon: '✍️', name: 'Критик', desc: 'Оставь 5 отзывов' },
   { id: 'daily_master', icon: '🔥', name: 'Стрик 7 дней', desc: 'Заходи 7 дней подряд' },
   { id: 'case_hunter', icon: '🎰', name: 'Кейс-хантер', desc: 'Крути кейс 5 раз' },
-  { id: 'loyal', icon: '👑', name: 'Loyal', desc: 'Достигни Gold' }
+  { id: 'loyal', icon: '👑', name: 'Loyal', desc: 'Достигни Gold' },
+  { id: 'favorite', icon: '❤️', name: 'Коллекционер', desc: 'Добавь 5 товаров в избранное' },
+  { id: 'explorer', icon: '🧭', name: 'Исследователь', desc: 'Открой 10 товаров' }
 ];
 
 const CHANGELOG = [
-  { ver: 'v0.7.0', date: 'Сегодня', changes: ['Каталог: табы Аккаунты / Звёзды и Премиум', 'Расширенные фильтры (цена, сортировка, метки)', 'Кнопка баланса → пополнение', 'Убран общий чат', 'Убран дневник', 'Фикс размера шрифта', 'Дефолт радиуса = скруглённые', 'Скидка дня вместо кейсов', 'Полная админка: CRUD товаров, юзеры, заказы, бэкап', 'Скролл фикс'] },
-  { ver: 'v0.6.0', date: '2 дня назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек', 'Сезонные ивенты'] },
-  { ver: 'v0.5.0', date: '4 дня назад', changes: ['Кейс дня и колесо', 'Ежедневный бонус', 'Лояльность и баллы'] },
-  { ver: 'v0.4.0', date: 'Неделю назад', changes: ['Полный редизайн', 'Авторизация', 'Корзина и профиль'] },
-  { ver: 'v0.3.0', date: '10 дней назад', changes: ['Первый каркас Mini App', 'Каталог товаров'] }
+  { ver: 'v0.8.0', date: 'Сегодня', changes: [
+    'Каталог 2.0: табы Аккаунты / Звёзды и Премиум',
+    'Расширенные фильтры: цена, сортировка, метки',
+    'Hero-баннер с таймером акции',
+    'Скидка дня вместо 3 кейсов',
+    'Кнопка баланса → пополнение',
+    'Убран общий чат и дневник',
+    'Полная админка 2.0: дашборд с графиком, CRUD товаров, юзеры (баланс/бан), заказы (возврат), промокоды с описанием, отзывы (удаление), бэкап JSON, логи, смена пароля',
+    'Модалки для работы с юзерами',
+    'Фикс размера шрифта',
+    'Радиус углов = максимум по умолчанию',
+    'Кнопка полного сброса данных'
+  ] },
+  { ver: 'v0.7.0', date: '2 дня назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек', 'Сезонные ивенты'] },
+  { ver: 'v0.6.0', date: '4 дня назад', changes: ['Кейс дня и колесо', 'Ежедневный бонус', 'Лояльность и баллы'] },
+  { ver: 'v0.5.0', date: 'Неделю назад', changes: ['Полный редизайн', 'Авторизация', 'Корзина и профиль'] },
+  { ver: 'v0.4.0', date: '10 дней назад', changes: ['Первый каркас Mini App', 'Каталог товаров'] }
 ];
 
 const LIVE_BUYERS = [
@@ -134,7 +150,9 @@ const LIVE_BUYERS = [
   { name: '@marsik', flag: '🎁', product: 'NFT Basic' },
   { name: '@lucky', flag: '🇯🇵', product: 'Япония' },
   { name: '@topchek', flag: '⭐', product: 'Stars 100' },
-  { name: '@arbitrage', flag: '🇰🇿', product: 'Казахстан' }
+  { name: '@arbitrage', flag: '🇰🇿', product: 'Казахстан' },
+  { name: '@germany_pro', flag: '🇩🇪', product: 'Германия' },
+  { name: '@colombia_x', flag: '🇨🇴', product: 'Колумбия' }
 ];
 
 // ==================== INIT ====================
@@ -186,12 +204,12 @@ function applyAllSettings() {
   if (season === 'default') document.body.removeAttribute('data-season');
   else document.body.setAttribute('data-season', season);
 
-  const r = Storage.get('radius', 'round');
-  const rmap = { sharp: '6px', default: '16px', round: '20px', pill: '32px' };
-  const rval = rmap[r] || rmap.round;
+  const r = Storage.get('radius', 'pill');
+  const rmap = { sharp: '8px', default: '20px', round: '28px', pill: '40px' };
+  const rval = rmap[r] || rmap.pill;
   document.body.style.setProperty('--radius', rval);
-  document.body.style.setProperty('--radius-sm', `calc(${rval} - 6px)`);
-  document.body.style.setProperty('--radius-lg', `calc(${rval} + 6px)`);
+  document.body.style.setProperty('--radius-sm', `calc(${rval} - 8px)`);
+  document.body.style.setProperty('--radius-lg', `calc(${rval} + 8px)`);
 
   const s = Storage.get('fontScale', 'default');
   const smap = { small: '0.9', default: '1', large: '1.1', xlarge: '1.2' };
@@ -213,7 +231,7 @@ function syncSettingsUI() {
   const setV = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
   const setC = (id, v) => { const el = document.getElementById(id); if (el) el.checked = v; };
 
-  setV('radiusSelect', Storage.get('radius', 'round'));
+  setV('radiusSelect', Storage.get('radius', 'pill'));
   setV('fontScaleSelect', Storage.get('fontScale', 'default'));
   setV('seasonSelect', Storage.get('season', 'default'));
   setC('compactToggle', Storage.get('compact', false));
@@ -229,6 +247,14 @@ function resetSettings() {
   applyAllSettings();
   toast('Настройки сброшены', 'success');
   haptic('medium');
+}
+
+function clearAllData() {
+  if (!confirm('Удалить ВСЕ данные без возможности восстановления?')) return;
+  if (!confirm('Точно? Аккаунт, заказы, инвентарь, баланс — всё удалится.')) return;
+  ['currentUser','users','cart','favorites','recent','reviews','promos','usedPromos','transactions','orders','inventory','points','stats','achievements','logs','products','onboarded'].forEach(k => Storage.del(k));
+  toast('Всё очищено. Перезагрузка...', 'success');
+  setTimeout(() => location.reload(), 1000);
 }
 
 // ==================== AUTH ====================
@@ -296,6 +322,7 @@ function enterApp() {
   renderProducts();
   renderFavorites();
   renderRecent();
+  renderPackages();
   renderReviewsMini();
   renderReviews();
   renderFAQ();
@@ -311,7 +338,6 @@ function enterApp() {
   renderChangelog();
   renderLiveFeed();
   renderSaleCard();
-  renderPackages();
   updateCatalogCounts();
   updateHello();
   checkLoyalty();
@@ -321,8 +347,17 @@ function enterApp() {
 
 function updateHello() {
   const el = document.getElementById('helloText');
+  const sub = document.getElementById('helloSub');
   const name = state.currentUser?.username || 'user';
   if (el) el.textContent = `Привет, ${name} 👋`;
+  if (sub) {
+    const hour = new Date().getHours();
+    let greet = 'Хорошего дня!';
+    if (hour < 12) greet = 'Доброе утро!';
+    else if (hour < 18) greet = 'Хорошего дня!';
+    else greet = 'Хорошего вечера!';
+    sub.textContent = greet;
+  }
 }
 
 function updateProfileUI() {
@@ -457,7 +492,7 @@ function renderSaleCard() {
   const sub = document.getElementById('saleSub');
   const price = document.getElementById('salePrice');
   if (title) title.textContent = `${p.flag} ${p.name}`;
-  if (sub) sub.textContent = `${p.sub}`;
+  if (sub) sub.textContent = p.sub;
   if (price) price.textContent = `${p.price}₽`;
 }
 
@@ -507,6 +542,7 @@ function renderProducts() {
     if (state.quickFilter === 'hit') items = items.filter(p => p.badge === 'ХИТ');
     if (state.quickFilter === 'new') items = items.filter(p => p.badge === 'NEW');
     if (state.quickFilter === 'sale') items = items.filter(p => p.oldPrice);
+    if (state.quickFilter === 'top') items = items.filter(p => p.rating >= 4.8);
 
     if (state.filters.priceMin) items = items.filter(p => p.price >= state.filters.priceMin);
     if (state.filters.priceMax) items = items.filter(p => p.price <= state.filters.priceMax);
@@ -518,6 +554,7 @@ function renderProducts() {
     if (s === 'cheap') items.sort((a,b) => a.price - b.price);
     else if (s === 'expensive') items.sort((a,b) => b.price - a.price);
     else if (s === 'rating') items.sort((a,b) => b.rating - a.rating);
+    else if (s === 'new') items.sort((a,b) => (b.badge === 'NEW' ? 1 : 0) - (a.badge === 'NEW' ? 1 : 0));
 
     if (!items.length) {
       list.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:30px;">Ничего не найдено</div>';
@@ -619,6 +656,7 @@ function toggleFav(id) {
   renderProducts();
   renderFavorites();
   haptic('light');
+  checkAchievements();
 }
 
 function renderFavorites() {
@@ -640,9 +678,17 @@ function renderFavorites() {
 }
 
 function addToRecent(id) {
-  state.recent = [id, ...state.recent.filter(x => x !== id)].slice(0, 8);
+  state.recent = [id, ...state.recent.filter(x => x !== id)].slice(0, 10);
   Storage.set('recent', state.recent);
   renderRecent();
+  checkAchievements();
+}
+
+function clearRecent() {
+  state.recent = [];
+  Storage.set('recent', []);
+  renderRecent();
+  toast('Очищено', 'success');
 }
 
 function renderRecent() {
@@ -926,9 +972,12 @@ function renderTransactions() {
   const list = document.getElementById('txList');
   const empty = document.getElementById('txEmpty');
   if (!list) return;
-  if (!state.transactions.length) { list.innerHTML = ''; empty?.classList.remove('hidden'); return; }
+  let items = [...state.transactions];
+  if (state.txFilter === 'in') items = items.filter(t => t.type === 'in');
+  if (state.txFilter === 'out') items = items.filter(t => t.type === 'out');
+  if (!items.length) { list.innerHTML = ''; empty?.classList.remove('hidden'); return; }
   empty?.classList.add('hidden');
-  list.innerHTML = state.transactions.map(t => `
+  list.innerHTML = items.map(t => `
     <div class="cart-item">
       <div class="cart-item-info">
         <span style="font-size:20px;">${t.type === 'in' ? '↗' : '↘'}</span>
@@ -1146,6 +1195,8 @@ function checkAchievements() {
   check('big_spender', state.stats.spent >= 5000);
   check('reviewer', state.reviews.filter(r => r.author === state.currentUser?.username).length >= 5);
   check('loyal', ['gold', 'platinum'].includes(state.loyaltyLevel));
+  check('favorite', state.favorites.length >= 5);
+  check('explorer', state.recent.length >= 10);
   Storage.set('achievements', u);
   renderAchievements();
 }
@@ -1217,7 +1268,7 @@ function renderLiveFeed() {
 
 function startOnlineTicker() {
   setInterval(() => {
-    state.onlineCount += Math.floor(Math.random() * 5) - 2;
+    state.onlineCount += Math.floor(Math.random() * 7) - 3;
     if (state.onlineCount < 1000) state.onlineCount = 1000;
     state.soldToday += Math.random() > 0.7 ? 1 : 0;
     const a = document.getElementById('statOnline');
@@ -1236,7 +1287,7 @@ function checkAdminPass() {
     go('admin');
     renderAdminTab('dashboard');
     setTimeout(() => closeModal('modalAdminPass'), 100);
-    toast('Добро пожаловать', 'success');
+    toast('Добро пожаловать, админ', 'success');
   } else {
     document.getElementById('adminPassInput').value = '';
     toast('Неверный пароль', 'error');
@@ -1267,12 +1318,13 @@ function renderAdminTab(tab) {
         <div class="admin-stat"><div class="admin-stat-label">Выручка</div><div class="admin-stat-value">${state.stats.spent}₽</div></div>
         <div class="admin-stat"><div class="admin-stat-label">Товаров</div><div class="admin-stat-value">${PRODUCTS.length}</div></div>
       </div>
-      <h4 style="margin-top:16px;">📈 Выручка 7 дней</h4>
+      <h4 style="margin-top:16px;">📈 Выручка за 7 дней</h4>
       <div class="admin-chart">
         ${revenue.map((v,i) => `<div class="admin-chart-bar" style="height:${(v/maxRev)*100}%;" data-label="${days[i]}"></div>`).join('')}
       </div>
       <h4 style="margin-top:20px;">⚡ Быстрые действия</h4>
       <button data-ap-add="1">➕ Добавить товар</button>
+      <button class="ghost" data-open-promo-modal="1">🎟 Новый промокод</button>
       <button class="ghost" data-admin-export="1">💾 Скачать бэкап</button>
     `;
   } else if (tab === 'products') {
@@ -1295,11 +1347,11 @@ function renderAdminTab(tab) {
   } else if (tab === 'users') {
     const list = Object.entries(state.users).map(([n, u]) =>
       `<div class="admin-row">
-        <span>@${n} ${u.banned ? '<span style="color:var(--accent);font-size:11px;">BANNED</span>' : ''}</span>
+        <span>@${escapeHtml(n)} ${u.banned ? '<span style="color:var(--accent);font-size:11px;">BANNED</span>' : ''}</span>
         <span style="display:flex;gap:6px;align-items:center;">
           <span>${u.balance || 0}₽</span>
-          <button class="ghost" data-admin-bal="${n}">💰</button>
-          <button class="ghost" data-admin-ban="${n}">${u.banned ? '✅' : '⛔'}</button>
+          <button class="ghost" data-admin-bal="${escapeHtml(n)}">💰</button>
+          <button class="ghost" data-admin-ban="${escapeHtml(n)}">${u.banned ? '✅' : '⛔'}</button>
         </span>
       </div>`
     ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет юзеров</div>';
@@ -1308,31 +1360,38 @@ function renderAdminTab(tab) {
     c.innerHTML = `<h4>📦 Заказы (${state.orders.length})</h4>` + (state.orders.length
       ? state.orders.map((o, i) => `
         <div class="admin-row">
-          <span>${o.id}</span>
+          <span>${o.id} · ${new Date(o.date).toLocaleDateString()}</span>
           <span style="display:flex;gap:6px;align-items:center;">
             <span>${o.total}₽</span>
-            <button class="ghost" data-admin-refund="${i}">↩️</button>
+            <button class="ghost" data-admin-refund="${i}">↩️ Возврат</button>
           </span>
         </div>`).join('')
       : '<div style="color:var(--muted);font-size:12px;">Нет заказов</div>');
   } else if (tab === 'promo') {
     c.innerHTML = `
-      <h4>🎟 Промокоды</h4>
-      <input type="text" id="promoCodeInput" placeholder="Код">
-      <input type="number" id="promoDiscInput" placeholder="Скидка %">
-      <button data-add-promo="1">Добавить</button>
-      <div id="promoList" style="margin-top:12px;"></div>
+      <h4>🎟 Промокоды (${state.promos.length})</h4>
+      <button data-open-promo-modal="1">➕ Создать промокод</button>
+      <div style="margin-top:12px;">
+        ${state.promos.length ? state.promos.map(p => `
+          <div class="admin-row">
+            <span><b>${escapeHtml(p.code)}</b> <span style="color:var(--muted);font-size:11px;">${p.description || ''}</span></span>
+            <span style="display:flex;gap:6px;align-items:center;">
+              <span>-${p.disc}%</span>
+              <button class="ghost" data-admin-delpromo="${escapeHtml(p.code)}">🗑</button>
+            </span>
+          </div>
+        `).join('') : '<div style="color:var(--muted);font-size:12px;">Нет промокодов</div>'}
+      </div>
     `;
-    renderPromoListAdmin();
   } else if (tab === 'reviews') {
     const list = state.reviews.map((r, i) =>
       `<div class="admin-row"><span>@${escapeHtml(r.author)} · ${r.rating}★ · ${escapeHtml(r.text).slice(0, 40)}</span><button class="ghost" data-admin-delrev="${i}">🗑</button></div>`
     ).join('') || '<div style="color:var(--muted);font-size:12px;">Нет отзывов</div>';
-    c.innerHTML = `<h4>⭐ Отзывы</h4>${list}`;
+    c.innerHTML = `<h4>⭐ Отзывы (${state.reviews.length})</h4>${list}`;
   } else if (tab === 'backup') {
     c.innerHTML = `
-      <h4>💾 Бэкап</h4>
-      <p style="color:var(--muted);font-size:12px;margin-bottom:12px;">Сохрани БД или загрузи из файла.</p>
+      <h4>💾 Резервное копирование</h4>
+      <p style="color:var(--muted);font-size:12px;margin-bottom:12px;">Сохрани всю БД в файл или загрузи из бэкапа.</p>
       <button data-admin-export="1">📥 Скачать бэкап</button>
       <input type="file" id="backupFile" accept=".json" style="margin-top:12px;display:block;width:100%;padding:10px;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;">
       <button class="ghost" data-admin-import="1" style="margin-top:8px;">📤 Загрузить из файла</button>
@@ -1340,7 +1399,9 @@ function renderAdminTab(tab) {
         Юзеров: <b>${Object.keys(state.users).length}</b><br>
         Товаров: <b>${PRODUCTS.length}</b><br>
         Заказов: <b>${state.orders.length}</b><br>
-        Промокодов: <b>${state.promos.length}</b>
+        Промокодов: <b>${state.promos.length}</b><br>
+        Отзывов: <b>${state.reviews.length}</b><br>
+        Инвентарь: <b>${state.inventory.length}</b>
       </div>
     `;
   } else if (tab === 'logs') {
@@ -1351,10 +1412,14 @@ function renderAdminTab(tab) {
   } else if (tab === 'settings') {
     c.innerHTML = `
       <h4>⚙️ Настройки админа</h4>
-      <p style="color:var(--muted);font-size:12px;margin-bottom:12px;">Текущий пароль: ${ADMIN_PASSWORD}</p>
-      <input type="password" id="newAdminPass" placeholder="Новый пароль">
+      <p style="color:var(--muted);font-size:12px;margin-bottom:12px;">Текущий пароль: <b>${ADMIN_PASSWORD}</b></p>
+      <input type="password" id="newAdminPass" placeholder="Новый пароль (мин. 6)">
       <button data-change-pass="1">Сменить пароль</button>
-      <button class="ghost" data-admin-clear="1" style="background:rgba(255,45,85,0.15);color:var(--accent);margin-top:16px;">⚠️ Очистить все данные</button>
+      <div style="margin-top:20px;">
+        <p style="color:var(--muted);font-size:12px;margin-bottom:8px;">ID админов (только им разрешён вход):</p>
+        ${ADMIN_IDS.map(id => `<div class="admin-row"><span>ID ${id}</span></div>`).join('')}
+      </div>
+      <button class="ghost" data-admin-clear="1" style="background:rgba(255,45,85,0.15);color:var(--accent);margin-top:20px;">⚠️ Очистить все данные</button>
     `;
   }
 }
@@ -1419,38 +1484,56 @@ function saveAdminProduct() {
   renderAdminTab('products');
   renderProducts();
   updateCatalogCounts();
+  logAction(`product_save: ${data.name}`);
   toast('Товар сохранён', 'success');
 }
 
 function deleteProductFromAdmin(id) {
   if (!confirm('Удалить товар?')) return;
+  const p = PRODUCTS.find(x => x.id === id);
   PRODUCTS = PRODUCTS.filter(p => p.id !== id);
   saveProducts();
   renderAdminTab('products');
   renderProducts();
   updateCatalogCounts();
+  logAction(`product_delete: ${p?.name || id}`);
   toast('Товар удалён', 'success');
 }
 
 function adminAddBalance(username) {
-  const amount = prompt('Сколько добавить?', '100');
-  if (!amount) return;
-  const n = +amount;
-  if (isNaN(n)) return;
-  if (!state.users[username]) return;
-  state.users[username].balance = (state.users[username].balance || 0) + n;
+  state.pendingAdminBalance = username;
+  const el = document.getElementById('adminBalanceUser');
+  if (el) el.textContent = `Юзер: @${username} · Баланс: ${state.users[username]?.balance || 0}₽`;
+  document.getElementById('adminBalanceAmount').value = '';
+  document.getElementById('adminBalanceReason').value = '';
+  openModal('modalAdminBalance');
+}
+
+function confirmAdminBalance() {
+  const username = state.pendingAdminBalance;
+  if (!username || !state.users[username]) return;
+  const amount = +document.getElementById('adminBalanceAmount').value;
+  const reason = document.getElementById('adminBalanceReason').value || 'Правка админом';
+  if (!amount) return toast('Введи сумму', 'error');
+  state.users[username].balance = (state.users[username].balance || 0) + amount;
   Storage.set('users', state.users);
   if (state.currentUser?.username === username) {
-    Storage.set('balance', (Storage.get('balance', 0) + n));
+    Storage.set('balance', (Storage.get('balance', 0) + amount));
     updateProfileUI();
   }
-  toast(`+${n}₽ @${username}`, 'success');
+  state.transactions.unshift({ type: amount > 0 ? 'in' : 'out', title: reason, amount: Math.abs(amount), date: Date.now() });
+  Storage.set('transactions', state.transactions);
+  logAction(`balance_${amount > 0 ? 'add' : 'sub'}: @${username} ${amount}`);
+  closeModal('modalAdminBalance');
+  renderAdminTab('users');
+  toast(`${amount > 0 ? '+' : ''}${amount}₽ @${username}`, 'success');
 }
 
 function adminToggleBan(username) {
   if (!state.users[username]) return;
   state.users[username].banned = !state.users[username].banned;
   Storage.set('users', state.users);
+  logAction(`ban_toggle: @${username} → ${state.users[username].banned ? 'banned' : 'active'}`);
   renderAdminTab('users');
   toast(state.users[username].banned ? 'Забанен' : 'Разбанен', 'success');
 }
@@ -1458,39 +1541,56 @@ function adminToggleBan(username) {
 function refundOrder(i) {
   const o = state.orders[i];
   if (!o) return;
+  if (!confirm(`Вернуть ${o.total}₽?`)) return;
   Storage.set('balance', Storage.get('balance', 0) + o.total);
   state.stats.spent -= o.total;
   Storage.set('stats', state.stats);
   state.orders.splice(i, 1);
   Storage.set('orders', state.orders);
+  state.transactions.unshift({ type: 'in', title: `Возврат заказа ${o.id}`, amount: o.total, date: Date.now() });
+  Storage.set('transactions', state.transactions);
+  logAction(`refund: ${o.id} ${o.total}₽`);
   renderAdminTab('orders');
   updateProfileUI();
   toast(`Возврат ${o.total}₽`, 'success');
 }
 
+function openAdminPromoModal() {
+  document.getElementById('promoCodeInput').value = '';
+  document.getElementById('promoDiscInput').value = '';
+  document.getElementById('promoLimitInput').value = '';
+  document.getElementById('promoDescInput').value = '';
+  openModal('modalAdminPromo');
+}
+
 function addPromo() {
   const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
   const disc = +document.getElementById('promoDiscInput').value;
-  if (!code || !disc) return toast('Заполни поля', 'error');
-  state.promos.push({ code, disc, limit: 0, used: 0 });
+  const limit = +document.getElementById('promoLimitInput').value || 0;
+  const description = document.getElementById('promoDescInput').value.trim();
+  if (!code || !disc) return toast('Заполни код и скидку', 'error');
+  if (state.promos.find(p => p.code === code)) return toast('Такой код уже есть', 'error');
+  state.promos.push({ code, disc, limit, used: 0, description, createdAt: Date.now() });
   Storage.set('promos', state.promos);
-  document.getElementById('promoCodeInput').value = '';
-  document.getElementById('promoDiscInput').value = '';
-  renderPromoListAdmin();
+  logAction(`promo_add: ${code} -${disc}%`);
+  closeModal('modalAdminPromo');
+  renderAdminTab('promo');
   toast('Промокод добавлен', 'success');
 }
 
-function renderPromoListAdmin() {
-  const el = document.getElementById('promoList');
-  if (!el) return;
-  el.innerHTML = state.promos.length
-    ? state.promos.map(p => `<div class="admin-row"><span>${p.code}</span><span>-${p.disc}%</span></div>`).join('')
-    : '<div style="color:var(--muted);font-size:12px;">Нет промокодов</div>';
+function deletePromo(code) {
+  if (!confirm(`Удалить промокод ${code}?`)) return;
+  state.promos = state.promos.filter(p => p.code !== code);
+  Storage.set('promos', state.promos);
+  logAction(`promo_delete: ${code}`);
+  renderAdminTab('promo');
+  toast('Промокод удалён', 'success');
 }
 
 function delReview(i) {
   state.reviews.splice(i, 1);
   Storage.set('reviews', state.reviews);
+  logAction('review_delete');
   renderAdminTab('reviews');
   renderReviews();
   renderReviewsMini();
@@ -1502,7 +1602,7 @@ function exportBackup() {
     users: state.users, products: PRODUCTS, orders: state.orders,
     promos: state.promos, reviews: state.reviews, inventory: state.inventory,
     transactions: state.transactions, points: state.points, stats: state.stats,
-    balance: Storage.get('balance', 0), version: 'v0.7.0', exported: Date.now()
+    balance: Storage.get('balance', 0), version: 'v0.8.0', exported: Date.now()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1511,11 +1611,12 @@ function exportBackup() {
   a.download = `desired_backup_${new Date().toISOString().slice(0,10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
+  logAction('backup_export');
   toast('Бэкап скачан', 'success');
 }
 
 function importBackup() {
-  const file = document.getElementById('backupFile').files[0];
+  const file = document.getElementById('backupFile')?.files[0];
   if (!file) return toast('Выбери файл', 'error');
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -1531,6 +1632,7 @@ function importBackup() {
       if (data.points !== undefined) Storage.set('points', data.points);
       if (data.stats) Storage.set('stats', data.stats);
       if (data.balance !== undefined) Storage.set('balance', data.balance);
+      logAction('backup_import');
       toast('Бэкап загружен! Перезагрузка...', 'success');
       setTimeout(() => location.reload(), 1200);
     } catch { toast('Ошибка файла', 'error'); }
@@ -1542,14 +1644,8 @@ function changeAdminPassword() {
   const newPass = document.getElementById('newAdminPass').value;
   if (newPass.length < 6) return toast('Минимум 6 символов', 'error');
   Storage.set('adminPassword', newPass);
+  logAction('password_change');
   toast('Пароль изменён (после перезагрузки)', 'success');
-}
-
-function clearAllData() {
-  if (!confirm('Удалить ВСЕ данные?')) return;
-  ['users','cart','favorites','recent','reviews','promos','transactions','orders','inventory','points','stats','achievements','logs','products'].forEach(k => Storage.del(k));
-  toast('Всё очищено. Перезагрузка...', 'success');
-  setTimeout(() => location.reload(), 1200);
 }
 
 // ==================== MODALS ====================
@@ -1620,7 +1716,7 @@ function startPromoTimer() {
     const h = String(Math.floor(promoSeconds/3600)).padStart(2,'0');
     const m = String(Math.floor((promoSeconds%3600)/60)).padStart(2,'0');
     const s = String(promoSeconds%60).padStart(2,'0');
-    el.textContent = `ещё ${h}:${m}:${s}`;
+    el.textContent = `${h}:${m}:${s}`;
   }, 1000);
 }
 
@@ -1685,12 +1781,22 @@ function bindAllListeners() {
   });
 
   // Инвентарь-фильтры
-  document.querySelectorAll('.inv-filter').forEach(f => {
+  document.querySelectorAll('.inv-filter[data-inv]').forEach(f => {
     f.addEventListener('click', () => {
-      document.querySelectorAll('.inv-filter').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.inv-filter[data-inv]').forEach(x => x.classList.remove('active'));
       f.classList.add('active');
       state.inventoryFilter = f.dataset.inv;
       renderInventory();
+    });
+  });
+
+  // Транзакции-фильтры
+  document.querySelectorAll('.inv-filter[data-tx]').forEach(f => {
+    f.addEventListener('click', () => {
+      document.querySelectorAll('.inv-filter[data-tx]').forEach(x => x.classList.remove('active'));
+      f.classList.add('active');
+      state.txFilter = f.dataset.tx;
+      renderTransactions();
     });
   });
 
@@ -1703,7 +1809,7 @@ function bindAllListeners() {
     });
   });
 
-  // Быстрые фильтры каталога
+  // Быстрые фильтры
   document.querySelectorAll('.quick-chip[data-quick]').forEach(c => {
     c.addEventListener('click', () => {
       document.querySelectorAll('.quick-chip[data-quick]').forEach(x => x.classList.remove('active'));
@@ -1839,10 +1945,11 @@ function bindAllListeners() {
     if (adminBan) { adminToggleBan(adminBan.dataset.adminBan); return; }
     const adminRefund = e.target.closest('[data-admin-refund]');
     if (adminRefund) { refundOrder(+adminRefund.dataset.adminRefund); return; }
-    const addPromoBtn = e.target.closest('[data-add-promo]');
-    if (addPromoBtn) { addPromo(); return; }
     const adminDelRev = e.target.closest('[data-admin-delrev]');
     if (adminDelRev) { delReview(+adminDelRev.dataset.adminDelrev); return; }
+    const adminDelPromo = e.target.closest('[data-admin-delpromo]');
+    if (adminDelPromo) { deletePromo(adminDelPromo.dataset.adminDelpromo); return; }
+    if (e.target.closest('[data-open-promo-modal]')) { openAdminPromoModal(); return; }
     if (e.target.closest('[data-admin-export]')) { exportBackup(); return; }
     if (e.target.closest('[data-admin-import]')) { importBackup(); return; }
     if (e.target.closest('[data-change-pass]')) { changeAdminPassword(); return; }
@@ -1903,13 +2010,18 @@ window.addReview = addReview;
 window.setSearch = setSearch;
 window.toast = toast;
 window.resetSettings = resetSettings;
+window.clearAllData = clearAllData;
 window.openFilters = openFilters;
 window.applyFilters = applyFilters;
 window.resetFilters = resetFilters;
 window.openSaleProduct = openSaleProduct;
+window.clearRecent = clearRecent;
 window.addProductFromAdmin = addProductFromAdmin;
 window.editProductFromAdmin = editProductFromAdmin;
 window.saveAdminProduct = saveAdminProduct;
 window.deleteProductFromAdmin = deleteProductFromAdmin;
 window.exportBackup = exportBackup;
 window.importBackup = importBackup;
+window.adminAddBalance = adminAddBalance;
+window.confirmAdminBalance = confirmAdminBalance;
+window.openAdminPromoModal = openAdminPromoModal;
