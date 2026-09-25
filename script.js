@@ -122,29 +122,16 @@ const ACHIEVEMENTS = [
 ];
 
 const CHANGELOG = [
-  { ver: 'v0.8.3', date: 'Сегодня', changes: [
-    'Фикс бесконечной загрузки (убрана лишняя скобка)',
-    'Привязка всех onclick-кнопок через addEventListener',
-    'Фикс авторизации — регистрация и вход работают'
+  { ver: 'v0.9.0', date: 'Сегодня', changes: [
+    'Полностью вырезана авторизация',
+    'Новый сплэш-экран с прогресс-баром',
+    'Авто-создание профиля при входе',
+    'Фикс бесконечной загрузки'
   ] },
-  { ver: 'v0.8.2', date: 'Сегодня', changes: [
-    'Убраны inline onclick с кнопок авторизации',
-    'Все кнопки привязаны через addEventListener'
-  ] },
-  { ver: 'v0.8.0', date: 'Сегодня', changes: [
-    'Каталог 2.0: табы Аккаунты / Звёзды и Премиум',
-    'Расширенные фильтры: цена, сортировка, метки',
-    'Hero-баннер с таймером акции',
-    'Скидка дня вместо 3 кейсов',
-    'Кнопка баланса → пополнение',
-    'Убран общий чат и дневник',
-    'Полная админка 2.0',
-    'Фикс размера шрифта',
-    'Радиус углов = максимум по умолчанию'
-  ] },
-  { ver: 'v0.7.0', date: '2 дня назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек', 'Сезонные ивенты'] },
-  { ver: 'v0.6.0', date: '4 дня назад', changes: ['Кейс дня и колесо', 'Ежедневный бонус', 'Лояльность и баллы'] },
-  { ver: 'v0.5.0', date: 'Неделю назад', changes: ['Полный редизайн', 'Авторизация', 'Корзина и профиль'] }
+  { ver: 'v0.8.3', date: 'Вчера', changes: ['Фикс авторизации', 'Привязка onclick-кнопок'] },
+  { ver: 'v0.8.0', date: '2 дня назад', changes: ['Каталог 2.0', 'Расширенные фильтры', 'Hero-баннер', 'Полная админка'] },
+  { ver: 'v0.7.0', date: '4 дня назад', changes: ['9 тем и 8 акцентов', 'Кастомизация настроек'] },
+  { ver: 'v0.6.0', date: '6 дней назад', changes: ['Кейс дня и колесо', 'Лояльность и баллы'] }
 ];
 
 const LIVE_BUYERS = [
@@ -164,20 +151,19 @@ const LIVE_BUYERS = [
 window.addEventListener('DOMContentLoaded', () => {
   applyAllSettings();
   initTelegram();
-  bindAuthButtons();
   bindAllOnclicks();
 
+  // Авто-создание юзера если нет
+  autoCreateUser();
+
   setTimeout(() => {
-    document.getElementById('splash')?.classList.add('hide');
+    const splash = document.getElementById('splash');
+    if (splash) splash.classList.add('hide');
     setTimeout(() => {
-      if (state.currentUser) {
-        if (!Storage.get('onboarded', false)) showOnboarding();
-        else enterApp();
-      } else {
-        document.getElementById('authScreen')?.classList.remove('hidden');
-      }
-    }, 400);
-  }, 1200);
+      splash?.remove();
+      enterApp();
+    }, 500);
+  }, 1400);
 
   startPromoTimer();
   startOnlineTicker();
@@ -186,6 +172,18 @@ window.addEventListener('DOMContentLoaded', () => {
   renderSaleCard();
   bindAllListeners();
 });
+
+function autoCreateUser() {
+  if (state.currentUser) return;
+  const tg = state.tgUser;
+  const username = tg?.username || tg?.first_name || 'desired';
+  state.currentUser = {
+    username: username,
+    tgId: tg?.id || null,
+    createdAt: Date.now()
+  };
+  Storage.set('currentUser', state.currentUser);
+}
 
 function initTelegram() {
   const tg = window.Telegram?.WebApp;
@@ -200,7 +198,6 @@ function initTelegram() {
 }
 
 // ==================== ФИКС ONCLICK ДЛЯ TELEGRAM WEBAPP ====================
-// Telegram WebApp блокирует inline onclick — перепривязываем все кнопки через addEventListener
 function bindAllOnclicks() {
   document.querySelectorAll('[onclick]').forEach(el => {
     const code = el.getAttribute('onclick');
@@ -216,63 +213,6 @@ function bindAllOnclicks() {
       }
     });
   });
-}
-
-// ==================== AUTH BUTTONS — ЯВНАЯ ПРИВЯЗКА ====================
-function bindAuthButtons() {
-  const byId = (id) => document.getElementById(id);
-
-  byId('btnGoLogin')?.addEventListener('click', () => showAuthForm('login'));
-  byId('btnGoRegister')?.addEventListener('click', () => showAuthForm('register'));
-
-  byId('btnDoLogin')?.addEventListener('click', () => doLogin());
-  byId('btnGoChoiceFromLogin')?.addEventListener('click', () => showAuthForm('choice'));
-
-  byId('regBtn')?.addEventListener('click', () => doRegister());
-  byId('btnGoChoiceFromReg')?.addEventListener('click', () => showAuthForm('choice'));
-
-  const regCb = byId('regConfirm');
-  const regBtn = byId('regBtn');
-  if (regCb && regBtn) {
-    regBtn.disabled = false;
-    regCb.addEventListener('change', () => {
-      regBtn.disabled = false;
-    });
-  }
-
-  const modalReg = byId('modalConfirmReg');
-  if (modalReg) {
-    const btns = modalReg.querySelectorAll('.btn');
-    if (btns[0]) btns[0].addEventListener('click', () => closeModal('modalConfirmReg'));
-    if (btns[1]) btns[1].addEventListener('click', () => confirmRegister());
-  }
-
-  const modalAdmin = byId('modalAdminPass');
-  if (modalAdmin) {
-    const btns = modalAdmin.querySelectorAll('.btn');
-    if (btns[0]) btns[0].addEventListener('click', () => closeModal('modalAdminPass'));
-    if (btns[1]) btns[1].addEventListener('click', () => checkAdminPass());
-  }
-
-  const modalDenied = byId('modalDenied');
-  if (modalDenied) {
-    const btn = modalDenied.querySelector('.btn-primary');
-    if (btn) btn.addEventListener('click', () => closeModal('modalDenied'));
-  }
-
-  const modalTopUp = byId('modalTopUp');
-  if (modalTopUp) {
-    const btns = modalTopUp.querySelectorAll('.btn');
-    if (btns[0]) btns[0].addEventListener('click', () => closeModal('modalTopUp'));
-    if (btns[1]) btns[1].addEventListener('click', () => submitTopUp());
-  }
-
-  const modalPromo = byId('modalPromo');
-  if (modalPromo) {
-    const btns = modalPromo.querySelectorAll('.btn');
-    if (btns[0]) btns[0].addEventListener('click', () => closeModal('modalPromo'));
-    if (btns[1]) btns[1].addEventListener('click', () => applyPromo());
-  }
 }
 
 // ==================== SETTINGS ====================
@@ -340,70 +280,8 @@ function clearAllData() {
   setTimeout(() => location.reload(), 1000);
 }
 
-// ==================== AUTH ====================
-function showAuthForm(which) {
-  ['authChoice', 'loginForm', 'registerForm'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
-  if (which === 'choice') document.getElementById('authChoice')?.classList.remove('hidden');
-  if (which === 'login') document.getElementById('loginForm')?.classList.remove('hidden');
-  if (which === 'register') document.getElementById('registerForm')?.classList.remove('hidden');
-  haptic('light');
-}
-
-function doRegister() {
-  const u = document.getElementById('regUsername').value.trim();
-  const p = document.getElementById('regPassword').value.trim();
-  const cb = document.getElementById('regConfirm');
-  
-  if (!u || !p) return toast('Заполни все поля', 'error');
-  if (u.length < 3) return toast('Имя минимум 3 символа', 'error');
-  if (p.length < 4) return toast('Пароль минимум 4 символа', 'error');
-  if (cb && !cb.checked) return toast('Подтверди, что записал данные', 'error');
-  if (state.users[u]) return toast('Имя занято', 'error');
-  
-  state._pendingReg = { username: u, password: p };
-  openModal('modalConfirmReg');
-}
-
-function confirmRegister() {
-  closeModal('modalConfirmReg');
-  const { username, password } = state._pendingReg || {};
-  if (!username) return;
-  state.users[username] = { password, createdAt: Date.now(), balance: 0, banned: false, points: 0 };
-  Storage.set('users', state.users);
-  state.currentUser = { username, tgId: state.tgUser?.id || null, createdAt: Date.now() };
-  Storage.set('currentUser', state.currentUser);
-  toast('Аккаунт создан!', 'success');
-  if (!Storage.get('onboarded', false)) showOnboarding();
-  else enterApp();
-}
-
-function doLogin() {
-  const u = document.getElementById('loginUsername').value.trim();
-  const p = document.getElementById('loginPassword').value.trim();
-  if (!u || !p) return toast('Заполни все поля', 'error');
-  const user = state.users[u];
-  if (!user || user.password !== p) return toast('Неверные данные', 'error');
-  if (user.banned) return toast('Аккаунт заблокирован', 'error');
-  state.currentUser = { username: u, tgId: state.tgUser?.id || null, createdAt: user.createdAt };
-  Storage.set('currentUser', state.currentUser);
-  toast('Добро пожаловать!', 'success');
-  if (!Storage.get('onboarded', false)) showOnboarding();
-  else enterApp();
-}
-
-function logout() {
-  state.currentUser = null;
-  Storage.del('currentUser');
-  document.getElementById('app')?.classList.add('hidden');
-  document.getElementById('authScreen')?.classList.remove('hidden');
-  document.getElementById('onboarding')?.classList.add('hidden');
-  showAuthForm('choice');
-  toast('Вы вышли', 'success');
-}
-
+// ==================== ENTER APP ====================
 function enterApp() {
-  document.getElementById('authScreen')?.classList.add('hidden');
-  document.getElementById('onboarding')?.classList.add('hidden');
   document.getElementById('app')?.classList.remove('hidden');
   updateProfileUI();
   renderProducts();
@@ -464,31 +342,6 @@ function updateProfileUI() {
     document.getElementById('verifiedBadge')?.classList.remove('hidden');
   }
   updateHello();
-}
-
-// ==================== ONBOARDING ====================
-let onbIndex = 0;
-function showOnboarding() {
-  document.getElementById('authScreen')?.classList.add('hidden');
-  document.getElementById('onboarding')?.classList.remove('hidden');
-  const track = document.getElementById('onbTrack');
-  const dots = document.querySelectorAll('.onb-dot');
-  const nextBtn = document.getElementById('onbNext');
-  const update = () => {
-    if (track) track.style.transform = `translateX(-${onbIndex * 100}%)`;
-    dots.forEach((d, i) => d.classList.toggle('active', i === onbIndex));
-    if (nextBtn) nextBtn.textContent = onbIndex === 2 ? 'Начать' : 'Далее';
-  };
-  update();
-  if (nextBtn) nextBtn.onclick = () => {
-    if (onbIndex < 2) { onbIndex++; update(); haptic('light'); }
-    else { Storage.set('onboarded', true); enterApp(); haptic('medium'); }
-  };
-  const skipBtn = document.getElementById('onbSkip');
-  if (skipBtn) skipBtn.onclick = () => {
-    Storage.set('onboarded', true);
-    enterApp();
-  };
 }
 
 // ==================== NAV ====================
@@ -1690,7 +1543,7 @@ function exportBackup() {
     users: state.users, products: PRODUCTS, orders: state.orders,
     promos: state.promos, reviews: state.reviews, inventory: state.inventory,
     transactions: state.transactions, points: state.points, stats: state.stats,
-    balance: Storage.get('balance', 0), version: 'v0.8.3', exported: Date.now()
+    balance: Storage.get('balance', 0), version: 'v0.9.0', exported: Date.now()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1740,7 +1593,6 @@ function changeAdminPassword() {
 function openModal(id) {
   const el = document.getElementById(id);
   if (el) el.classList.add('show');
-  else console.error('Modal not found:', id);
 }
 function closeModal(id) {
   const el = document.getElementById(id);
@@ -2036,11 +1888,6 @@ function bindAllListeners() {
 
 // ==================== WINDOW EXPORTS ====================
 window.go = go;
-window.showAuthForm = showAuthForm;
-window.doLogin = doLogin;
-window.doRegister = doRegister;
-window.confirmRegister = confirmRegister;
-window.logout = logout;
 window.checkAdminPass = checkAdminPass;
 window.addPromo = addPromo;
 window.delReview = delReview;
