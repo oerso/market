@@ -1351,3 +1351,103 @@ body.glow .avatar { box-shadow: 0 10px 30px -10px var(--accent), 0 0 0 3px var(-
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* ==================== SPLASH v2 — НОВЫЙ ЭКРАН ЗАГРУЗКИ ==================== */
+.splash2 {
+  position: fixed; inset: 0;
+  background: #08080a;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  overflow: hidden;
+  transition: opacity .45s ease;
+}
+.splash2.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Мягкое свечение под лого */
+.splash2-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 320px; height: 320px;
+  transform: translate(-50%, -60%);
+  background: radial-gradient(circle, rgba(255,45,85,0.35) 0%, transparent 65%);
+  filter: blur(50px);
+  pointer-events: none;
+  animation: splash2Pulse 3s ease-in-out infinite;
+}
+@keyframes splash2Pulse {
+  0%,100% { transform: translate(-50%, -60%) scale(1); opacity: 0.8; }
+  50% { transform: translate(-50%, -60%) scale(1.15); opacity: 1; }
+}
+
+/* Контент по центру */
+.splash2-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 0 32px;
+  width: 100%;
+  max-width: 320px;
+}
+
+/* Лого */
+.splash2-logo {
+  width: 88px;
+  height: 88px;
+  animation: splash2Float 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 24px rgba(255,45,85,0.55));
+}
+.splash2-logo svg { width: 100%; height: 100%; }
+@keyframes splash2Float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Название */
+.splash2-name {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -1.2px;
+  background: linear-gradient(180deg, #ffffff 0%, #8b8b95 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-top: 6px;
+}
+
+/* Подпись */
+.splash2-sub {
+  font-size: 13px;
+  color: #6a6a75;
+  font-weight: 500;
+  text-align: center;
+  letter-spacing: 0.2px;
+  margin-bottom: 4px;
+}
+
+/* Тонкая полоса загрузки */
+.splash2-bar {
+  width: 140px;
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+.splash2-bar-fill {
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, #ff2d55, #ff8fa3);
+  border-radius: 3px;
+  box-shadow: 0 0 12px rgba(255,45,85,0.7);
+  animation: splash2Load 1.4s ease-in-out infinite;
+}
+@keyframes splash2Load {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
