@@ -15,25 +15,65 @@
 </head>
 <body data-theme="dark" data-accent="red">
 
-<!-- ==================== SPLASH (НОВЫЙ) ==================== -->
-<div id="splash" class="splash2">
-  <div class="splash2-glow"></div>
-  <div class="splash2-inner">
-    <div class="splash2-logo">
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="sp2g" x1="0" y1="0" x2="64" y2="64">
-            <stop offset="0%" stop-color="#ff2d55"/>
-            <stop offset="100%" stop-color="#a80020"/>
-          </linearGradient>
-        </defs>
-        <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#sp2g)"/>
-        <text x="32" y="42" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
-      </svg>
+<!-- ==================== SPLASH v3 PREMIUM ==================== -->
+<div id="splash" class="splash3">
+  <div class="splash3-noise"></div>
+  <div class="splash3-glow splash3-glow-1"></div>
+  <div class="splash3-glow splash3-glow-2"></div>
+  <div class="splash3-particles" id="splashParticles"></div>
+
+  <div class="splash3-inner">
+    <div class="splash3-logo-wrap">
+      <div class="splash3-logo-ring"></div>
+      <div class="splash3-logo-ring splash3-logo-ring-2"></div>
+      <div class="splash3-logo">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sp3g" x1="0" y1="0" x2="64" y2="64">
+              <stop offset="0%" stop-color="#ff2d55"/>
+              <stop offset="100%" stop-color="#a80020"/>
+            </linearGradient>
+          </defs>
+          <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#sp3g)"/>
+          <text x="32" y="43" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
+        </svg>
+      </div>
     </div>
-    <div class="splash2-name">desired</div>
-    <div class="splash2-sub">Маркет звёзд, премиума и аккаунтов</div>
-    <div class="splash2-bar"><div class="splash2-bar-fill"></div></div>
+
+    <div class="splash3-name">desired</div>
+
+    <div class="splash3-tagline" id="splashTagline">Маркет звёзд, премиума и аккаунтов</div>
+
+    <div class="splash3-features">
+      <div class="splash3-feature">
+        <span class="splash3-feature-dot"></span>
+        <span>Автовыдача 24/7</span>
+      </div>
+      <div class="splash3-feature-divider"></div>
+      <div class="splash3-feature">
+        <span class="splash3-feature-dot"></span>
+        <span>100% гарантия</span>
+      </div>
+      <div class="splash3-feature-divider"></div>
+      <div class="splash3-feature">
+        <span class="splash3-feature-dot"></span>
+        <span>Тысячи юзеров</span>
+      </div>
+    </div>
+
+    <div class="splash3-progress">
+      <div class="splash3-progress-track">
+        <div class="splash3-progress-fill" id="splashProgressFill"></div>
+      </div>
+      <div class="splash3-progress-info">
+        <span class="splash3-progress-status" id="splashStatus">Инициализация...</span>
+        <span class="splash3-progress-percent" id="splashPercent">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="splash3-footer">
+    <span>swill way · 2025</span>
   </div>
 </div>
 
@@ -45,7 +85,7 @@
       <svg class="logo" viewBox="0 0 64 64" fill="none">
         <defs><linearGradient id="bg1" x1="0" y1="0" x2="64" y2="64"><stop offset="0%" stop-color="#ff2d55"/><stop offset="100%" stop-color="#a80020"/></linearGradient></defs>
         <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#bg1)"/>
-        <text x="32" y="42" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
+        <text x="32" y="43" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
       </svg>
       <span class="brand-name">desired</span>
     </div>
@@ -54,46 +94,52 @@
         <span class="plus">+</span>
         <span id="topBalance">0₽</span>
       </button>
-      <button class="dots-btn" id="dotsBtn" aria-label="Меню">⋮</button>
+      <button class="dots-btn" id="dotsBtn" aria-label="Меню">
+        <svg width="4" height="18" viewBox="0 0 4 18" fill="currentColor"><circle cx="2" cy="2" r="1.8"/><circle cx="2" cy="9" r="1.8"/><circle cx="2" cy="16" r="1.8"/></svg>
+      </button>
     </div>
   </header>
 
   <div class="dropdown" id="dropdownMenu">
     <div class="dropdown-section">
       <div class="dropdown-label">Магазин</div>
-      <a data-page="main">🏠 Каталог</a>
-      <a data-page="favorites">❤️ Избранное</a>
-      <a data-page="inventory">📦 Инвентарь</a>
-      <a data-page="orders">🛒 Заказы</a>
-      <a data-page="transactions">📋 Транзакции</a>
-      <a data-page="reviews">⭐ Отзывы</a>
+      <a data-page="main"><span class="dd-icon">⌂</span> Каталог</a>
+      <a data-page="favorites"><span class="dd-icon">♡</span> Избранное</a>
+      <a data-page="inventory"><span class="dd-icon">▣</span> Инвентарь</a>
+      <a data-page="orders"><span class="dd-icon">☰</span> Заказы</a>
+      <a data-page="transactions"><span class="dd-icon">⇄</span> Транзакции</a>
+      <a data-page="reviews"><span class="dd-icon">★</span> Отзывы</a>
     </div>
     <div class="dropdown-section">
       <div class="dropdown-label">Заработок</div>
-      <a data-page="ref">👥 Рефералка</a>
-      <a data-page="leaderboard">🏆 Лидеры</a>
-      <a data-page="achievements">🎖 Достижения</a>
+      <a data-page="ref"><span class="dd-icon">⇗</span> Рефералка</a>
+      <a data-page="leaderboard"><span class="dd-icon">▲</span> Лидеры</a>
+      <a data-page="achievements"><span class="dd-icon">✦</span> Достижения</a>
     </div>
     <div class="dropdown-section">
       <div class="dropdown-label">Информация</div>
-      <a data-page="faq">❓ FAQ</a>
-      <a data-page="info">ℹ️ Инфо</a>
-      <a data-page="support">💬 Поддержка</a>
-      <a data-page="changelog">📋 Ченджлог</a>
-      <a data-page="settings">⚙️ Настройки</a>
+      <a data-page="faq"><span class="dd-icon">?</span> FAQ</a>
+      <a data-page="info"><span class="dd-icon">i</span> Инфо</a>
+      <a data-page="support"><span class="dd-icon">✆</span> Поддержка</a>
+      <a data-page="changelog"><span class="dd-icon">↻</span> Ченджлог</a>
+      <a data-page="settings"><span class="dd-icon">⚙</span> Настройки</a>
     </div>
   </div>
 
   <main id="page-main" class="page active">
     <div class="hello-line">
-      <span id="helloText">Привет, user 👋</span>
-      <span class="hello-sub" id="helloSub">Свежие товары каждый день</span>
+      <span id="helloText">Привет 👋</span>
+      <span class="hello-sub" id="helloSub">Удачных покупок!</span>
     </div>
 
     <div class="hero-banner">
       <div class="hero-bg"></div>
+      <div class="hero-bg-2"></div>
       <div class="hero-content">
-        <div class="hero-tag">🔥 Новинки каждый день</div>
+        <div class="hero-tag">
+          <span class="hero-tag-dot"></span>
+          Новинки каждый день
+        </div>
         <h2 class="hero-title">Скидки до <b>62%</b></h2>
         <p class="hero-sub">На аккаунты, звёзды и Premium</p>
         <div class="hero-timer">
@@ -104,14 +150,20 @@
       <div class="hero-icon">%</div>
     </div>
 
-    <div class="catalog-tabs">
+    <div class="catalog-tabs" id="catalogTabs">
+      <div class="catalog-tab-slider" id="catalogTabSlider"></div>
       <button class="catalog-tab active" data-cat="accounts">
-        <span class="tab-icon">👤</span>
+        <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
         <span class="tab-label">Аккаунты</span>
         <span class="tab-count" id="countAccounts">0</span>
       </button>
       <button class="catalog-tab" data-cat="stars">
-        <span class="tab-icon">⭐</span>
+        <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
         <span class="tab-label">Звёзды и Премиум</span>
         <span class="tab-count" id="countStars">0</span>
       </button>
@@ -119,14 +171,25 @@
 
     <div class="stat-cards">
       <div class="stat-card">
-        <div class="stat-card-icon">🔥</div>
+        <div class="stat-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+          </svg>
+        </div>
         <div class="stat-card-info">
           <div class="stat-card-value" id="statSoldToday">32</div>
           <div class="stat-card-label">Продано сегодня</div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-card-icon">👥</div>
+        <div class="stat-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
         <div class="stat-card-info">
           <div class="stat-card-value" id="statOnline">1 247</div>
           <div class="stat-card-label">Онлайн сейчас</div>
@@ -135,7 +198,11 @@
     </div>
 
     <div class="sale-card" id="saleCard" onclick="openSaleProduct()">
-      <div class="sale-card-badge">🔥 СКИДКА ДНЯ</div>
+      <div class="sale-card-glow"></div>
+      <div class="sale-card-badge">
+        <span class="sale-badge-dot"></span>
+        СКИДКА ДНЯ
+      </div>
       <div class="sale-card-body">
         <div class="sale-card-info">
           <div class="sale-card-title" id="saleTitle">Загрузка...</div>
@@ -151,16 +218,21 @@
     <div class="quick-filters">
       <button class="quick-chip active" data-quick="all">Все</button>
       <button class="quick-chip" data-quick="cheap">До 100₽</button>
-      <button class="quick-chip" data-quick="hit">🔥 Хиты</button>
-      <button class="quick-chip" data-quick="new">🆕 Новинки</button>
-      <button class="quick-chip" data-quick="sale">💸 Скидки</button>
-      <button class="quick-chip" data-quick="top">⭐ Топ рейтинг</button>
+      <button class="quick-chip" data-quick="hit">Хиты</button>
+      <button class="quick-chip" data-quick="new">Новинки</button>
+      <button class="quick-chip" data-quick="sale">Скидки</button>
+      <button class="quick-chip" data-quick="top">Топ рейтинг</button>
     </div>
 
     <div class="search-row">
       <input type="text" class="search" placeholder="Поиск по каталогу" id="searchInput" autocomplete="off">
       <button class="filter-btn" id="filterBtn" onclick="openFilters()">
-        <span>⚙️</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+          <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+          <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
+        </svg>
         <span class="filter-badge hidden" id="filterBadge">0</span>
       </button>
     </div>
@@ -181,11 +253,11 @@
     </div>
     <div class="live-feed" id="liveFeed"></div>
 
-    <div class="section-title">⭐ Что говорят юзеры</div>
-    <div class="reviews-mini" id="reviewsMini"></div>
-
     <div class="section-title">🎁 Готовые пакеты</div>
     <div class="packages" id="packagesList"></div>
+
+    <div class="section-title">⭐ Что говорят юзеры</div>
+    <div class="reviews-mini" id="reviewsMini"></div>
   </main>
 
   <main id="page-profile" class="page">
@@ -536,17 +608,43 @@
 
   <nav class="bottom-nav">
     <button class="nav-btn active" data-page="main">
-      <span class="nav-icon">🏠</span><span>Маркет</span>
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </span>
+      <span>Маркет</span>
     </button>
     <button class="nav-btn" data-page="inventory">
-      <span class="nav-icon">📦</span><span>Инвентарь</span>
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+          <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+      </span>
+      <span>Инвентарь</span>
     </button>
     <button class="nav-btn" data-page="cart">
-      <span class="nav-icon">🛒</span><span>Корзина</span>
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/>
+          <circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+      </span>
+      <span>Корзина</span>
       <span class="cart-badge hidden" id="cartBadge">0</span>
     </button>
     <button class="nav-btn" data-page="profile">
-      <span class="nav-icon">👤</span><span>Профиль</span>
+      <span class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </span>
+      <span>Профиль</span>
     </button>
   </nav>
 </div>
@@ -640,9 +738,9 @@
 
     <div style="margin-bottom:16px;">
       <label style="display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;">Метки</label>
-      <label style="display:flex;align-items:center;gap:8px;padding:8px 0;font-size:13px;cursor:pointer;"><input type="checkbox" id="filterHit" style="width:18px;height:18px;accent-color:var(--accent);"> 🔥 Только хиты</label>
-      <label style="display:flex;align-items:center;gap:8px;padding:8px 0;font-size:13px;cursor:pointer;"><input type="checkbox" id="filterNew" style="width:18px;height:18px;accent-color:var(--accent);"> 🆕 Только новинки</label>
-      <label style="display:flex;align-items:center;gap:8px;padding:8px 0;font-size:13px;cursor:pointer;"><input type="checkbox" id="filterSale" style="width:18px;height:18px;accent-color:var(--accent);"> 💸 Только со скидкой</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:8px 0;font-size:13px;cursor:pointer;"><input type="checkbox" id="filterHit" style="width:18px;height:18px;accent-color:var(--accent);"> Только хиты</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:8px 0;font-size:13px;cursor:pointer;"><input type="checkbox" id="filterNew" style="width:18px;height:18px;accent-color:var(--accent);"> Только новинки</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:8px 0;font-size:13px;cursor:pointer;"><input type="checkbox" id="filterSale" style="width:18px;height:18px;accent-color:var(--accent);"> Только со скидкой</label>
     </div>
 
     <div class="modal-actions">
@@ -664,14 +762,14 @@
     <input type="number" id="apOldPrice" placeholder="Старая цена (пусто = без скидки)">
     <input type="number" id="apStock" placeholder="В наличии">
     <select id="apCategory" class="season-select" style="width:100%;margin-bottom:8px;">
-      <option value="accounts">👤 Аккаунты</option>
-      <option value="stars">⭐ Звёзды и Премиум</option>
+      <option value="accounts">Аккаунты</option>
+      <option value="stars">Звёзды и Премиум</option>
     </select>
     <input type="text" id="apTags" placeholder="Теги через запятую">
     <select id="apBadge" class="season-select" style="width:100%;margin-bottom:8px;">
       <option value="">Без метки</option>
-      <option value="ХИТ">🔥 ХИТ</option>
-      <option value="NEW">🆕 NEW</option>
+      <option value="ХИТ">ХИТ</option>
+      <option value="NEW">NEW</option>
     </select>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('modalAdminProduct')">Отмена</button>
@@ -713,4 +811,4 @@
 
 <script src="script.js"></script>
 </body>
-          </html>
+</html>
