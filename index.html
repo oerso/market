@@ -66,16 +66,16 @@
   <p class="auth-sub">Маркет звёзд, премиума и аккаунтов</p>
 
   <div class="auth-form" id="authChoice">
-    <button class="btn btn-primary btn-full" onclick="showAuthForm('login')">Войти</button>
-    <button class="btn btn-secondary btn-full" onclick="showAuthForm('register')">Зарегистрироваться</button>
+    <button class="btn btn-primary btn-full" id="btnGoLogin" type="button">Войти</button>
+    <button class="btn btn-secondary btn-full" id="btnGoRegister" type="button">Зарегистрироваться</button>
   </div>
 
   <div class="auth-form hidden" id="loginForm">
     <h2 class="form-title">Вход</h2>
     <input type="text" id="loginUsername" placeholder="Имя пользователя" autocomplete="off">
     <input type="password" id="loginPassword" placeholder="Пароль" autocomplete="off">
-    <button class="btn btn-primary btn-full" onclick="doLogin()">Войти</button>
-    <button class="btn-link" onclick="showAuthForm('choice')">← Назад</button>
+    <button class="btn btn-primary btn-full" id="btnDoLogin" type="button">Войти</button>
+    <button class="btn-link" id="btnGoChoiceFromLogin" type="button">← Назад</button>
   </div>
 
   <div class="auth-form hidden" id="registerForm">
@@ -87,15 +87,14 @@
       <input type="checkbox" id="regConfirm">
       <span>Я записал(а) данные в надёжное место</span>
     </label>
-    <button class="btn btn-primary btn-full" id="regBtn" onclick="doRegister()">Создать аккаунт</button>
-    <button class="btn-link" onclick="showAuthForm('choice')">← Назад</button>
+    <button class="btn btn-primary btn-full" id="regBtn" type="button">Создать аккаунт</button>
+    <button class="btn-link" id="btnGoChoiceFromReg" type="button">← Назад</button>
   </div>
 </div>
 
 <!-- ==================== APP ==================== -->
 <div id="app" class="app hidden">
 
-  <!-- ============ TOPBAR ============ -->
   <header class="topbar" id="topbar">
     <div class="brand" id="brandLogo">
       <svg class="logo" viewBox="0 0 64 64" fill="none">
@@ -114,7 +113,6 @@
     </div>
   </header>
 
-  <!-- ============ DROPDOWN 3 ТОЧЕК ============ -->
   <div class="dropdown" id="dropdownMenu">
     <div class="dropdown-section">
       <div class="dropdown-label">Магазин</div>
@@ -141,16 +139,12 @@
     </div>
   </div>
 
-  <!-- ============ PAGE: MAIN ============ -->
   <main id="page-main" class="page active">
-
-    <!-- Приветствие -->
     <div class="hello-line">
       <span id="helloText">Привет, user 👋</span>
       <span class="hello-sub" id="helloSub">Свежие товары каждый день</span>
     </div>
 
-    <!-- Hero-баннер -->
     <div class="hero-banner">
       <div class="hero-bg"></div>
       <div class="hero-content">
@@ -165,7 +159,6 @@
       <div class="hero-icon">%</div>
     </div>
 
-    <!-- Табы каталога -->
     <div class="catalog-tabs">
       <button class="catalog-tab active" data-cat="accounts">
         <span class="tab-icon">👤</span>
@@ -179,7 +172,6 @@
       </button>
     </div>
 
-    <!-- Статистика -->
     <div class="stat-cards">
       <div class="stat-card">
         <div class="stat-card-icon">🔥</div>
@@ -197,7 +189,6 @@
       </div>
     </div>
 
-    <!-- Скидка дня -->
     <div class="sale-card" id="saleCard" onclick="openSaleProduct()">
       <div class="sale-card-badge">🔥 СКИДКА ДНЯ</div>
       <div class="sale-card-body">
@@ -212,7 +203,6 @@
       </div>
     </div>
 
-    <!-- Быстрые фильтры -->
     <div class="quick-filters">
       <button class="quick-chip active" data-quick="all">Все</button>
       <button class="quick-chip" data-quick="cheap">До 100₽</button>
@@ -222,7 +212,6 @@
       <button class="quick-chip" data-quick="top">⭐ Топ рейтинг</button>
     </div>
 
-    <!-- Поиск + фильтры -->
     <div class="search-row">
       <input type="text" class="search" placeholder="Поиск по каталогу" id="searchInput" autocomplete="off">
       <button class="filter-btn" id="filterBtn" onclick="openFilters()">
@@ -232,38 +221,30 @@
     </div>
     <div class="search-history hidden" id="searchHistory"></div>
 
-    <!-- Товары -->
     <div class="products" id="productsList"></div>
     <div class="products-end hidden" id="productsEnd">— Конец каталога —</div>
 
-    <!-- Недавно смотрел -->
     <div class="section-title hidden" id="recentTitle">
       <span>👀 Недавно смотрел</span>
       <button class="section-clear" onclick="clearRecent()">Очистить</button>
     </div>
     <div class="hscroll" id="recentList"></div>
 
-    <!-- Live-лента -->
     <div class="section-title">
       <span>🔴 Сейчас покупают</span>
       <span class="live-dot-inline"></span>
     </div>
     <div class="live-feed" id="liveFeed"></div>
 
-    <!-- Отзывы mini -->
     <div class="section-title">⭐ Что говорят юзеры</div>
     <div class="reviews-mini" id="reviewsMini"></div>
 
-    <!-- Пакеты -->
     <div class="section-title">🎁 Готовые пакеты</div>
     <div class="packages" id="packagesList"></div>
-
   </main>
 
-  <!-- ============ PAGE: PROFILE ============ -->
   <main id="page-profile" class="page">
     <h1 class="page-title center">Профиль</h1>
-
     <div class="avatar-wrap">
       <div class="avatar" id="userAvatar">d</div>
       <div class="username" id="userName">@desired</div>
@@ -310,7 +291,6 @@
     <button class="btn-wide danger" onclick="logout()">🚪 Выйти из аккаунта</button>
   </main>
 
-  <!-- ============ PAGE: INVENTORY ============ -->
   <main id="page-inventory" class="page">
     <h1 class="page-title">📦 Инвентарь</h1>
     <div class="inv-filters">
@@ -327,39 +307,31 @@
     </div>
   </main>
 
-  <!-- ============ PAGE: CART ============ -->
   <main id="page-cart" class="page">
     <h1 class="page-title">Корзина</h1>
-
     <div class="cart-stepper">
       <div class="step active" id="step1"><span>1</span>Товары</div>
       <div class="step" id="step2"><span>2</span>Оплата</div>
       <div class="step" id="step3"><span>3</span>Готово</div>
     </div>
-
     <div id="cartList"></div>
-
     <div class="upsell hidden" id="upsell">
       <div class="upsell-title">🎁 С этим часто берут:</div>
       <div id="upsellList"></div>
     </div>
-
     <div class="cart-summary hidden" id="cartSummary">
       <div class="cart-row"><span>Товары</span><span id="cartCount">0</span></div>
       <div class="cart-row"><span>Скидка лояльности</span><span id="cartLoyalty">0₽</span></div>
       <div class="cart-row"><span>Промокод</span><span id="cartPromo">—</span></div>
       <button class="btn btn-secondary btn-full promo-btn" onclick="applyPromoInCart()">💎 Применить промокод</button>
       <div class="cart-row total"><span>Итого</span><span id="cartTotal">0₽</span></div>
-
       <div class="balance-check" id="balanceCheck">
         <div class="balance-check-info"><span id="balanceCheckText">Баланс: 0₽</span></div>
         <button class="btn btn-primary btn-sm hidden" id="topUpQuick" onclick="openTopUp()">Докинуть</button>
       </div>
-
       <div class="cart-note">⚡ Автовыдача после оплаты</div>
       <button class="btn btn-primary btn-full" onclick="checkout()">Оформить заказ</button>
     </div>
-
     <div class="empty-state" id="cartEmpty">
       <div class="empty-emoji">🛒</div>
       <div class="empty-title">Корзина пуста</div>
@@ -368,7 +340,6 @@
     </div>
   </main>
 
-  <!-- ============ PAGE: FAVORITES ============ -->
   <main id="page-favorites" class="page">
     <h1 class="page-title">❤️ Избранное</h1>
     <div id="favList"></div>
@@ -380,7 +351,6 @@
     </div>
   </main>
 
-  <!-- ============ PAGE: TRANSACTIONS ============ -->
   <main id="page-transactions" class="page">
     <h1 class="page-title">📋 Транзакции</h1>
     <div class="tx-filters">
@@ -396,7 +366,6 @@
     </div>
   </main>
 
-  <!-- ============ PAGE: ORDERS ============ -->
   <main id="page-orders" class="page">
     <h1 class="page-title">📦 Мои заказы</h1>
     <div id="ordersList"></div>
@@ -408,7 +377,6 @@
     </div>
   </main>
 
-  <!-- ============ PAGE: REF ============ -->
   <main id="page-ref" class="page">
     <h1 class="page-title">👥 Реферальная программа</h1>
     <div class="ref-hero">
@@ -431,7 +399,6 @@
     <button class="btn btn-secondary btn-full" onclick="copyRef()">📤 Поделиться ссылкой</button>
   </main>
 
-  <!-- ============ PAGE: REVIEWS ============ -->
   <main id="page-reviews" class="page">
     <h1 class="page-title">⭐ Отзывы</h1>
     <div class="review-summary">
@@ -456,20 +423,17 @@
     <div id="reviewsList"></div>
   </main>
 
-  <!-- ============ PAGE: FAQ ============ -->
   <main id="page-faq" class="page">
     <h1 class="page-title">❓ FAQ</h1>
     <input type="text" class="search" id="faqSearch" placeholder="Поиск по вопросам...">
     <div class="faq-list" id="faqList"></div>
   </main>
 
-  <!-- ============ PAGE: INFO ============ -->
   <main id="page-info" class="page">
     <h1 class="page-title">ℹ️ Информация</h1>
     <div class="faq-list" id="infoList"></div>
   </main>
 
-  <!-- ============ PAGE: SUPPORT ============ -->
   <main id="page-support" class="page">
     <h1 class="page-title">💬 Поддержка</h1>
     <div class="support-hero">
@@ -490,7 +454,6 @@
     <div class="warn-box">Восстановление пароля возможно только через поддержку.</div>
   </main>
 
-  <!-- ============ PAGE: LEADERBOARD ============ -->
   <main id="page-leaderboard" class="page">
     <h1 class="page-title">🏆 Лидеры</h1>
     <div class="lb-tabs">
@@ -500,19 +463,16 @@
     <div id="lbList"></div>
   </main>
 
-  <!-- ============ PAGE: ACHIEVEMENTS ============ -->
   <main id="page-achievements" class="page">
     <h1 class="page-title">🎖 Достижения</h1>
     <div class="ach-grid" id="achList"></div>
   </main>
 
-  <!-- ============ PAGE: CHANGELOG ============ -->
   <main id="page-changelog" class="page">
     <h1 class="page-title">📋 Ченджлог</h1>
     <div class="changelog-list" id="changelogList"></div>
   </main>
 
-  <!-- ============ PAGE: SETTINGS ============ -->
   <main id="page-settings" class="page">
     <h1 class="page-title">⚙️ Настройки</h1>
 
@@ -552,10 +512,7 @@
     </div>
 
     <div class="setting-row">
-      <div>
-        <div>📐 Радиус углов</div>
-        <div class="setting-hint">Скругление карточек и кнопок</div>
-      </div>
+      <div><div>📐 Радиус углов</div><div class="setting-hint">Скругление карточек и кнопок</div></div>
       <select id="radiusSelect" class="season-select">
         <option value="sharp">Острые</option>
         <option value="default">Обычные</option>
@@ -565,10 +522,7 @@
     </div>
 
     <div class="setting-row">
-      <div>
-        <div>🔠 Размер шрифта</div>
-        <div class="setting-hint">Для удобного чтения</div>
-      </div>
+      <div><div>🔠 Размер шрифта</div><div class="setting-hint">Для удобного чтения</div></div>
       <select id="fontScaleSelect" class="season-select">
         <option value="small">Мелкий</option>
         <option value="default" selected>Обычный</option>
@@ -578,34 +532,22 @@
     </div>
 
     <div class="setting-row">
-      <div>
-        <div>📱 Компактный режим</div>
-        <div class="setting-hint">Больше контента на экране</div>
-      </div>
+      <div><div>📱 Компактный режим</div><div class="setting-hint">Больше контента на экране</div></div>
       <label class="switch"><input type="checkbox" id="compactToggle"><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div>
-        <div>✨ Анимации</div>
-        <div class="setting-hint">Плавные переходы и эффекты</div>
-      </div>
+      <div><div>✨ Анимации</div><div class="setting-hint">Плавные переходы и эффекты</div></div>
       <label class="switch"><input type="checkbox" id="animToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div>
-        <div>💡 Свечение</div>
-        <div class="setting-hint">Неоновый glow на кнопках</div>
-      </div>
+      <div><div>💡 Свечение</div><div class="setting-hint">Неоновый glow на кнопках</div></div>
       <label class="switch"><input type="checkbox" id="glowToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div>
-        <div>🎄 Сезонная тема</div>
-        <div class="setting-hint">Акцент под праздник</div>
-      </div>
+      <div><div>🎄 Сезонная тема</div><div class="setting-hint">Акцент под праздник</div></div>
       <select id="seasonSelect" class="season-select">
         <option value="default">Обычная</option>
         <option value="newyear">🎄 Новый год</option>
@@ -615,26 +557,17 @@
     </div>
 
     <div class="setting-row">
-      <div>
-        <div>🔊 Звук покупки</div>
-        <div class="setting-hint">Звук при оплате</div>
-      </div>
+      <div><div>🔊 Звук покупки</div><div class="setting-hint">Звук при оплате</div></div>
       <label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div>
-        <div>🔔 Уведомления</div>
-        <div class="setting-hint">Пуш-уведомления в боте</div>
-      </div>
+      <div><div>🔔 Уведомления</div><div class="setting-hint">Пуш-уведомления в боте</div></div>
       <label class="switch"><input type="checkbox" id="notifyToggle" checked><span class="slider"></span></label>
     </div>
 
     <div class="setting-row">
-      <div>
-        <div>📳 Вибрация</div>
-        <div class="setting-hint">Тактильный отклик</div>
-      </div>
+      <div><div>📳 Вибрация</div><div class="setting-hint">Тактильный отклик</div></div>
       <label class="switch"><input type="checkbox" id="hapticToggle" checked><span class="slider"></span></label>
     </div>
 
@@ -642,7 +575,6 @@
     <button class="btn btn-secondary btn-full" style="margin-top:8px;color:#ff5566;" onclick="clearAllData()">🗑 Сбросить все данные</button>
   </main>
 
-  <!-- ============ PAGE: ADMIN ============ -->
   <main id="page-admin" class="page">
     <h1 class="page-title">🛠 Админ-панель</h1>
     <div class="admin-tabs">
@@ -659,7 +591,6 @@
     <div class="admin-content" id="adminContent"></div>
   </main>
 
-  <!-- ============ BOTTOM NAV ============ -->
   <nav class="bottom-nav">
     <button class="nav-btn active" data-page="main">
       <span class="nav-icon">🏠</span><span>Маркет</span>
@@ -677,7 +608,6 @@
   </nav>
 </div>
 
-<!-- ==================== MODALS ==================== -->
 <div class="modal" id="modalConfirmReg">
   <div class="modal-box">
     <div class="modal-emoji">⚠️</div>
@@ -874,4 +804,4 @@
 
 <script src="script.js"></script>
 </body>
-    </html>
+</html>
