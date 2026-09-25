@@ -122,15 +122,14 @@ const ACHIEVEMENTS = [
 ];
 
 const CHANGELOG = [
-  { ver: 'v0.8.2', date: 'Сегодня', changes: [
-    'Фикс авторизации — регистрация и вход работают',
-    'Убраны inline onclick с кнопок авторизации',
-    'Все кнопки привязаны через addEventListener',
-    'Добавлена закрывающая скобка в bindAllListeners'
+  { ver: 'v0.8.3', date: 'Сегодня', changes: [
+    'Фикс бесконечной загрузки (убрана лишняя скобка)',
+    'Привязка всех onclick-кнопок через addEventListener',
+    'Фикс авторизации — регистрация и вход работают'
   ] },
-  { ver: 'v0.8.1', date: 'Сегодня', changes: [
-    'Фикс модалок',
-    'Проверка чекбокса при клике'
+  { ver: 'v0.8.2', date: 'Сегодня', changes: [
+    'Убраны inline onclick с кнопок авторизации',
+    'Все кнопки привязаны через addEventListener'
   ] },
   { ver: 'v0.8.0', date: 'Сегодня', changes: [
     'Каталог 2.0: табы Аккаунты / Звёзды и Премиум',
@@ -166,6 +165,7 @@ window.addEventListener('DOMContentLoaded', () => {
   applyAllSettings();
   initTelegram();
   bindAuthButtons();
+  bindAllOnclicks();
 
   setTimeout(() => {
     document.getElementById('splash')?.classList.add('hide');
@@ -199,23 +199,38 @@ function initTelegram() {
   } catch {}
 }
 
+// ==================== ФИКС ONCLICK ДЛЯ TELEGRAM WEBAPP ====================
+// Telegram WebApp блокирует inline onclick — перепривязываем все кнопки через addEventListener
+function bindAllOnclicks() {
+  document.querySelectorAll('[onclick]').forEach(el => {
+    const code = el.getAttribute('onclick');
+    el.removeAttribute('onclick');
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      try {
+        const fn = new Function(code);
+        fn.call(el, e);
+      } catch (err) {
+        console.error('onclick error:', err, 'code:', code);
+      }
+    });
+  });
+}
+
 // ==================== AUTH BUTTONS — ЯВНАЯ ПРИВЯЗКА ====================
 function bindAuthButtons() {
   const byId = (id) => document.getElementById(id);
 
-  // Главный экран
   byId('btnGoLogin')?.addEventListener('click', () => showAuthForm('login'));
   byId('btnGoRegister')?.addEventListener('click', () => showAuthForm('register'));
 
-  // Форма логина
   byId('btnDoLogin')?.addEventListener('click', () => doLogin());
   byId('btnGoChoiceFromLogin')?.addEventListener('click', () => showAuthForm('choice'));
 
-  // Форма регистрации
   byId('regBtn')?.addEventListener('click', () => doRegister());
   byId('btnGoChoiceFromReg')?.addEventListener('click', () => showAuthForm('choice'));
 
-  // Чекбокс — снимает disabled визуально
   const regCb = byId('regConfirm');
   const regBtn = byId('regBtn');
   if (regCb && regBtn) {
@@ -225,7 +240,6 @@ function bindAuthButtons() {
     });
   }
 
-  // Кнопки модалки подтверждения регистрации
   const modalReg = byId('modalConfirmReg');
   if (modalReg) {
     const btns = modalReg.querySelectorAll('.btn');
@@ -233,7 +247,6 @@ function bindAuthButtons() {
     if (btns[1]) btns[1].addEventListener('click', () => confirmRegister());
   }
 
-  // Кнопки модалки админ-пароля
   const modalAdmin = byId('modalAdminPass');
   if (modalAdmin) {
     const btns = modalAdmin.querySelectorAll('.btn');
@@ -241,14 +254,12 @@ function bindAuthButtons() {
     if (btns[1]) btns[1].addEventListener('click', () => checkAdminPass());
   }
 
-  // Кнопка "Понятно" в модалке "Доступ запрещён"
   const modalDenied = byId('modalDenied');
   if (modalDenied) {
     const btn = modalDenied.querySelector('.btn-primary');
     if (btn) btn.addEventListener('click', () => closeModal('modalDenied'));
   }
 
-  // Кнопки модалки топ-апа
   const modalTopUp = byId('modalTopUp');
   if (modalTopUp) {
     const btns = modalTopUp.querySelectorAll('.btn');
@@ -256,7 +267,6 @@ function bindAuthButtons() {
     if (btns[1]) btns[1].addEventListener('click', () => submitTopUp());
   }
 
-  // Кнопки модалки промокода
   const modalPromo = byId('modalPromo');
   if (modalPromo) {
     const btns = modalPromo.querySelectorAll('.btn');
@@ -470,11 +480,12 @@ function showOnboarding() {
     if (nextBtn) nextBtn.textContent = onbIndex === 2 ? 'Начать' : 'Далее';
   };
   update();
-  nextBtn.onclick = () => {
+  if (nextBtn) nextBtn.onclick = () => {
     if (onbIndex < 2) { onbIndex++; update(); haptic('light'); }
     else { Storage.set('onboarded', true); enterApp(); haptic('medium'); }
   };
-  document.getElementById('onbSkip').onclick = () => {
+  const skipBtn = document.getElementById('onbSkip');
+  if (skipBtn) skipBtn.onclick = () => {
     Storage.set('onboarded', true);
     enterApp();
   };
@@ -1679,7 +1690,7 @@ function exportBackup() {
     users: state.users, products: PRODUCTS, orders: state.orders,
     promos: state.promos, reviews: state.reviews, inventory: state.inventory,
     transactions: state.transactions, points: state.points, stats: state.stats,
-    balance: Storage.get('balance', 0), version: 'v0.8.2', exported: Date.now()
+    balance: Storage.get('balance', 0), version: 'v0.8.3', exported: Date.now()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -2069,19 +2080,3 @@ window.importBackup = importBackup;
 window.adminAddBalance = adminAddBalance;
 window.confirmAdminBalance = confirmAdminBalance;
 window.openAdminPromoModal = openAdminPromoModal;
-}
-
-// ⚡ ФИКС ДЛЯ TELEGRAM WEBAPP
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    document.querySelectorAll('[onclick]').forEach(el => {
-      const code = el.getAttribute('onclick');
-      el.removeAttribute('onclick');
-      el.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        try { new Function(code).call(el); } catch (err) { console.error(err); }
-      });
-    });
-  }, 50);
-}); хз
