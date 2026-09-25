@@ -81,13 +81,35 @@
 <div id="app" class="app hidden">
 
   <header class="topbar" id="topbar">
-    <div class="brand" id="brandLogo">
-      <svg class="logo" viewBox="0 0 64 64" fill="none">
-        <defs><linearGradient id="bg1" x1="0" y1="0" x2="64" y2="64"><stop offset="0%" stop-color="#ff2d55"/><stop offset="100%" stop-color="#a80020"/></linearGradient></defs>
-        <path d="M32 4 L58 20 L58 44 L32 60 L6 44 L6 20 Z" fill="url(#bg1)"/>
-        <text x="32" y="43" font-family="Manrope, sans-serif" font-size="30" font-weight="800" fill="#fff" text-anchor="middle">d</text>
-      </svg>
-      <span class="brand-name">desired</span>
+    <div class="topbar-left">
+      <button class="back-btn hidden" id="backBtn" aria-label="Назад">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"/>
+          <polyline points="12 19 5 12 12 5"/>
+        </svg>
+      </button>
+      <div class="brand" id="brandLogo">
+        <div class="brand-logo-wrap">
+          <svg class="logo" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="brandGrad" x1="0" y1="0" x2="64" y2="64">
+                <stop offset="0%" stop-color="#ff2d55"/>
+                <stop offset="100%" stop-color="#a80020"/>
+              </linearGradient>
+              <linearGradient id="brandInner" x1="0" y1="0" x2="0" y2="64">
+                <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
+                <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+              </linearGradient>
+            </defs>
+            <path d="M32 3 L59 19.5 L59 44.5 L32 61 L5 44.5 L5 19.5 Z" fill="url(#brandGrad)"/>
+            <path d="M32 3 L59 19.5 L59 44.5 L32 61 L5 44.5 L5 19.5 Z" fill="url(#brandInner)" opacity="0.5"/>
+            <path d="M32 10 L52 22 L52 42 L32 54 L12 42 L12 22 Z" fill="rgba(255,255,255,0.08)"/>
+            <text x="32" y="42" font-family="Manrope, sans-serif" font-size="28" font-weight="800" fill="#fff" text-anchor="middle">d</text>
+          </svg>
+          <span class="brand-glow-pulse"></span>
+        </div>
+        <span class="brand-name">desired</span>
+      </div>
     </div>
     <div class="topbar-right">
       <button class="balance-pill" onclick="openTopUp()">
@@ -128,7 +150,7 @@
 
   <main id="page-main" class="page active">
     <div class="hello-line">
-      <span id="helloText">Привет 👋</span>
+      <span id="helloText">Приветствую 👋</span>
       <span class="hello-sub" id="helloSub">Удачных покупок!</span>
     </div>
 
@@ -158,14 +180,12 @@
           <circle cx="12" cy="7" r="4"/>
         </svg>
         <span class="tab-label">Аккаунты</span>
-        <span class="tab-count" id="countAccounts">0</span>
       </button>
       <button class="catalog-tab" data-cat="stars">
         <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
         </svg>
         <span class="tab-label">Звёзды и Премиум</span>
-        <span class="tab-count" id="countStars">0</span>
       </button>
     </div>
 
@@ -261,50 +281,139 @@
   </main>
 
   <main id="page-profile" class="page">
-    <h1 class="page-title center">Профиль</h1>
-    <div class="avatar-wrap">
-      <div class="avatar" id="userAvatar">d</div>
-      <div class="username" id="userName">@desired</div>
-      <div class="userid" id="userId">@id0</div>
-      <div class="badges-row">
-        <span class="auth-badge">авторизован</span>
-        <span class="loyalty-badge" id="loyaltyBadge">🥉 Bronze</span>
-        <span class="verified-badge hidden" id="verifiedBadge">✅ Verified</span>
+    <h1 class="page-title">Профиль</h1>
+
+    <div class="profile-hero">
+      <div class="profile-avatar-ring">
+        <div class="profile-avatar" id="userAvatar">d</div>
       </div>
+      <div class="profile-name" id="userName">@desired</div>
+      <div class="profile-id" id="userId">@id0</div>
+      <div class="profile-badges">
+        <span class="p-badge p-badge-green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Авторизован
+        </span>
+        <span class="p-badge p-badge-gold" id="loyaltyBadge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+          Bronze
+        </span>
+        <span class="p-badge p-badge-blue hidden" id="verifiedBadge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Verified
+        </span>
+      </div>
+    </div>
+
+    <div class="profile-balance-card">
+      <div class="pbc-glow"></div>
+      <div class="pbc-top">
+        <span class="pbc-label">Баланс</span>
+        <svg class="pbc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="6" width="20" height="14" rx="3"/>
+          <path d="M2 10h20"/>
+          <circle cx="17" cy="15" r="1.4" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="pbc-amount" id="profileBalance">0₽</div>
+      <button class="pbc-btn" onclick="openTopUp()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Пополнить
+      </button>
     </div>
 
     <div class="loyalty-card">
       <div class="loyalty-head">
-        <span>Уровень лояльности</span>
+        <span class="loyalty-head-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Уровень лояльности
+        </span>
         <span id="loyaltyProgressText">0 / 5000₽</span>
       </div>
       <div class="loyalty-bar"><div class="loyalty-fill" id="loyaltyFill" style="width:0%"></div></div>
       <div class="loyalty-hint">Кэшбэк: <b id="cashbackPercent">3%</b> · Потрачено: <b id="loyaltySpent">0₽</b></div>
     </div>
 
-    <div class="balance-card">
-      <div>
-        <div class="label">Баланс</div>
-        <div class="amount" id="profileBalance">0₽</div>
+    <div class="profile-stats-grid">
+      <div class="p-stat p-stat-green">
+        <div class="p-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </div>
+        <div class="p-stat-value" id="statTopUp">0₽</div>
+        <div class="p-stat-label">Пополнено</div>
       </div>
-      <button class="btn btn-primary" onclick="openTopUp()">Пополнить</button>
+      <div class="p-stat p-stat-red">
+        <div class="p-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 17 17 7 17"/></svg>
+        </div>
+        <div class="p-stat-value" id="statSpent">0₽</div>
+        <div class="p-stat-label">Потрачено</div>
+      </div>
+      <div class="p-stat p-stat-purple">
+        <div class="p-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="p-stat-value" id="statPoints">0</div>
+        <div class="p-stat-label">Баллы</div>
+      </div>
+      <div class="p-stat p-stat-blue">
+        <div class="p-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </div>
+        <div class="p-stat-value" id="statOrders">0</div>
+        <div class="p-stat-label">Заказов</div>
+      </div>
     </div>
 
-    <div class="stats">
-      <div class="stat green"><div class="stat-value" id="statTopUp">0₽</div><div class="stat-label">↗ Пополнено</div></div>
-      <div class="stat gray"><div class="stat-value" id="statSpent">0₽</div><div class="stat-label">↘ Потрачено</div></div>
-    </div>
-    <div class="stats">
-      <div class="stat gray"><div class="stat-value" id="statPoints">0</div><div class="stat-label">💎 Баллы</div></div>
-      <div class="stat gray"><div class="stat-value" id="statOrders">0</div><div class="stat-label">📦 Заказов</div></div>
-    </div>
+    <div class="profile-menu">
+      <button class="profile-menu-item" onclick="openPromoModal()">
+        <span class="pmi-icon pmi-icon-pink">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        </span>
+        <span class="pmi-text">Ввести промокод</span>
+        <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
 
-    <button class="btn-wide" onclick="openPromoModal()">💎 Ввести промокод</button>
-    <button class="btn-wide" onclick="go('transactions')">📋 Все транзакции</button>
-    <button class="btn-wide" onclick="go('orders')">📦 Мои заказы</button>
-    <button class="btn-wide" onclick="go('ref')">👥 Реферальная программа</button>
-    <button class="btn-wide" onclick="go('favorites')">❤️ Избранное</button>
-    <button class="btn-wide" onclick="go('achievements')">🎖 Достижения</button>
+      <button class="profile-menu-item" onclick="go('transactions')">
+        <span class="pmi-icon pmi-icon-blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+        </span>
+        <span class="pmi-text">Все транзакции</span>
+        <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <button class="profile-menu-item" onclick="go('orders')">
+        <span class="pmi-icon pmi-icon-green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </span>
+        <span class="pmi-text">Мои заказы</span>
+        <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <button class="profile-menu-item" onclick="go('ref')">
+        <span class="pmi-icon pmi-icon-purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <span class="pmi-text">Реферальная программа</span>
+        <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <button class="profile-menu-item" onclick="go('favorites')">
+        <span class="pmi-icon pmi-icon-red">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </span>
+        <span class="pmi-text">Избранное</span>
+        <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <button class="profile-menu-item" onclick="go('achievements')">
+        <span class="pmi-icon pmi-icon-gold">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+        </span>
+        <span class="pmi-text">Достижения</span>
+        <svg class="pmi-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
   </main>
 
   <main id="page-inventory" class="page">
@@ -312,7 +421,6 @@
     <div class="inv-filters">
       <button class="inv-filter active" data-inv="all">Все</button>
       <button class="inv-filter" data-inv="active">Активные</button>
-      <button class="inv-filter" data-inv="history">История</button>
     </div>
     <div id="inventoryList"></div>
     <div class="empty-state" id="inventoryEmpty">
@@ -441,7 +549,10 @@
 
   <main id="page-faq" class="page">
     <h1 class="page-title">❓ FAQ</h1>
-    <input type="text" class="search" id="faqSearch" placeholder="Поиск по вопросам...">
+    <div class="faq-search-wrap">
+      <svg class="faq-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="search faq-search-input" id="faqSearch" placeholder="Поиск по вопросам...">
+    </div>
     <div class="faq-list" id="faqList"></div>
   </main>
 
@@ -587,7 +698,6 @@
     </div>
 
     <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="resetSettings()">🔄 Сбросить настройки</button>
-    <button class="btn btn-secondary btn-full" style="margin-top:8px;color:#ff5566;" onclick="clearAllData()">🗑 Сбросить все данные</button>
   </main>
 
   <main id="page-admin" class="page">
