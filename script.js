@@ -2070,3 +2070,18 @@ window.adminAddBalance = adminAddBalance;
 window.confirmAdminBalance = confirmAdminBalance;
 window.openAdminPromoModal = openAdminPromoModal;
 }
+
+// ⚡ ФИКС ДЛЯ TELEGRAM WEBAPP
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelectorAll('[onclick]').forEach(el => {
+      const code = el.getAttribute('onclick');
+      el.removeAttribute('onclick');
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        try { new Function(code).call(el); } catch (err) { console.error(err); }
+      });
+    });
+  }, 50);
+}); хз
