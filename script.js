@@ -122,11 +122,15 @@ const ACHIEVEMENTS = [
 ];
 
 const CHANGELOG = [
-  { ver: 'v0.8.1', date: 'Сегодня', changes: [
+  { ver: 'v0.8.2', date: 'Сегодня', changes: [
     'Фикс авторизации — регистрация и вход работают',
-    'Кнопка регистрации активна всегда',
-    'Проверка чекбокса при клике',
-    'Явная привязка обработчиков кнопок'
+    'Убраны inline onclick с кнопок авторизации',
+    'Все кнопки привязаны через addEventListener',
+    'Добавлена закрывающая скобка в bindAllListeners'
+  ] },
+  { ver: 'v0.8.1', date: 'Сегодня', changes: [
+    'Фикс модалок',
+    'Проверка чекбокса при клике'
   ] },
   { ver: 'v0.8.0', date: 'Сегодня', changes: [
     'Каталог 2.0: табы Аккаунты / Звёзды и Премиум',
@@ -197,92 +201,67 @@ function initTelegram() {
 
 // ==================== AUTH BUTTONS — ЯВНАЯ ПРИВЯЗКА ====================
 function bindAuthButtons() {
-  // Кнопки на главном экране авторизации
-  const choiceLogin = document.querySelector('#authChoice .btn-primary');
-  const choiceReg = document.querySelector('#authChoice .btn-secondary');
-  
-  if (choiceLogin) {
-    choiceLogin.onclick = (e) => { e.preventDefault(); showAuthForm('login'); };
-  }
-  if (choiceReg) {
-    choiceReg.onclick = (e) => { e.preventDefault(); showAuthForm('register'); };
-  }
+  const byId = (id) => document.getElementById(id);
 
-  // Кнопка "Войти" на форме логина
-  const loginBtn = document.querySelector('#loginForm .btn-primary');
-  if (loginBtn) {
-    loginBtn.onclick = (e) => { e.preventDefault(); doLogin(); };
-  }
+  // Главный экран
+  byId('btnGoLogin')?.addEventListener('click', () => showAuthForm('login'));
+  byId('btnGoRegister')?.addEventListener('click', () => showAuthForm('register'));
 
-  // Кнопка "Назад" на форме логина
-  const loginBack = document.querySelector('#loginForm .btn-link');
-  if (loginBack) {
-    loginBack.onclick = (e) => { e.preventDefault(); showAuthForm('choice'); };
-  }
+  // Форма логина
+  byId('btnDoLogin')?.addEventListener('click', () => doLogin());
+  byId('btnGoChoiceFromLogin')?.addEventListener('click', () => showAuthForm('choice'));
 
-  // Кнопка "Создать аккаунт" на форме регистрации
-  const regBtn = document.getElementById('regBtn');
-  if (regBtn) {
-    // Снимаем disabled по умолчанию — проверим при клике
+  // Форма регистрации
+  byId('regBtn')?.addEventListener('click', () => doRegister());
+  byId('btnGoChoiceFromReg')?.addEventListener('click', () => showAuthForm('choice'));
+
+  // Чекбокс — снимает disabled визуально
+  const regCb = byId('regConfirm');
+  const regBtn = byId('regBtn');
+  if (regCb && regBtn) {
     regBtn.disabled = false;
-    regBtn.onclick = (e) => { e.preventDefault(); doRegister(); };
-  }
-
-  // Кнопка "Назад" на форме регистрации
-  const regBack = document.querySelector('#registerForm .btn-link');
-  if (regBack) {
-    regBack.onclick = (e) => { e.preventDefault(); showAuthForm('choice'); };
-  }
-
-  // Чекбокс — визуально разблокирует кнопку (но она и так работает)
-  const regCb = document.getElementById('regConfirm');
-  if (regCb) {
-    regCb.onchange = () => {
-      if (regBtn) regBtn.disabled = false;
-    };
+    regCb.addEventListener('change', () => {
+      regBtn.disabled = false;
+    });
   }
 
   // Кнопки модалки подтверждения регистрации
-  const modalReg = document.getElementById('modalConfirmReg');
+  const modalReg = byId('modalConfirmReg');
   if (modalReg) {
-    const btnCancel = modalReg.querySelector('.btn-secondary');
-    const btnConfirm = modalReg.querySelector('.btn-primary');
-    if (btnCancel) btnCancel.onclick = () => closeModal('modalConfirmReg');
-    if (btnConfirm) btnConfirm.onclick = () => confirmRegister();
+    const btns = modalReg.querySelectorAll('.btn');
+    if (btns[0]) btns[0].addEventListener('click', () => closeModal('modalConfirmReg'));
+    if (btns[1]) btns[1].addEventListener('click', () => confirmRegister());
   }
 
   // Кнопки модалки админ-пароля
-  const modalAdmin = document.getElementById('modalAdminPass');
+  const modalAdmin = byId('modalAdminPass');
   if (modalAdmin) {
-    const btnCancel = modalAdmin.querySelector('.btn-secondary');
-    const btnConfirm = modalAdmin.querySelector('.btn-primary');
-    if (btnCancel) btnCancel.onclick = () => closeModal('modalAdminPass');
-    if (btnConfirm) btnConfirm.onclick = () => checkAdminPass();
+    const btns = modalAdmin.querySelectorAll('.btn');
+    if (btns[0]) btns[0].addEventListener('click', () => closeModal('modalAdminPass'));
+    if (btns[1]) btns[1].addEventListener('click', () => checkAdminPass());
   }
 
   // Кнопка "Понятно" в модалке "Доступ запрещён"
-  const modalDenied = document.getElementById('modalDenied');
+  const modalDenied = byId('modalDenied');
   if (modalDenied) {
     const btn = modalDenied.querySelector('.btn-primary');
-    if (btn) btn.onclick = () => closeModal('modalDenied');
+    if (btn) btn.addEventListener('click', () => closeModal('modalDenied'));
   }
 
   // Кнопки модалки топ-апа
-  const modalTopUp = document.getElementById('modalTopUp');
+  const modalTopUp = byId('modalTopUp');
   if (modalTopUp) {
-    const btnCancel = modalTopUp.querySelector('.btn-secondary');
-    const btnConfirm = modalTopUp.querySelector('.btn-primary');
-    if (btnCancel) btnCancel.onclick = () => closeModal('modalTopUp');
-    if (btnConfirm) btnConfirm.onclick = () => submitTopUp();
+    const btns = modalTopUp.querySelectorAll('.btn');
+    if (btns[0]) btns[0].addEventListener('click', () => closeModal('modalTopUp'));
+    if (btns[1]) btns[1].addEventListener('click', () => submitTopUp());
   }
 
   // Кнопки модалки промокода
-  const modalPromo = document.getElementById('modalPromo');
+  const modalPromo = byId('modalPromo');
   if (modalPromo) {
-    const btnCancel = modalPromo.querySelector('.btn-secondary');
-    const btnConfirm = modalPromo.querySelector('.btn-primary');
-    if (btnCancel) btnCancel.onclick = () => closeModal('modalPromo');
-    if (btnConfirm) btnConfirm.onclick = () => applyPromo();
+    const btns = modalPromo.querySelectorAll('.btn');
+    if (btns[0]) btns[0].addEventListener('click', () => closeModal('modalPromo'));
+    if (btns[1]) btns[1].addEventListener('click', () => applyPromo());
   }
 }
 
@@ -1700,7 +1679,7 @@ function exportBackup() {
     users: state.users, products: PRODUCTS, orders: state.orders,
     promos: state.promos, reviews: state.reviews, inventory: state.inventory,
     transactions: state.transactions, points: state.points, stats: state.stats,
-    balance: Storage.get('balance', 0), version: 'v0.8.1', exported: Date.now()
+    balance: Storage.get('balance', 0), version: 'v0.8.2', exported: Date.now()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1747,12 +1726,12 @@ function changeAdminPassword() {
 }
 
 // ==================== MODALS ====================
-function openModal(id) { 
+function openModal(id) {
   const el = document.getElementById(id);
   if (el) el.classList.add('show');
   else console.error('Modal not found:', id);
 }
-function closeModal(id) { 
+function closeModal(id) {
   const el = document.getElementById(id);
   if (el) el.classList.remove('show');
 }
@@ -1934,13 +1913,6 @@ function bindAllListeners() {
   document.getElementById('searchInput')?.addEventListener('focus', renderSearchHistory);
   document.getElementById('faqSearch')?.addEventListener('input', renderFAQ);
 
-  document.addEventListener('input', (e) => {
-    if (e.target.id === 'regConfirm') {
-      const btn = document.getElementById('regBtn');
-      if (btn) btn.disabled = false;
-    }
-  });
-
   document.addEventListener('change', (e) => {
     const id = e.target.id;
     if (id === 'radiusSelect') Storage.set('radius', e.target.value);
@@ -2097,4 +2069,3 @@ window.importBackup = importBackup;
 window.adminAddBalance = adminAddBalance;
 window.confirmAdminBalance = confirmAdminBalance;
 window.openAdminPromoModal = openAdminPromoModal;
-}
